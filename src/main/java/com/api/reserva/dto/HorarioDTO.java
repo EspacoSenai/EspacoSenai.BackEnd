@@ -1,10 +1,14 @@
 package com.api.reserva.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.time.LocalTime;
 
 public class HorarioDTO {
     private Long id;
+    @NotBlank(message = "O horário de inicio é obrigatório.")
     private LocalTime horaInicio;
+    @NotBlank(message = "O horário de término é obrigatório.")
     private LocalTime horaFim;
 
     public HorarioDTO() {

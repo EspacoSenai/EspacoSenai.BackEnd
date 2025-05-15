@@ -29,8 +29,8 @@ public class PeriodoService {
     }
 
     public PeriodoDTO salvar(PeriodoDTO periodoDTO) {
-        LocalTime inicioFormatado = periodoDTO.getInicio();
-        LocalTime terminoFormatado = periodoDTO.getTermino();
+        LocalTime inicioFormatado = periodoDTO.getHoraInicio();
+        LocalTime terminoFormatado = periodoDTO.getHoraFim();
 
         if (inicioFormatado.isAfter(terminoFormatado) || inicioFormatado.equals(terminoFormatado)) {
             throw new HorarioInvalidoException();
@@ -41,8 +41,8 @@ public class PeriodoService {
     }
 
     public PeriodoDTO atualizar(Long id, PeriodoDTO periodoDTO) {
-        LocalTime inicio = periodoDTO.getInicio();
-        LocalTime termino = periodoDTO.getTermino();
+        LocalTime inicio = periodoDTO.getHoraInicio();
+        LocalTime termino = periodoDTO.getHoraFim();
 
         if (inicio.isAfter(termino) || inicio.equals(termino)) {
             throw new HorarioInvalidoException();
@@ -50,16 +50,16 @@ public class PeriodoService {
 
         Periodo periodo = repository.findById(id).orElseThrow(SemResultadosException::new);
 
-        if(periodoDTO.getPeriodoAmbiente() != null && periodo.getInicio() != periodoDTO.getInicio()) {
+        if(periodoDTO.getPeriodoAmbiente() != null && periodo.getHoraInicio() != periodoDTO.getHoraInicio()) {
             periodo.setPeriodoAmbiente(periodoDTO.getPeriodoAmbiente());
         }
 
-        if(periodoDTO.getInicio() != null && periodo.getInicio() != periodoDTO.getInicio()) {
-            periodo.setInicio(periodoDTO.getInicio());
+        if(periodoDTO.getHoraInicio() != null && periodo.getHoraInicio() != periodoDTO.getHoraInicio()) {
+            periodo.setHoraInicio(periodoDTO.getHoraInicio());
         }
 
-        if(periodoDTO.getTermino() != null && periodo.getTermino() != periodoDTO.getTermino()) {
-            periodo.setTermino(periodoDTO.getTermino());
+        if(periodoDTO.getHoraFim() != null && periodo.getHoraFim() != periodoDTO.getHoraFim()) {
+            periodo.setHoraFim(periodoDTO.getHoraFim());
         }
 
         return new PeriodoDTO(repository.save(periodo));

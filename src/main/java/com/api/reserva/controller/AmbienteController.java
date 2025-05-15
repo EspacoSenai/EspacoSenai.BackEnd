@@ -31,7 +31,7 @@ public class  AmbienteController {
     }
 
     @PatchMapping("/atualizar/{id}")
-    public ResponseEntity<AmbienteDTO> atualizar (@PathVariable Long id, @Valid @RequestBody AmbienteDTO ambienteDTO) {
+    public ResponseEntity<AmbienteDTO> atualizar (@Valid @PathVariable Long id, @Valid @RequestBody AmbienteDTO ambienteDTO) {
         return ResponseEntity.ok(service.atualizar(id, ambienteDTO));
     }
 

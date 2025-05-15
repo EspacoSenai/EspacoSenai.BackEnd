@@ -18,10 +18,8 @@ public class Ambiente {
     @Column(nullable = false, length = 50)
     private String nome;
 
+    @Column(length = 255)
     private String descricao;
-
-    @Column(nullable = false, unique = true, length = 6)
-    private String identificacao;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -38,17 +36,15 @@ public class Ambiente {
             joinColumns = @JoinColumn(name = "id_ambiente"),
             inverseJoinColumns = @JoinColumn(name = "id_categoria")
     )
+
     private Set<Categoria> categorias = new HashSet<>();
-
-
 
     public Ambiente() {
     }
 
-    public Ambiente(String nome, String descricao, String identificacao, Disponibilidade disponibilidade, Aprovacao aprovacao) {
+    public Ambiente(String nome, String descricao, Disponibilidade disponibilidade, Aprovacao aprovacao) {
         this.nome = nome;
         this.descricao = descricao;
-        this.identificacao = identificacao;
         this.disponibilidade = disponibilidade;
         this.aprovacao = aprovacao;
     }
@@ -57,13 +53,8 @@ public class Ambiente {
         id = ambienteDTO.getId();
         nome = ambienteDTO.getNome();
         descricao = ambienteDTO.getDescricao();
-        identificacao = ambienteDTO.getIdentificacao();
         disponibilidade = ambienteDTO.getDisponibilidade();
         aprovacao = ambienteDTO.getAprovacao();
-//        categorias = ambienteDTO.getCategorias()
-//                .stream()
-//                .map(Categoria::new)
-//                .collect(Collectors.toSet());
     }
 
     public Long getId() {
@@ -84,14 +75,6 @@ public class Ambiente {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public String getIdentificacao() {
-        return identificacao;
-    }
-
-    public void setIdentificacao(String identificacao) {
-        this.identificacao = identificacao;
     }
 
     public Disponibilidade getDisponibilidade() {

@@ -27,21 +27,6 @@ public class ExceptionGlobal {
                 .body(e.getMessage());
     }
 
-    //Trata requisicoes com usuario duplicado
-    @ExceptionHandler(UsuarioDuplicadoException.class)
-    public ResponseEntity<String> handler(UsuarioDuplicadoException e){
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
-    }
-
-
-
-    //Trata erros internos no servidor
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handler (Exception e){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Erro interno no servidor. Tente novamente mais tarde.");
-    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handler(IllegalArgumentException e){
@@ -84,6 +69,7 @@ public class ExceptionGlobal {
 
     @ExceptionHandler(DadoDuplicadoException.class)
     public ResponseEntity<String> handler (DadoDuplicadoException e) {
+    //Trata erros internos no servidor
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
@@ -92,5 +78,11 @@ public class ExceptionGlobal {
     public ResponseEntity<String> handler (HorarioInvalidoException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handler (Exception e){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Erro interno no servidor. Tente novamente mais tarde.");
     }
 }

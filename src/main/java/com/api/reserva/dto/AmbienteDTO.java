@@ -10,36 +10,32 @@ import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AmbienteDTO {
     private Long id;
 
-    @NotBlank(message = "Nome é obrigatório")
-    @Size(min = 3, max = 20, message = "Nome deve ter entre 3 e 50 caracteres.")
+    @NotBlank(message = "Nome do ambiente é obrigatório.")
+    @Size(min = 5, max = 50, message = "Nome do ambiente deve ter entre 5 e 50 caracteres.")
     private String nome;
 
-    @Size(min = 10, max = 300, message = "Descrição deve ter entre 10 e 300 caracteres.")
+    @Size(max = 255, message = "Descrição deve ter no máximo 255 caracteres.")
     private String descricao;
-
-    @NotBlank(message = "Identificação é obrigatória")
-    @Size(min = 3, max = 6, message = "Identificação deve ter entre 3 e 6 caracteres.")
-    private String identificacao;
 
     @NotNull(message = "Disponibilidade é obrigatória.")
     private Disponibilidade disponibilidade;
 
-    @NotNull(message = "Categoria de de aprovação é obrigatória.")
+    @NotNull(message = "Tipo de aprovação é obrigatório.")
     private Aprovacao aprovacao;
 
-    private Set<CategoriaDTO> categorias = new HashSet<>();
+    private Set<CategoriaReferenciaDTO> categorias = new HashSet<>();
 
-    public AmbienteDTO() {}
+    public AmbienteDTO() {
+    }
 
-    public AmbienteDTO(Long id, String nome, String descricao, String identificacao, Disponibilidade disponibilidade, Aprovacao aprovacao) {
-        this.id = id;
+    public AmbienteDTO(String nome, String descricao, Disponibilidade disponibilidade, Aprovacao aprovacao) {
         this.nome = nome;
         this.descricao = descricao;
-        this.identificacao = identificacao;
         this.disponibilidade = disponibilidade;
         this.aprovacao = aprovacao;
     }
@@ -48,14 +44,43 @@ public class AmbienteDTO {
         id = ambiente.getId();
         nome = ambiente.getNome();
         descricao = ambiente.getDescricao();
-        identificacao = ambiente.getIdentificacao();
         disponibilidade = ambiente.getDisponibilidade();
         aprovacao = ambiente.getAprovacao();
-        for(Categoria categoria : ambiente.getCategorias()) {
-            categorias.add(new CategoriaDTO(categoria));
-        }
+        categorias = ambiente.getCategorias()
+                .stream()
+                .map(CategoriaReferenciaDTO::new)
+                .collect(Collectors.toSet());
 
+//        categorias = ambiente.getCategorias().stream()
+//                .map(Categoria::getId)
+//                .collect(Collectors.toSet());
     }
+
+
+//    private String validarNome(String nome) {
+//        if (nome == null) {
+//            throw new DadoInvalidoException("O nome do ambiente não pode ser nulo.");
+//        }
+//
+//        nome = nome.trim();
+//
+//        if (nome.isBlank()) {
+//            throw new DadoInvalidoException("O nome não pode estar em branco.");
+//        } else if (nome.length() < 5 || nome.length() > 50) {
+//            throw new DadoInvalidoException("O nome do ambiente deve estar entre 5 e 50 caracteres.");
+//        }
+//        return nome;
+//    }
+//
+//    private String validarDescricao(String descricao){
+//        if(descricao != null || !descricao.isBlank()) {
+//            descricao = descricao.trim();
+//            if (descricao.length() > 500) {
+//                throw new DadoInvalidoException("A descrição deve ter no máximo 500 caracteres.");
+//            }
+//        }
+//        return descricao;
+//    }
 
     public Long getId() {
         return id;
@@ -66,7 +91,7 @@ public class AmbienteDTO {
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        this.nome = nome.trim();
     }
 
     public String getDescricao() {
@@ -74,15 +99,7 @@ public class AmbienteDTO {
     }
 
     public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public String getIdentificacao() {
-        return identificacao;
-    }
-
-    public void setIdentificacao(String identificacao) {
-        this.identificacao = identificacao;
+        this.descricao = descricao.trim();
     }
 
     public Disponibilidade getDisponibilidade() {
@@ -101,11 +118,11 @@ public class AmbienteDTO {
         this.aprovacao = aprovacao;
     }
 
-    public Set<CategoriaDTO> getCategorias() {
+    public Set<CategoriaReferenciaDTO> getCategorias() {
         return categorias;
     }
 
-    public void setCategorias(Set<CategoriaDTO> categorias) {
+    public void setCategorias(Set<CategoriaReferenciaDTO> categorias) {
         this.categorias = categorias;
     }
 }

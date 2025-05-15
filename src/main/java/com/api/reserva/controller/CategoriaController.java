@@ -25,22 +25,22 @@ public class CategoriaController {
     }
 
     @GetMapping("/listar/{id}")
-    public ResponseEntity<CategoriaDTO> listar(@PathVariable Long id){
+    public ResponseEntity<CategoriaDTO> listar(@PathVariable Long id) {
         return ResponseEntity.ok(service.listar(id));
     }
 
     @PostMapping("/salvar")
-    public ResponseEntity<CategoriaDTO> salvar(@Valid @RequestBody CategoriaDTO categoriaDTO){
+    public ResponseEntity<CategoriaDTO> salvar(@Valid @RequestBody CategoriaDTO categoriaDTO) {
         return ResponseEntity.ok(service.salvar(categoriaDTO));
     }
 
-    @PatchMapping("/atualizar/{id}")
-    public ResponseEntity<CategoriaDTO> atualizar(@Valid @PathVariable Long id, @RequestBody CategoriaDTO categoriaDTO){
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<CategoriaDTO> atualizar(@Valid @PathVariable Long id, @RequestBody CategoriaDTO categoriaDTO) {
         return ResponseEntity.ok(service.atualizar(id, categoriaDTO));
     }
 
     @DeleteMapping("/excluir/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
         service.excluir(id);
         return ResponseEntity.ok().build();
     }

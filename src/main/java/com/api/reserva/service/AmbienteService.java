@@ -2,10 +2,10 @@ package com.api.reserva.service;
 
 import com.api.reserva.dto.AmbienteDTO;
 import com.api.reserva.entity.Ambiente;
-import com.api.reserva.entity.Categoria;
 import com.api.reserva.exception.DadoDuplicadoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.AmbienteRepository;
+import com.api.reserva.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,17 +20,20 @@ import java.util.stream.Collectors;
 @Service
 public class AmbienteService {
     @Autowired
-    AmbienteRepository repository;
+    AmbienteRepository ambienteRepository;
+
+    @Autowired
+    CategoriaRepository categoriaRepository;
 
     /**
      * Busca um ambiente específico pelo seu ID
-
+     *
      * @param id identificador único do ambiente
      * @return o DTO do ambiente encontrado
      * @throws SemResultadosException se nenhum ambiente com id fornecido for encontraodo
      */
     public AmbienteDTO listar(Long id) {
-        return new AmbienteDTO(repository.findById(id).orElseThrow(SemResultadosException::new));
+        return new AmbienteDTO(ambienteRepository.findById(id).orElseThrow(SemResultadosException::new));
     }
 
     /**
@@ -39,7 +42,7 @@ public class AmbienteService {
      * @return uma lista de DTOs de todos os ambientes
      */
     public List<AmbienteDTO> listar() {
-        List<Ambiente> ambientes = repository.findAll();
+        List<Ambiente> ambientes = ambienteRepository.findAll();
         return ambientes.stream()
                 .map(AmbienteDTO::new)
                 .toList();
@@ -47,57 +50,42 @@ public class AmbienteService {
 
     /**
      * Salva um novo ambiente
-
+     *
      * @param ambienteDTO os dados do ambiente
-     * @return AmbienteDTO com os dados registrados
+     * @return AmbienteDTO com os dados registradosç
      * @throws DadoDuplicadoException caso já haja um dado unico existente
      */
     @Transactional
     public AmbienteDTO salvar(AmbienteDTO ambienteDTO) {
-        String dadoDuplicado = repository.verificarDuplicidade(ambienteDTO.getNome(),
-                ambienteDTO.getIdentificacao(),
-                null);
-        if (dadoDuplicado != null) {
-            throw new DadoDuplicadoException(dadoDuplicado);
-        }
         Ambiente ambiente = new Ambiente(ambienteDTO);
-        ambiente.setCategorias(ambienteDTO.getCategorias()
-                .stream()
-                .map(Categoria::new)
-                .collect(Collectors.toSet()));
-        return new AmbienteDTO(repository.save(ambiente));
+
+        if (ambienteDTO.getCategorias() != null) {
+            ambiente.setCategorias(ambienteDTO.getCategorias()
+                    .stream()
+                    .map(categoriaId -> categoriaRepository.findById(categoriaId)
+                            .orElseThrow(() -> new SemResultadosException(String
+                                    .format("associação com Id: %s.", categoriaId))))
+                    .collect(Collectors.toSet()));
+        }
+        return new AmbienteDTO(ambienteRepository.save(ambiente));
     }
 
     /**
      * Atualiza um ambiente
-
+     *
      * @param ambienteDTO os novos dados ao ambiente
-     * @param id identificador do ambiente a ser atualizado
+     * @param id          identificador do ambiente a ser atualizado
+     * @return um DTO contendo os novos dados
      * @throws SemResultadosException caso não encontre o ambiente pelo id
      * @throws DadoDuplicadoException caso já haja um dado unico existente
-     * @return um DTO contendo os novos dados
      */
     @Transactional
     public AmbienteDTO atualizar(Long id, AmbienteDTO ambienteDTO) {
-        Ambiente ambiente = repository.findById(id).orElseThrow(() -> new SemResultadosException("atualização"));
+        Ambiente ambiente = ambienteRepository.findById(id).orElseThrow(() -> new SemResultadosException("atualização"));
 
-        String dadoDuplicado = repository.verificarDuplicidade(ambienteDTO.getNome(),
-                ambienteDTO.getIdentificacao(),
-                id);
-        if (dadoDuplicado != null) {
-            throw new DadoDuplicadoException(dadoDuplicado);
-        }
 
         if (!Objects.equals(ambiente.getNome(), ambienteDTO.getNome())) {
             ambiente.setNome(ambienteDTO.getNome());
-        }
-
-        if(!Objects.equals(ambiente.getDescricao(), ambienteDTO.getDescricao())) {
-            ambiente.setDescricao(ambienteDTO.getDescricao());
-        }
-
-        if(!Objects.equals(ambiente.getIdentificacao(), ambienteDTO.getIdentificacao())) {
-            ambiente.setIdentificacao(ambienteDTO.getIdentificacao());
         }
 
         if (!Objects.equals(ambiente.getDisponibilidade(), ambienteDTO.getDisponibilidade())) {
@@ -108,18 +96,26 @@ public class AmbienteService {
             ambiente.setAprovacao(ambienteDTO.getAprovacao());
         }
 
-        return new AmbienteDTO(repository.save(ambiente));
+        if (ambienteDTO.getCategorias() != null) {
+            ambiente.setCategorias(ambienteDTO.getCategorias()
+                    .stream()
+                    .map(categoriaId -> categoriaRepository.findById(categoriaId)
+                            .orElseThrow(() -> new SemResultadosException(String.format("associação com Id: %s.", categoriaId))))
+                    .collect(Collectors.toSet()));
+        }
+
+        return new AmbienteDTO(ambienteRepository.save(ambiente));
     }
 
     /**
      * Exclui um ambiente
-
+     *
      * @param id o identificador unico do ambiente a ser excluido
      * @throws SemResultadosException caso não encontre o ambiente pelo id
      */
     @Transactional
     public void excluir(Long id) {
-        Ambiente ambiente = repository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão"));
-        repository.delete(ambiente);
+        Ambiente ambiente = ambienteRepository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão"));
+        ambienteRepository.delete(ambiente);
     }
 }

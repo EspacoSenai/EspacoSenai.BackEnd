@@ -11,29 +11,34 @@ import jakarta.persistence.*;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario")
     private Long id;
+
+    @Column(length = 50, nullable = false)
     private String nome;
+
+    @Column(length = 100, nullable = false)
     private String email;
+
     private String senha;
+
+    @Column(length = 11)
     private String telefone;
-    @Enumerated(EnumType.STRING)
-    private UsuarioGenero genero;
+
     @Enumerated(EnumType.STRING)
     private UsuarioStatus status;
+
     @Enumerated(EnumType.STRING)
     private UsuarioRole role;
 
-    public Usuario() {}
+    public Usuario() {
+    }
 
-    public Usuario(Long id, String nome, String email, String senha, String telefone,
-                   UsuarioGenero genero, UsuarioStatus status, UsuarioRole role) {
-        this.id = id;
+    public Usuario(String nome, String email, String senha, String telefone,
+                   UsuarioStatus status, UsuarioRole role) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.telefone = telefone;
-        this.genero = genero;
         this.status = status;
         this.role = role;
     }
@@ -44,7 +49,6 @@ public class Usuario {
         email = usuarioDTO.getEmail();
         senha = usuarioDTO.getSenha();
         telefone = usuarioDTO.getTelefone();
-        genero = usuarioDTO.getGenero();
         status = usuarioDTO.getStatus();
         role = usuarioDTO.getRole();
     }
@@ -83,14 +87,6 @@ public class Usuario {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-    public UsuarioGenero getGenero() {
-        return genero;
-    }
-
-    public void setGenero(UsuarioGenero genero) {
-        this.genero = genero;
     }
 
     public UsuarioStatus getStatus() {
