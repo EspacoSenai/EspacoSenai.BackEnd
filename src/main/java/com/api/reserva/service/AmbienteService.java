@@ -62,7 +62,7 @@ public class AmbienteService {
         if (ambienteDTO.getCategorias() != null) {
             ambiente.setCategorias(ambienteDTO.getCategorias()
                     .stream()
-                    .map(categoriaId -> categoriaRepository.findById(categoriaId)
+                    .map(categoriaId -> categoriaRepository.findById(categoriaId.getId())
                             .orElseThrow(() -> new SemResultadosException(String
                                     .format("associação com Id: %s.", categoriaId))))
                     .collect(Collectors.toSet()));
@@ -99,7 +99,7 @@ public class AmbienteService {
         if (ambienteDTO.getCategorias() != null) {
             ambiente.setCategorias(ambienteDTO.getCategorias()
                     .stream()
-                    .map(categoriaId -> categoriaRepository.findById(categoriaId)
+                    .map(categoriaId -> categoriaRepository.findById(categoriaId.getId())
                             .orElseThrow(() -> new SemResultadosException(String.format("associação com Id: %s.", categoriaId))))
                     .collect(Collectors.toSet()));
         }

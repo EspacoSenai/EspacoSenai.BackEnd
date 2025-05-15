@@ -65,10 +65,10 @@ public class CategoriaService {
 
         Categoria categoria = new Categoria(categoriaDTO);
 
-        if (categoriaDTO.getAmbientesIds() != null) {
-            categoria.setAmbientes(categoriaDTO.getAmbientesIds()
+        if (categoriaDTO.getAmbientes() != null) {
+            categoria.setAmbientes(categoriaDTO.getAmbientes()
                     .stream()
-                    .map(ambienteId -> ambienteRepository.findById(ambienteId)
+                    .map(ambienteId -> ambienteRepository.findById(ambienteId.getId())
                             .orElseThrow(() -> new SemResultadosException(String.format("associação com o Id: %s", ambienteId))))
                     .collect(Collectors.toSet()));
         }
@@ -97,10 +97,10 @@ public class CategoriaService {
             categoria.setNome(categoriaDTO.getNome());
         }
 
-        if (categoriaDTO.getAmbientesIds() != null) {
-            categoria.setAmbientes(categoriaDTO.getAmbientesIds()
+        if (categoriaDTO.getAmbientes() != null) {
+            categoria.setAmbientes(categoriaDTO.getAmbientes()
                     .stream()
-                    .map(ambienteId -> ambienteRepository.findById(ambienteId)
+                    .map(ambienteId -> ambienteRepository.findById(ambienteId.getId())
                             .orElseThrow(() -> new SemResultadosException(String.format("associação com o Id: %s", ambienteId))))
                     .collect(Collectors.toSet()));
         }
