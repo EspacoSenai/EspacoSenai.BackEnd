@@ -11,4 +11,6 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     //verifica se existe uma categoria com o nome passado e id diferente do passado,
     //excluindo a categoria atual da verificação (usado para atualização)
     boolean existsByNomeAndIdNot(String nome, Long id);
+
+
 }

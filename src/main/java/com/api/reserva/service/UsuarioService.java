@@ -66,10 +66,6 @@ public class UsuarioService {
            usuario.setTelefone(telefoneLimpo);
        }
 
-        if (!usuarioDTO.getGenero().equals(usuario.getGenero())) {
-            usuario.setGenero(usuarioDTO.getGenero());
-        }
-
         if (!usuarioDTO.getStatus().equals(usuario.getStatus())) {
             usuario.setStatus(usuarioDTO.getStatus());
         }

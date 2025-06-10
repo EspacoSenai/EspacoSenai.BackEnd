@@ -9,25 +9,26 @@ import java.time.LocalTime;
 public class PeriodoDTO {
     private Long id;
 
-    @NotNull(message = "O nome do periodo é obrigatório.")
+    @NotNull(message = "Escolha um período.")
     private PeriodoAmbiente periodoAmbiente;
     @NotNull(message = "O horário de início é obrigatório.")
-    private LocalTime inicio;
+    private LocalTime horaInicio;
     @NotNull(message = "O horário de término é obrigatório.")
-    private LocalTime termino;
+    private LocalTime horaFim;
 
     public PeriodoDTO() {}
 
-    public PeriodoDTO(PeriodoAmbiente periodoAmbiente, LocalTime inicio, LocalTime termino) {
+    public PeriodoDTO(PeriodoAmbiente periodoAmbiente, LocalTime horaInicio, LocalTime horaFim) {
         this.periodoAmbiente = periodoAmbiente;
-        this.inicio = inicio;
-        this.termino = termino;
+        this.horaInicio = horaInicio;
+        this.horaFim = horaFim;
     }
 
     public PeriodoDTO(Periodo periodo) {
+        id = periodo.getId();
         periodoAmbiente = periodo.getPeriodoAmbiente();
-        inicio = periodo.getInicio();
-        termino = periodo.getTermino();
+        horaInicio = periodo.getHoraInicio();
+        horaFim = periodo.getHoraFim();
     }
 
     public Long getId() {
@@ -42,19 +43,19 @@ public class PeriodoDTO {
         this.periodoAmbiente = periodoAmbiente;
     }
 
-    public LocalTime getInicio() {
-        return inicio;
+    public LocalTime getHoraInicio() {
+        return horaInicio;
     }
 
-    public void setInicio(LocalTime inicio) {
-        this.inicio = inicio;
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
     }
 
-    public LocalTime getTermino() {
-        return termino;
+    public LocalTime getHoraFim() {
+        return horaFim;
     }
 
-    public void setTermino(LocalTime termino) {
-        this.termino = termino;
+    public void setHoraFim(LocalTime horaFim) {
+        this.horaFim = horaFim;
     }
 }
