@@ -14,6 +14,7 @@ public class Periodo {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PeriodoAmbiente periodoAmbiente;
     @Column(nullable = false)
     private LocalTime horaInicio;

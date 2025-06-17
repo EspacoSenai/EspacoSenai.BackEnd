@@ -2,6 +2,7 @@ package com.api.reserva.service;
 
 import com.api.reserva.dto.CategoriaDTO;
 import com.api.reserva.dto.CategoriaReferenciaDTO;
+import com.api.reserva.entity.Ambiente;
 import com.api.reserva.entity.Categoria;
 import com.api.reserva.exception.DadoDuplicadoException;
 import com.api.reserva.exception.SemResultadosException;
@@ -13,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Serviço responsável pelo gerenciamento de operações relacionadas a entidade Categoria.
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class CategoriaService {
     @Autowired
-    private CategoriaRepository repository;
+    private CategoriaRepository categoriaRepository;
     @Autowired
     private AmbienteRepository ambienteRepository;
 
@@ -33,7 +33,7 @@ public class CategoriaService {
      * @throws SemResultadosException se nenhuma categoria for encontrada com o ID fornecido
      */
     public CategoriaReferenciaDTO listar(Long id) {
-        return new CategoriaReferenciaDTO(repository.findById(id).orElseThrow(SemResultadosException::new));
+        return new CategoriaReferenciaDTO(categoriaRepository.findById(id).orElseThrow(SemResultadosException::new));
     }
 
     /**
@@ -43,7 +43,7 @@ public class CategoriaService {
      */
     public List<CategoriaDTO> listar() {
         //retorna todas as categorias
-        List<Categoria> categorias = repository.findAll();
+        List<Categoria> categorias = categoriaRepository.findAll();
         //converte a lista de categorias para uma lista de CategoriaDTO
         return categorias.stream()
                 .map(CategoriaDTO::new)
@@ -60,19 +60,20 @@ public class CategoriaService {
     @Transactional
     public void salvar(CategoriaDTO categoriaDTO) {
         //verifica se já existe uma categoria com o nome passado
-        if (repository.existsByNome(categoriaDTO.getNome())) {
+        if (categoriaRepository.existsByNome(categoriaDTO.getNome())) {
             throw new DadoDuplicadoException("Nome");
         }
 
-        Categoria categoria = new Categoria(categoriaDTO);
-
-//        if (categoriaDTO.getAmbientes() != null) {
-//            categoria.setAmbientes(categoriaDTO.getAmbientes()
-//                    .stream()
-//                    .map(ambienteId -> ambienteRepository.findById(ambienteId.getId())
-//                            .orElseThrow(() -> new SemResultadosException(String.format("associação com o Id: %s", ambienteId))))
-//                    .collect(Collectors.toSet()));
-//        }
+//        Categoria categoria = new Categoria(categoriaDTO);
+//
+////        if (categoriaDTO.getAmbientes() != null) {
+////            categoria.setAmbientes(categoriaDTO.getAmbientes()
+////                    .stream()
+////                    .map(ambienteId -> ambienteRepository.findById(ambienteId.getId())
+////                            .orElseThrow(() -> new SemResultadosException(String.format("associação com o Id: %s", ambienteId))))
+////                    .collect(Collectors.toSet()));
+////        }
+        categoriaRepository.save(new Categoria(categoriaDTO));
     }
 
     /**
@@ -86,9 +87,9 @@ public class CategoriaService {
      */
     @Transactional
     public void atualizar(Long id, CategoriaDTO categoriaDTO) {
-        Categoria categoria = repository.findById(id).orElseThrow(() -> new SemResultadosException("atualização"));
+        Categoria categoria = categoriaRepository.findById(id).orElseThrow(() -> new SemResultadosException("atualização"));
 
-        if (repository.existsByNomeAndIdNot(categoriaDTO.getNome(), id)) {
+        if (categoriaRepository.existsByNomeAndIdNot(categoriaDTO.getNome(), id)) {
             throw new DadoDuplicadoException("Nome");
         }
 
@@ -114,8 +115,8 @@ public class CategoriaService {
     @Transactional
     public void excluir(Long id) {
         //busca a categoria pelo id, se não existir, lança uma exceção
-        Categoria categoria = repository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão"));
+        Categoria categoria = categoriaRepository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão"));
         //deleta a categoria do banco
-        repository.delete(categoria);
+        categoriaRepository.delete(categoria);
     }
 }

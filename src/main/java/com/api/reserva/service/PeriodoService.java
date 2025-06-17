@@ -28,19 +28,7 @@ public class PeriodoService {
                 .toList();
     }
 
-    public PeriodoDTO salvar(PeriodoDTO periodoDTO) {
-        LocalTime inicioFormatado = periodoDTO.getHoraInicio();
-        LocalTime terminoFormatado = periodoDTO.getHoraFim();
-
-        if (inicioFormatado.isAfter(terminoFormatado) || inicioFormatado.equals(terminoFormatado)) {
-            throw new HorarioInvalidoException();
-        }
-
-        Periodo periodo = new Periodo(periodoDTO.getPeriodoAmbiente(), inicioFormatado, terminoFormatado);
-        return new PeriodoDTO(repository.save(periodo));
-    }
-
-    public PeriodoDTO atualizar(Long id, PeriodoDTO periodoDTO) {
+    public void salvar(PeriodoDTO periodoDTO) {
         LocalTime inicio = periodoDTO.getHoraInicio();
         LocalTime termino = periodoDTO.getHoraFim();
 
@@ -48,9 +36,21 @@ public class PeriodoService {
             throw new HorarioInvalidoException();
         }
 
-        Periodo periodo = repository.findById(id).orElseThrow(SemResultadosException::new);
+        Periodo periodo = new Periodo(periodoDTO.getPeriodoAmbiente(), inicio, termino);
+        repository.save(periodo);
+    }
 
-        if(periodoDTO.getPeriodoAmbiente() != null && periodo.getHoraInicio() != periodoDTO.getHoraInicio()) {
+    public void atualizar(Long id, PeriodoDTO periodoDTO) {
+        LocalTime inicio = periodoDTO.getHoraInicio();
+        LocalTime termino = periodoDTO.getHoraFim();
+
+        if (inicio.isAfter(termino) || inicio.equals(termino)) {
+            throw new HorarioInvalidoException();
+        }
+
+        Periodo periodo = repository.findById(id).orElseThrow(() -> new SemResultadosException("atualização"));
+
+        if(periodoDTO.getPeriodoAmbiente() != null && periodo.getPeriodoAmbiente() != periodoDTO.getPeriodoAmbiente()) {
             periodo.setPeriodoAmbiente(periodoDTO.getPeriodoAmbiente());
         }
 
@@ -62,13 +62,11 @@ public class PeriodoService {
             periodo.setHoraFim(periodoDTO.getHoraFim());
         }
 
-        return new PeriodoDTO(repository.save(periodo));
+        repository.save(periodo);
     }
 
     public void excluir(Long id) {
-        if (!repository.existsById(id)) {
-            throw new SemResultadosException();
-        }
-        repository.deleteById(id);
+        Periodo periodo = repository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão."));
+        repository.delete(periodo);
     }
 }

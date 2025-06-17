@@ -5,6 +5,7 @@ import com.api.reserva.dto.AmbienteReferenciaDTO;
 import com.api.reserva.dto.CategoriaDTO;
 import com.api.reserva.dto.CategoriaReferenciaDTO;
 import com.api.reserva.entity.Ambiente;
+import com.api.reserva.entity.Categoria;
 import com.api.reserva.exception.DadoDuplicadoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.AmbienteRepository;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -125,5 +127,15 @@ public class AmbienteService {
     public void excluir(Long id) {
         Ambiente ambiente = ambienteRepository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão"));
         ambienteRepository.delete(ambiente);
+    }
+    
+    @Transactional
+    public void associarCategorias (Long idAmbiente, Set<Long> idsCategorias) {
+        Ambiente ambiente = ambienteRepository.findById(idAmbiente).orElseThrow(() -> new SemResultadosException("associação"));
+
+        ambiente.setCategorias(idsCategorias.stream()
+                .map(idCategoria -> categoriaRepository.findById(idCategoria)
+                        .orElseThrow(() -> new SemResultadosException("associação.")))
+                .collect(Collectors.toSet()));
     }
 }
