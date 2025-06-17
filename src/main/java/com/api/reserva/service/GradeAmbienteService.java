@@ -1,6 +1,7 @@
 package com.api.reserva.service;
 
 import com.api.reserva.dto.GradeAmbienteDTO;
+import com.api.reserva.dto.GradeAmbienteReferenciaDTO;
 import com.api.reserva.entity.Ambiente;
 import com.api.reserva.entity.GradeAmbiente;
 import com.api.reserva.enums.Agendamento;
@@ -28,32 +29,32 @@ public class GradeAmbienteService {
     @Autowired
     public HorarioRepository horarioRepository;
 
-    public List<GradeAmbienteDTO> listar() {
+    public List<GradeAmbienteReferenciaDTO> listar() {
         return gradeAmbienteRepository.findAll().stream()
-                .map(GradeAmbienteDTO::new)
+                .map(GradeAmbienteReferenciaDTO::new)
                 .toList();
     }
 
-    public GradeAmbienteDTO listar(Long id) {
-        return new GradeAmbienteDTO(gradeAmbienteRepository.findById(id).orElseThrow(SecurityException::new));
+    public GradeAmbienteReferenciaDTO listar(Long id) {
+        return new GradeAmbienteReferenciaDTO(gradeAmbienteRepository.findById(id).orElseThrow(SemResultadosException::new));
     }
 
     @Transactional
     public void salvar(GradeAmbienteDTO gradeAmbienteDTO) {
         GradeAmbiente gradeAmbiente = new GradeAmbiente();
 
-        gradeAmbiente.setAmbiente(ambienteRepository.findById(gradeAmbienteDTO.getId()).orElseThrow(() ->
+        gradeAmbiente.setAmbiente(ambienteRepository.findById(gradeAmbienteDTO.getIdAmbiente()).orElseThrow(() ->
                 new SemResultadosException("vinculação de Ambiente.")));
 
         if (Objects.equals(gradeAmbienteDTO.getAgendamento(), Agendamento.PERIODO)
                 && gradeAmbienteDTO.getIdHorario() == null) {
             gradeAmbiente.setAgendamento(Agendamento.PERIODO);
-            gradeAmbiente.setPeriodo(periodoRepository.findById(gradeAmbienteDTO.getId()).orElseThrow(()
+            gradeAmbiente.setPeriodo(periodoRepository.findById(gradeAmbienteDTO.getIdPeriodo()).orElseThrow(()
                     -> new SemResultadosException("vinculação de Periodo.")));
         } else if (Objects.equals(gradeAmbienteDTO.getAgendamento(), Agendamento.HORARIO)
                 && gradeAmbienteDTO.getIdPeriodo() == null) {
             gradeAmbiente.setAgendamento(Agendamento.HORARIO);
-            gradeAmbiente.setHorario(horarioRepository.findById(gradeAmbienteDTO.getId()).orElseThrow(()
+            gradeAmbiente.setHorario(horarioRepository.findById(gradeAmbienteDTO.getIdHorario()).orElseThrow(()
                     -> new SemResultadosException("vinculação de Horário.")));
         } else {
             throw new DadoInvalidoException("Escolha um tipo de agendamento e preencha somente seu campo.");
@@ -67,18 +68,18 @@ public class GradeAmbienteService {
         GradeAmbiente gradeAmbiente = gradeAmbienteRepository.findById(id).orElseThrow(()
                 -> new SemResultadosException("atualização"));
 
-        gradeAmbiente.setAmbiente(ambienteRepository.findById(gradeAmbienteDTO.getId()).orElseThrow(() ->
+        gradeAmbiente.setAmbiente(ambienteRepository.findById(gradeAmbienteDTO.getIdAmbiente()).orElseThrow(() ->
                 new SemResultadosException("vinculação de Ambiente.")));
 
         if (Objects.equals(gradeAmbienteDTO.getAgendamento(), Agendamento.PERIODO)
                 && gradeAmbienteDTO.getIdHorario() == null) {
             gradeAmbiente.setAgendamento(Agendamento.PERIODO);
-            gradeAmbiente.setPeriodo(periodoRepository.findById(gradeAmbienteDTO.getId()).orElseThrow(()
+            gradeAmbiente.setPeriodo(periodoRepository.findById(gradeAmbienteDTO.getIdPeriodo()).orElseThrow(()
                     -> new SemResultadosException("vinculação de Periodo.")));
         } else if (Objects.equals(gradeAmbienteDTO.getAgendamento(), Agendamento.HORARIO)
                 && gradeAmbienteDTO.getIdPeriodo() == null) {
             gradeAmbiente.setAgendamento(Agendamento.HORARIO);
-            gradeAmbiente.setHorario(horarioRepository.findById(gradeAmbienteDTO.getId()).orElseThrow(()
+            gradeAmbiente.setHorario(horarioRepository.findById(gradeAmbienteDTO.getIdHorario()).orElseThrow(()
                     -> new SemResultadosException("vinculação de Horário.")));
         } else {
             throw new DadoInvalidoException("Escolha um tipo de agendamento e preencha somente seu campo.");
@@ -90,7 +91,8 @@ public class GradeAmbienteService {
 
     @Transactional
     public void excluir(Long id) {
-        Ambiente ambiente = ambienteRepository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão"));
-        ambienteRepository.delete(ambiente);
+        GradeAmbiente gradeAmbiente = gradeAmbienteRepository.findById(id).orElseThrow(
+                () -> new SemResultadosException("exclusão"));
+        gradeAmbienteRepository.delete(gradeAmbiente);
     }
 }

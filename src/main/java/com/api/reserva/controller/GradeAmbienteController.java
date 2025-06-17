@@ -1,6 +1,7 @@
 package com.api.reserva.controller;
 
 import com.api.reserva.dto.GradeAmbienteDTO;
+import com.api.reserva.dto.GradeAmbienteReferenciaDTO;
 import com.api.reserva.repository.GradeAmbienteRepository;
 import com.api.reserva.service.GradeAmbienteService;
 import com.api.reserva.util.ResponseBuilder;
@@ -18,12 +19,12 @@ public class GradeAmbienteController {
     private GradeAmbienteService gradeAmbienteService;
 
     @GetMapping("/listar")
-    public ResponseEntity<List<GradeAmbienteDTO>> listar() {
+    public ResponseEntity<List<GradeAmbienteReferenciaDTO>> listar() {
         return ResponseEntity.ok(gradeAmbienteService.listar());
     }
 
     @GetMapping("/listar/{id}")
-    public ResponseEntity<GradeAmbienteDTO> listar (@PathVariable Long id) {
+    public ResponseEntity<GradeAmbienteReferenciaDTO> listar (@PathVariable Long id) {
         return ResponseEntity.ok(gradeAmbienteService.listar(id));
     }
 
