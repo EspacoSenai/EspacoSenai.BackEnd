@@ -5,6 +5,7 @@ import com.api.reserva.entity.GradeAmbiente;
 import com.api.reserva.entity.Horario;
 import com.api.reserva.entity.Periodo;
 import com.api.reserva.enums.Agendamento;
+import com.api.reserva.enums.DiaSemana;
 import com.api.reserva.enums.Disponibilidade;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,9 @@ public class GradeAmbienteDTO {
     @NotNull(message = "Indique se a grade usa um PERÍODO ou HORÁRIO.")
     private Agendamento agendamento;
 
+    @NotNull(message = "Escolha um dia da semana.")
+    private DiaSemana diaSemana;
+
     @NotNull(message = "Indique a disponibilidade desta grade atualmente.")
     private Disponibilidade disponibilidade;
 
@@ -31,7 +35,7 @@ public class GradeAmbienteDTO {
     }
 
     public GradeAmbienteDTO(Long idAmbiente, Long idPeriodo, Long idHorario, Agendamento agendamento,
-                            Disponibilidade disponibilidade) {
+                            DiaSemana diaSemana ,Disponibilidade disponibilidade) {
         this.idAmbiente = idAmbiente;
         this.idPeriodo = idPeriodo;
         this.idHorario = idHorario;
@@ -45,6 +49,7 @@ public class GradeAmbienteDTO {
         idPeriodo = gradeAmbiente.getPeriodo().getId();
         idHorario = gradeAmbiente.getId();
         agendamento = gradeAmbiente.getAgendamento();
+        diaSemana = gradeAmbiente.getDiaSemana();
         disponibilidade = gradeAmbiente.getDisponibilidade();
     }
 
@@ -82,6 +87,14 @@ public class GradeAmbienteDTO {
 
     public void setAgendamento(Agendamento agendamento) {
         this.agendamento = agendamento;
+    }
+
+    public DiaSemana getDiaSemana() {
+        return diaSemana;
+    }
+
+    public void setDiaSemana(DiaSemana diaSemana) {
+        this.diaSemana = diaSemana;
     }
 
     public Disponibilidade getDisponibilidade() {

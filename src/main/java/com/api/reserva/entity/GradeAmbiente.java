@@ -2,6 +2,7 @@ package com.api.reserva.entity;
 
 import com.api.reserva.dto.GradeAmbienteDTO;
 import com.api.reserva.enums.Agendamento;
+import com.api.reserva.enums.DiaSemana;
 import com.api.reserva.enums.Disponibilidade;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -30,17 +31,22 @@ public class GradeAmbiente {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    private DiaSemana diaSemana;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Disponibilidade disponibilidade;
     
     public GradeAmbiente() {
     }
 
     public GradeAmbiente(Ambiente ambiente, Periodo periodo, Horario horario, Agendamento agendamento,
-                         Disponibilidade disponibilidade) {
+                         DiaSemana diaSemana, Disponibilidade disponibilidade) {
         this.ambiente = ambiente;
         this.periodo = periodo;
         this.horario = horario;
         this.agendamento = agendamento;
+        this.diaSemana = diaSemana;
         this.disponibilidade = disponibilidade;
     }
 
@@ -78,6 +84,14 @@ public class GradeAmbiente {
 
     public void setAgendamento(Agendamento agendamento) {
         this.agendamento = agendamento;
+    }
+
+    public DiaSemana getDiaSemana() {
+        return diaSemana;
+    }
+
+    public void setDiaSemana(DiaSemana diaSemana) {
+        this.diaSemana = diaSemana;
     }
 
     public Disponibilidade getDisponibilidade() {

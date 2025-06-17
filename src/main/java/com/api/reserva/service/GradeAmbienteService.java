@@ -5,6 +5,7 @@ import com.api.reserva.dto.GradeAmbienteReferenciaDTO;
 import com.api.reserva.entity.Ambiente;
 import com.api.reserva.entity.GradeAmbiente;
 import com.api.reserva.enums.Agendamento;
+import com.api.reserva.enums.DiaSemana;
 import com.api.reserva.exception.DadoInvalidoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.AmbienteRepository;
@@ -59,8 +60,9 @@ public class GradeAmbienteService {
         } else {
             throw new DadoInvalidoException("Escolha um tipo de agendamento e preencha somente seu campo.");
         }
-
+        gradeAmbiente.setDiaSemana(gradeAmbienteDTO.getDiaSemana());
         gradeAmbiente.setDisponibilidade(gradeAmbienteDTO.getDisponibilidade());
+
         gradeAmbienteRepository.save(gradeAmbiente);
     }
 
@@ -84,8 +86,9 @@ public class GradeAmbienteService {
         } else {
             throw new DadoInvalidoException("Escolha um tipo de agendamento e preencha somente seu campo.");
         }
-
+        gradeAmbiente.setDiaSemana(gradeAmbienteDTO.getDiaSemana());
         gradeAmbiente.setDisponibilidade(gradeAmbienteDTO.getDisponibilidade());
+
         gradeAmbienteRepository.save(gradeAmbiente);
     }
 
