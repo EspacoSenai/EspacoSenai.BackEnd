@@ -1,5 +1,6 @@
 package com.api.reserva.dto;
 
+import com.api.reserva.entity.Ambiente;
 import com.api.reserva.entity.Categoria;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -15,7 +16,8 @@ public class CategoriaDTO {
     @Size(min = 3, max = 20, message = "Nome da categoria deve ter entre 3 e 20 caracteres.")
     private String nome;
 
-    private Set<AmbienteReferenciaDTO> ambientes = new HashSet<>();
+//    private Set<AmbienteReferenciaDTO> ambientes = new HashSet<>();
+    private Set<Long> ambientesIds = new HashSet<>();
 
     public CategoriaDTO() {
     }
@@ -27,13 +29,13 @@ public class CategoriaDTO {
     public CategoriaDTO(Categoria categoria) {
         id = categoria.getId();
         nome = categoria.getNome();
-        ambientes = categoria.getAmbientes()
-                .stream()
-                .map(AmbienteReferenciaDTO::new)
-                .collect(Collectors.toSet());
-//        ambientes = categoria.getAmbientes().stream()
-//                .map(Ambiente::getId)
+//        ambientes = categoria.getAmbientes()
+//                .stream()
+//                .map(AmbienteReferenciaDTO::new)
 //                .collect(Collectors.toSet());
+        ambientesIds = categoria.getAmbientes().stream()
+                .map(Ambiente::getId)
+                .collect(Collectors.toSet());
     }
 
     public Long getId() {
@@ -48,11 +50,20 @@ public class CategoriaDTO {
         this.nome = nome;
     }
 
-    public Set<AmbienteReferenciaDTO> getAmbientes() {
-        return ambientes;
+//    public Set<AmbienteReferenciaDTO> getAmbientes() {
+//        return ambientes;
+//    }
+//
+//    public void setAmbientes(Set<AmbienteReferenciaDTO> ambientes) {
+//        this.ambientes = ambientes;
+//    }
+
+
+    public Set<Long> getAmbientesIds() {
+        return ambientesIds;
     }
 
-    public void setAmbientes(Set<AmbienteReferenciaDTO> ambientes) {
-        this.ambientes = ambientes;
+    public void setAmbientesIds(Set<Long> ambientesIds) {
+        this.ambientesIds = ambientesIds;
     }
 }

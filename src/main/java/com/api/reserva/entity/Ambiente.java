@@ -15,10 +15,10 @@ public class Ambiente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(unique = true, nullable = false,  length = 50)
     private String nome;
 
-    @Column(length = 255)
+    @Column(length = 500)
     private String descricao;
 
     @Column(nullable = false)
@@ -36,7 +36,6 @@ public class Ambiente {
             joinColumns = @JoinColumn(name = "id_ambiente"),
             inverseJoinColumns = @JoinColumn(name = "id_categoria")
     )
-
     private Set<Categoria> categorias = new HashSet<>();
 
     public Ambiente() {

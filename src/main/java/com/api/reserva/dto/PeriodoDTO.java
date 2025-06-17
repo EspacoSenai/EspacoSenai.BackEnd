@@ -9,7 +9,7 @@ import java.time.LocalTime;
 public class PeriodoDTO {
     private Long id;
 
-    @NotNull(message = "O nome do periodo é obrigatório.")
+    @NotNull(message = "Escolha um período.")
     private PeriodoAmbiente periodoAmbiente;
     @NotNull(message = "O horário de início é obrigatório.")
     private LocalTime horaInicio;

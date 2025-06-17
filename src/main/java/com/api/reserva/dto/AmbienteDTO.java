@@ -16,19 +16,20 @@ public class AmbienteDTO {
     private Long id;
 
     @NotBlank(message = "Nome do ambiente é obrigatório.")
-    @Size(min = 5, max = 50, message = "Nome do ambiente deve ter entre 5 e 50 caracteres.")
+    @Size(min = 5, max = 50, message = "Nome do ambiente deve possuir entre 5 e 50 caracteres.")
     private String nome;
 
-    @Size(max = 255, message = "Descrição deve ter no máximo 255 caracteres.")
+    @Size(max = 500, message = "Descrição não deve ultrapassar 500 caracteres.")
     private String descricao;
 
-    @NotNull(message = "Disponibilidade é obrigatória.")
+    @NotNull(message = "Escolha uma disponibilidade.")
     private Disponibilidade disponibilidade;
 
-    @NotNull(message = "Tipo de aprovação é obrigatório.")
+    @NotNull(message = "Escolha uma aprovação.")
     private Aprovacao aprovacao;
 
-    private Set<CategoriaReferenciaDTO> categorias = new HashSet<>();
+//    private Set<CategoriaReferenciaDTO> categorias = new HashSet<>();
+    private Set<Long> categoriasIds = new HashSet<>();
 
     public AmbienteDTO() {
     }
@@ -46,41 +47,14 @@ public class AmbienteDTO {
         descricao = ambiente.getDescricao();
         disponibilidade = ambiente.getDisponibilidade();
         aprovacao = ambiente.getAprovacao();
-        categorias = ambiente.getCategorias()
-                .stream()
-                .map(CategoriaReferenciaDTO::new)
+        categoriasIds = ambiente.getCategorias().stream()
+                .map(Categoria::getId)
                 .collect(Collectors.toSet());
-
-//        categorias = ambiente.getCategorias().stream()
-//                .map(Categoria::getId)
+//        categorias = ambiente.getCategorias()
+//                .stream()
+//                .map(CategoriaReferenciaDTO::new)
 //                .collect(Collectors.toSet());
     }
-
-
-//    private String validarNome(String nome) {
-//        if (nome == null) {
-//            throw new DadoInvalidoException("O nome do ambiente não pode ser nulo.");
-//        }
-//
-//        nome = nome.trim();
-//
-//        if (nome.isBlank()) {
-//            throw new DadoInvalidoException("O nome não pode estar em branco.");
-//        } else if (nome.length() < 5 || nome.length() > 50) {
-//            throw new DadoInvalidoException("O nome do ambiente deve estar entre 5 e 50 caracteres.");
-//        }
-//        return nome;
-//    }
-//
-//    private String validarDescricao(String descricao){
-//        if(descricao != null || !descricao.isBlank()) {
-//            descricao = descricao.trim();
-//            if (descricao.length() > 500) {
-//                throw new DadoInvalidoException("A descrição deve ter no máximo 500 caracteres.");
-//            }
-//        }
-//        return descricao;
-//    }
 
     public Long getId() {
         return id;
@@ -118,11 +92,19 @@ public class AmbienteDTO {
         this.aprovacao = aprovacao;
     }
 
-    public Set<CategoriaReferenciaDTO> getCategorias() {
-        return categorias;
+    public Set<Long> getCategoriasIds() {
+        return categoriasIds;
     }
 
-    public void setCategorias(Set<CategoriaReferenciaDTO> categorias) {
-        this.categorias = categorias;
+    public void setCategoriasIds(Set<Long> categoriasIds) {
+        this.categoriasIds = categoriasIds;
     }
+
+//    public Set<CategoriaReferenciaDTO> getCategorias() {
+//        return categorias;
+//    }
+//
+//    public void setCategorias(Set<CategoriaReferenciaDTO> categorias) {
+//        this.categorias = categorias;
+//    }
 }

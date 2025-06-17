@@ -1,7 +1,11 @@
 package com.api.reserva.service;
 
 import com.api.reserva.dto.AmbienteDTO;
+import com.api.reserva.dto.AmbienteReferenciaDTO;
+import com.api.reserva.dto.CategoriaDTO;
+import com.api.reserva.dto.CategoriaReferenciaDTO;
 import com.api.reserva.entity.Ambiente;
+import com.api.reserva.entity.Categoria;
 import com.api.reserva.exception.DadoDuplicadoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.AmbienteRepository;
@@ -12,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -32,8 +37,8 @@ public class AmbienteService {
      * @return o DTO do ambiente encontrado
      * @throws SemResultadosException se nenhum ambiente com id fornecido for encontraodo
      */
-    public AmbienteDTO listar(Long id) {
-        return new AmbienteDTO(ambienteRepository.findById(id).orElseThrow(SemResultadosException::new));
+    public AmbienteReferenciaDTO listar(Long id) {
+        return new AmbienteReferenciaDTO(ambienteRepository.findById(id).orElseThrow(SemResultadosException::new));
     }
 
     /**
@@ -41,10 +46,10 @@ public class AmbienteService {
      *
      * @return uma lista de DTOs de todos os ambientes
      */
-    public List<AmbienteDTO> listar() {
+    public List<AmbienteReferenciaDTO> listar() {
         List<Ambiente> ambientes = ambienteRepository.findAll();
         return ambientes.stream()
-                .map(AmbienteDTO::new)
+                .map(AmbienteReferenciaDTO::new)
                 .toList();
     }
 
@@ -52,22 +57,24 @@ public class AmbienteService {
      * Salva um novo ambiente
      *
      * @param ambienteDTO os dados do ambiente
-     * @return AmbienteDTO com os dados registradosç
+     * @return AmbienteDTO com os dados registrados
      * @throws DadoDuplicadoException caso já haja um dado unico existente
      */
     @Transactional
-    public AmbienteDTO salvar(AmbienteDTO ambienteDTO) {
+    public void salvar(AmbienteDTO ambienteDTO) {
+
         Ambiente ambiente = new Ambiente(ambienteDTO);
 
-        if (ambienteDTO.getCategorias() != null) {
-            ambiente.setCategorias(ambienteDTO.getCategorias()
-                    .stream()
-                    .map(categoriaId -> categoriaRepository.findById(categoriaId.getId())
-                            .orElseThrow(() -> new SemResultadosException(String
-                                    .format("associação com Id: %s.", categoriaId))))
-                    .collect(Collectors.toSet()));
-        }
-        return new AmbienteDTO(ambienteRepository.save(ambiente));
+//        if (ambienteDTO.getCategorias() != null) {
+//            ambiente.setCategorias(ambienteDTO.getCategorias()
+//                    .stream()
+//                    .map(categoriaId -> categoriaRepository.findById(categoriaId.getId())
+//                            .orElseThrow(() -> new SemResultadosException(String
+//                                    .format("associação com Id: %s.", categoriaId))))
+//                    .collect(Collectors.toSet()));
+//        }
+
+        ambienteRepository.save(ambiente);
     }
 
     /**
@@ -80,12 +87,16 @@ public class AmbienteService {
      * @throws DadoDuplicadoException caso já haja um dado unico existente
      */
     @Transactional
-    public AmbienteDTO atualizar(Long id, AmbienteDTO ambienteDTO) {
+    public void atualizar(Long id, AmbienteDTO ambienteDTO) {
         Ambiente ambiente = ambienteRepository.findById(id).orElseThrow(() -> new SemResultadosException("atualização"));
 
 
         if (!Objects.equals(ambiente.getNome(), ambienteDTO.getNome())) {
             ambiente.setNome(ambienteDTO.getNome());
+        }
+
+        if(!Objects.equals(ambiente.getDescricao(), ambienteDTO.getDescricao())) {
+            ambiente.setDescricao(ambienteDTO.getDescricao());
         }
 
         if (!Objects.equals(ambiente.getDisponibilidade(), ambienteDTO.getDisponibilidade())) {
@@ -96,17 +107,16 @@ public class AmbienteService {
             ambiente.setAprovacao(ambienteDTO.getAprovacao());
         }
 
-        if (ambienteDTO.getCategorias() != null) {
-            ambiente.setCategorias(ambienteDTO.getCategorias()
-                    .stream()
-                    .map(categoriaId -> categoriaRepository.findById(categoriaId.getId())
-                            .orElseThrow(() -> new SemResultadosException(String.format("associação com Id: %s.", categoriaId))))
-                    .collect(Collectors.toSet()));
-        }
+//        if (ambienteDTO.getCategorias() != null) {
+//            ambiente.setCategorias(ambienteDTO.getCategorias()
+//                    .stream()
+//                    .map(categoriaId -> categoriaRepository.findById(categoriaId.getId())
+//                            .orElseThrow(() -> new SemResultadosException(String.format("associação com Id: %s.", categoriaId))))
+//                    .collect(Collectors.toSet()));
+//        }
 
-        return new AmbienteDTO(ambienteRepository.save(ambiente));
+        ambienteRepository.save(ambiente);
     }
-
     /**
      * Exclui um ambiente
      *
@@ -117,5 +127,15 @@ public class AmbienteService {
     public void excluir(Long id) {
         Ambiente ambiente = ambienteRepository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão"));
         ambienteRepository.delete(ambiente);
+    }
+    
+    @Transactional
+    public void associarCategorias (Long idAmbiente, Set<Long> idsCategorias) {
+        Ambiente ambiente = ambienteRepository.findById(idAmbiente).orElseThrow(() -> new SemResultadosException("associação"));
+
+        ambiente.setCategorias(idsCategorias.stream()
+                .map(idCategoria -> categoriaRepository.findById(idCategoria)
+                        .orElseThrow(() -> new SemResultadosException("associação.")))
+                .collect(Collectors.toSet()));
     }
 }

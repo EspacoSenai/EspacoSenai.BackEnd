@@ -1,5 +1,6 @@
 package com.api.reserva.dto;
 
+import com.api.reserva.entity.Horario;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalTime;
@@ -19,10 +20,10 @@ public class HorarioDTO {
         this.horaFim = horaFim;
     }
 
-    public HorarioDTO(Long id, LocalTime horaInicio, LocalTime horaFim) {
-        this.id = id;
-        this.horaInicio = horaInicio;
-        this.horaFim = horaFim;
+    public HorarioDTO(Horario horario) {
+        id = horario.getId();
+        horaInicio = horario.getHoraInicio();
+        horaFim = horario.getHoraFim();
     }
 
     public Long getId() {
