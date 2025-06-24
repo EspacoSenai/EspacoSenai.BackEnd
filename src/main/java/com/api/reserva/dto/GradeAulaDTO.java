@@ -7,50 +7,50 @@ public class GradeAulaDTO {
 
     private Long id;
     private String sala;
-    private Long idProfessor;
-    private Long idHorario;
-    private Long idPeriodo;
+    private UsuarioDTO professor;  // Aqui é UsuarioDTO
+    private HorarioDTO horario;
+    private PeriodoDTO periodo;
     private DiaSemana dia;
 
     public GradeAulaDTO() {}
 
-    public GradeAulaDTO(Long id, String sala, Long idProfessor, Long idHorario, Long idPeriodo, DiaSemana dia) {
+    public GradeAulaDTO(Long id, String sala, UsuarioDTO professor, HorarioDTO horario, PeriodoDTO periodo, DiaSemana dia) {
         this.id = id;
         this.sala = sala;
-        this.idProfessor = idProfessor;
-        this.idHorario = idHorario;
-        this.idPeriodo = idPeriodo;
+        this.professor = professor;
+        this.horario = horario;
+        this.periodo = periodo;
         this.dia = dia;
     }
 
     public GradeAulaDTO(GradeAula entity) {
         this.id = entity.getId();
         this.sala = entity.getSala();
-        this.idProfessor = entity.getProfessor().getId();
-        this.idHorario = entity.getHorario().getId();
-        this.idPeriodo = entity.getPeriodo().getId();
+        this.professor = new UsuarioDTO(entity.getProfessor()); // usa UsuarioDTO aqui
+        this.horario = new HorarioDTO(entity.getHorario());
+        this.periodo = new PeriodoDTO(entity.getPeriodo());
         this.dia = entity.getDia();
     }
 
-    public Long getId() {return id;}
+    public Long getId() { return id; }
 
-    public String getSala() {return sala;}
+    public String getSala() { return sala; }
 
-    public void setSala(String sala) {this.sala = sala;}
+    public void setSala(String sala) { this.sala = sala; }
 
-    public Long getIdProfessor() {return idProfessor;}
+    public UsuarioDTO getProfessor() { return professor; }
 
-    public void setIdProfessor(Long idProfessor) {this.idProfessor = idProfessor;}
+    public void setProfessor(UsuarioDTO professor) { this.professor = professor; }
 
-    public Long getIdHorario() {return idHorario;}
+    public HorarioDTO getHorario() { return horario; }
 
-    public void setIdHorario(Long idHorario) {this.idHorario = idHorario;}
+    public void setHorario(HorarioDTO horario) { this.horario = horario; }
 
-    public Long getIdPeriodo() {return idPeriodo;}
+    public PeriodoDTO getPeriodo() { return periodo; }
 
-    public void setIdPeriodo(Long idPeriodo) {this.idPeriodo = idPeriodo;}
+    public void setPeriodo(PeriodoDTO periodo) { this.periodo = periodo; }
 
-    public DiaSemana getDia() {return dia;}
+    public DiaSemana getDia() { return dia; }
 
-    public void setDia(DiaSemana dia) {this.dia = dia;}
+    public void setDia(DiaSemana dia) { this.dia = dia; }
 }

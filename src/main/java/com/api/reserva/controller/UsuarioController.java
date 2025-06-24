@@ -19,14 +19,14 @@ public class UsuarioController {
 
     @GetMapping("/listar")
     public ResponseEntity<List<UsuarioDTO>> listarTudo() {
-            List<UsuarioDTO> usuarios = service.listar();
-            return ResponseEntity.ok(usuarios);
+        List<UsuarioDTO> usuarios = service.listar();
+        return ResponseEntity.ok(usuarios);
     }
 
     @GetMapping("/listar/{id}")
     public ResponseEntity<UsuarioDTO> listar(@PathVariable Long id) {
-            UsuarioDTO usuario = service.listar(id);
-            return ResponseEntity.ok(usuario);
+        UsuarioDTO usuario = service.listar(id);
+        return ResponseEntity.ok(usuario);
     }
 
     @PostMapping("/salvar")
@@ -35,7 +35,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body("Usuário cadastrado com sucesso.");
     }
 
-    @PatchMapping("/atualizar/{id}")
+    @PutMapping("/atualizar/{id}")
     public ResponseEntity<String> atualizar (@Valid @RequestBody UsuarioDTO usuarioDTO, @PathVariable Long id){
         service.atualizar(usuarioDTO, id);
         return ResponseEntity.status(HttpStatus.OK).body("Usuário atualizado com sucesso.");    }

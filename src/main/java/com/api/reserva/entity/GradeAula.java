@@ -30,11 +30,9 @@ public class GradeAula {
     @Column(nullable = false)
     private DiaSemana dia;
 
-    // 🔸 Construtor padrão
     public GradeAula() {
     }
 
-    // 🔸 Construtor completo
     public GradeAula(String sala, Usuario professor, Horario horario, Periodo periodo, DiaSemana dia) {
         this.sala = sala;
         this.professor = professor;
@@ -43,7 +41,6 @@ public class GradeAula {
         this.dia = dia;
     }
 
-    // 🔸 Getters e Setters
     public Long getId() {
         return id;
     }
