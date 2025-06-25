@@ -49,6 +49,10 @@ public class GradeAulaService {
 
     @Transactional
     public GradeAulaDTO criar(GradeAulaDTO dto) {
+        // Verifica conflito de aula
+        gradeAulaRepository.findBySalaAndDiaAndHorario_Id(dto.getSala(), dto.getDia(), dto.getIdHorario())
+                .ifPresent(a -> { throw new RuntimeException("Já existe uma aula para essa sala, dia e horário."); });
+
         Usuario professor = usuarioRepository.findById(dto.getIdProfessor())
                 .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado"));
 
@@ -74,6 +78,11 @@ public class GradeAulaService {
     public GradeAulaDTO atualizar(Long id, GradeAulaDTO dto) {
         GradeAula aula = gradeAulaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Aula não encontrada"));
+
+        // Verifica conflito de aula (exceto a própria)
+        gradeAulaRepository.findBySalaAndDiaAndHorario_Id(dto.getSala(), dto.getDia(), dto.getIdHorario())
+                .filter(a -> !a.getId().equals(id))
+                .ifPresent(a -> { throw new RuntimeException("Já existe uma aula para essa sala, dia e horário."); });
 
         Usuario professor = usuarioRepository.findById(dto.getIdProfessor())
                 .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado"));

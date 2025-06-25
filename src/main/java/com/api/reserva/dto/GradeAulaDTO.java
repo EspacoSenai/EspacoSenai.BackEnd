@@ -3,8 +3,10 @@ package com.api.reserva.dto;
 import com.api.reserva.entity.Disciplina;
 import com.api.reserva.entity.GradeAula;
 import com.api.reserva.enums.DiaSemana;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GradeAulaDTO {
 
     private Long id;
