@@ -18,17 +18,20 @@ public class GradeAulaService {
     private final UsuarioRepository usuarioRepository;
     private final HorarioRepository horarioRepository;
     private final PeriodoRepository periodoRepository;
+    private final DisciplinaRepository disciplinaRepository;
 
     public GradeAulaService(
             GradeAulaRepository gradeAulaRepository,
             UsuarioRepository usuarioRepository,
             HorarioRepository horarioRepository,
-            PeriodoRepository periodoRepository
+            PeriodoRepository periodoRepository,
+            DisciplinaRepository disciplinaRepository
     ) {
         this.gradeAulaRepository = gradeAulaRepository;
         this.usuarioRepository = usuarioRepository;
         this.horarioRepository = horarioRepository;
         this.periodoRepository = periodoRepository;
+        this.disciplinaRepository = disciplinaRepository;
     }
 
     public List<GradeAulaDTO> listar() {
@@ -46,27 +49,23 @@ public class GradeAulaService {
 
     @Transactional
     public GradeAulaDTO criar(GradeAulaDTO dto) {
-        Usuario professor = usuarioRepository.findById(dto.getProfessor().getId()) // corrigido aqui
+        Usuario professor = usuarioRepository.findById(dto.getIdProfessor())
                 .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado"));
 
         if (professor.getRole() != UsuarioRole.PROFESSOR) {
             throw new RuntimeException("Apenas usuários com papel de PROFESSOR podem criar aulas.");
         }
 
-        Horario horario = horarioRepository.findById(dto.getHorario().getId())
+        Horario horario = horarioRepository.findById(dto.getIdHorario())
                 .orElseThrow(() -> new EntityNotFoundException("Horário não encontrado"));
 
-        Periodo periodo = periodoRepository.findById(dto.getPeriodo().getId())
+        Periodo periodo = periodoRepository.findById(dto.getIdPeriodo())
                 .orElseThrow(() -> new EntityNotFoundException("Período não encontrado"));
 
-        GradeAula aula = new GradeAula(
-                dto.getSala(),
-                professor,
-                horario,
-                periodo,
-                dto.getDia()
-        );
+        Disciplina disciplina = disciplinaRepository.findById(dto.getIdDisciplina())
+                .orElseThrow(() -> new EntityNotFoundException("Disciplina não encontrada"));
 
+        GradeAula aula = new GradeAula(dto, professor, disciplina, horario, periodo);
         aula = gradeAulaRepository.save(aula);
         return new GradeAulaDTO(aula);
     }
@@ -76,21 +75,25 @@ public class GradeAulaService {
         GradeAula aula = gradeAulaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Aula não encontrada"));
 
-        Usuario professor = usuarioRepository.findById(dto.getProfessor().getId())
+        Usuario professor = usuarioRepository.findById(dto.getIdProfessor())
                 .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado"));
 
         if (professor.getRole() != UsuarioRole.PROFESSOR) {
             throw new RuntimeException("Apenas usuários com papel de PROFESSOR podem atualizar aulas.");
         }
 
-        Horario horario = horarioRepository.findById(dto.getHorario().getId())
+        Horario horario = horarioRepository.findById(dto.getIdHorario())
                 .orElseThrow(() -> new EntityNotFoundException("Horário não encontrado"));
 
-        Periodo periodo = periodoRepository.findById(dto.getPeriodo().getId())
+        Periodo periodo = periodoRepository.findById(dto.getIdPeriodo())
                 .orElseThrow(() -> new EntityNotFoundException("Período não encontrado"));
+
+        Disciplina disciplina = disciplinaRepository.findById(dto.getIdDisciplina())
+                .orElseThrow(() -> new EntityNotFoundException("Disciplina não encontrada"));
 
         aula.setSala(dto.getSala());
         aula.setProfessor(professor);
+        aula.setDisciplina(disciplina);
         aula.setHorario(horario);
         aula.setPeriodo(periodo);
         aula.setDia(dto.getDia());
@@ -114,4 +117,3 @@ public class GradeAulaService {
         gradeAulaRepository.delete(aula);
     }
 }
-
