@@ -56,7 +56,7 @@ public class GradeAulaService {
         Usuario professor = usuarioRepository.findById(dto.getIdProfessor())
                 .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado"));
 
-        if (professor.getRole() != UsuarioRole.PROFESSOR) {
+        if (professor.getRole() != UsuarioRole.PROFESSOR || professor.getRole() != UsuarioRole.ADMIN) {
             throw new RuntimeException("Apenas usuários com papel de PROFESSOR podem criar aulas.");
         }
 
@@ -87,7 +87,7 @@ public class GradeAulaService {
         Usuario professor = usuarioRepository.findById(dto.getIdProfessor())
                 .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado"));
 
-        if (professor.getRole() != UsuarioRole.PROFESSOR) {
+        if (professor.getRole() != UsuarioRole.PROFESSOR || professor.getRole() != UsuarioRole.ADMIN) {
             throw new RuntimeException("Apenas usuários com papel de PROFESSOR podem atualizar aulas.");
         }
 
@@ -119,7 +119,7 @@ public class GradeAulaService {
         Usuario professor = usuarioRepository.findById(idProfessor)
                 .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado"));
 
-        if (professor.getRole() != UsuarioRole.PROFESSOR) {
+        if (professor.getRole() != UsuarioRole.PROFESSOR || professor.getRole() != UsuarioRole.ADMIN) {
             throw new RuntimeException("Apenas usuários com papel de PROFESSOR podem deletar aulas.");
         }
 
