@@ -21,6 +21,13 @@ public class CategoriaReferenciaDTO {
                 .stream().map(Ambiente::getId)
                 .collect(Collectors.toSet());
     }
+//    public CategoriaReferenciaDTO(Categoria categoria) {
+//        id = categoria.getId();
+//        nome = categoria.getNome();
+//        ambientes = categoria.getAmbientes()
+//                .stream().map(Ambiente::getId)
+//                .collect(Collectors.toSet());
+//    }
 
     public Long getId() {
         return id;

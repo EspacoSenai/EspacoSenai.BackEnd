@@ -50,7 +50,7 @@ public class  AmbienteController {
         return ResponseBuilder.respostaSimples(HttpStatus.NO_CONTENT, "Ambiente excluído com sucesso.");
     }
 
-    @PutMapping("/associarCategorias/{id}")
+    @PutMapping("/associarcategorias/{id}")
     public ResponseEntity<Object> associarCategorias(@PathVariable Long id, @RequestBody AmbienteCategoria ambienteCategoria) {
         ambienteService.associarCategorias(id, ambienteCategoria.getIdsCategorias());
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Categorias associadas.");

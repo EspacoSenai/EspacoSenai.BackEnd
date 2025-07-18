@@ -1,6 +1,6 @@
 package com.api.reserva.dto;
 
-import com.api.reserva.entity.GradeAmbiente;
+import com.api.reserva.entity.Catalogo;
 import com.api.reserva.entity.Reserva;
 import com.api.reserva.entity.Usuario;
 import com.api.reserva.enums.StatusReserva;
@@ -12,7 +12,7 @@ import java.time.LocalTime;
 public class ReservaReferenciaDTO {
     private Long id;
     private Usuario usuario;
-    private GradeAmbiente gradeAmbiente;
+    private Catalogo catalogo;
     private LocalDate data;
     private LocalTime horaInicio;
     private LocalTime horaFim;
@@ -27,7 +27,7 @@ public class ReservaReferenciaDTO {
     public ReservaReferenciaDTO(Reserva reserva) {
         id = reserva.getId();
         usuario = reserva.getUsuario();
-        gradeAmbiente = reserva.getGradeAmbiente();
+        catalogo = reserva.getGradeAmbiente();
         data = reserva.getData();
         horaInicio = reserva.getHoraInicio();
         horaFim = reserva.getHoraFim();
@@ -53,12 +53,12 @@ public class ReservaReferenciaDTO {
         this.usuario = usuario;
     }
 
-    public GradeAmbiente getGradeAmbiente() {
-        return gradeAmbiente;
+    public Catalogo getGradeAmbiente() {
+        return catalogo;
     }
 
-    public void setGradeAmbiente(GradeAmbiente gradeAmbiente) {
-        this.gradeAmbiente = gradeAmbiente;
+    public void setGradeAmbiente(Catalogo catalogo) {
+        this.catalogo = catalogo;
     }
 
     public LocalDate getData() {

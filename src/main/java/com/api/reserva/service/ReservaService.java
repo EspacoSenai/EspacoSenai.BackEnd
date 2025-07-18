@@ -2,17 +2,14 @@ package com.api.reserva.service;
 
 import com.api.reserva.dto.ReservaDTO;
 import com.api.reserva.dto.ReservaReferenciaDTO;
-import com.api.reserva.entity.GradeAmbiente;
-import com.api.reserva.entity.Periodo;
+import com.api.reserva.entity.Catalogo;
 import com.api.reserva.entity.Reserva;
 import com.api.reserva.enums.Agendamento;
-import com.api.reserva.enums.DiaSemana;
 import com.api.reserva.enums.StatusReserva;
 import com.api.reserva.exception.DataInvalidaException;
 import com.api.reserva.exception.HorarioInvalidoException;
 import com.api.reserva.exception.SemResultadosException;
-import com.api.reserva.repository.GradeAmbienteRepository;
-import com.api.reserva.repository.PeriodoRepository;
+import com.api.reserva.repository.CatalogoRepository;
 import com.api.reserva.repository.ReservaRepository;
 import com.api.reserva.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -28,9 +25,7 @@ public class ReservaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
-    private GradeAmbienteRepository gradeAmbienteRepository;
-    @Autowired
-    private PeriodoRepository periodoRepository;
+    private CatalogoRepository catalogoRepository;
 
     public List<ReservaReferenciaDTO> listar() {
         return reservaRepository.findAll()
@@ -51,21 +46,21 @@ public class ReservaService {
         reserva.setUsuario(usuarioRepository.findById(reservaDTO.getIdUsuario()).orElseThrow(
                 () -> new SemResultadosException("associação: Usuario")));
 
-        GradeAmbiente gradeAmbiente = gradeAmbienteRepository.findById(reservaDTO.getIdGradeAmbiente()).orElseThrow(
+        Catalogo catalogo = catalogoRepository.findById(reservaDTO.getIdGradeAmbiente()).orElseThrow(
                 () -> new SemResultadosException("associação: GradeAmbiente"));
 
-        if (gradeAmbiente.getAgendamento() == Agendamento.PERIODO) {
+        if (catalogo.getAgendamento() == Agendamento.PERIODO) {
 
-            Periodo periodo = periodoRepository.findById(gradeAmbiente.getPeriodo().getId()).orElseThrow(
+            Periodo periodo = periodoRepository.findById(catalogo.getPeriodo().getId()).orElseThrow(
                     () -> new SemResultadosException("associação: Período"));
             reserva.setHoraInicio(periodo.getHoraInicio());
             reserva.setHoraFim(periodo.getHoraFim());
         } else {
 
-            if (reservaDTO.getHoraInicio().isAfter(gradeAmbiente.getHorario().getHoraFim()) ||
-                    reservaDTO.getHoraInicio().equals(gradeAmbiente.getHorario().getHoraFim()) ||
-                    reservaDTO.getHoraInicio().isBefore(gradeAmbiente.getHorario().getHoraInicio()) ||
-                    reservaDTO.getHoraFim().isAfter(gradeAmbiente.getHorario().getHoraFim())) {
+            if (reservaDTO.getHoraInicio().isAfter(catalogo.getHorario().getHoraFim()) ||
+                    reservaDTO.getHoraInicio().equals(catalogo.getHorario().getHoraFim()) ||
+                    reservaDTO.getHoraInicio().isBefore(catalogo.getHorario().getHoraInicio()) ||
+                    reservaDTO.getHoraFim().isAfter(catalogo.getHorario().getHoraFim())) {
                 throw new HorarioInvalidoException();
             }
             reserva.setHoraInicio(reservaDTO.getHoraInicio());
@@ -73,7 +68,7 @@ public class ReservaService {
         }
 
 
-        if(reservaDTO.getData().getDayOfWeek() != gradeAmbiente.getDiaSemana().getDayOfWeek()){
+        if(reservaDTO.getData().getDayOfWeek() != catalogo.getDiaSemana().getDayOfWeek()){
             throw new DataInvalidaException();
         }
 
@@ -90,21 +85,21 @@ public class ReservaService {
         reserva.setUsuario(usuarioRepository.findById(reservaDTO.getIdUsuario()).orElseThrow(
                 () -> new SemResultadosException("associação: Usuario")));
 
-        GradeAmbiente gradeAmbiente = gradeAmbienteRepository.findById(reservaDTO.getIdGradeAmbiente()).orElseThrow(
+        Catalogo catalogo = catalogoRepository.findById(reservaDTO.getIdGradeAmbiente()).orElseThrow(
                 () -> new SemResultadosException("associação: GradeAmbiente"));
 
-        if (gradeAmbiente.getAgendamento() == Agendamento.PERIODO) {
+        if (catalogo.getAgendamento() == Agendamento.PERIODO) {
 
-            Periodo periodo = periodoRepository.findById(gradeAmbiente.getPeriodo().getId()).orElseThrow(
+            Periodo periodo = periodoRepository.findById(catalogo.getPeriodo().getId()).orElseThrow(
                     () -> new SemResultadosException("associação: Período"));
             reserva.setHoraInicio(periodo.getHoraInicio());
             reserva.setHoraFim(periodo.getHoraFim());
         } else {
 
-            if (reservaDTO.getHoraInicio().isAfter(gradeAmbiente.getHorario().getHoraFim()) ||
-                    reservaDTO.getHoraInicio().equals(gradeAmbiente.getHorario().getHoraFim()) ||
-                    reservaDTO.getHoraInicio().isBefore(gradeAmbiente.getHorario().getHoraInicio()) ||
-                    reservaDTO.getHoraFim().isAfter(gradeAmbiente.getHorario().getHoraFim())) {
+            if (reservaDTO.getHoraInicio().isAfter(catalogo.getHorario().getHoraFim()) ||
+                    reservaDTO.getHoraInicio().equals(catalogo.getHorario().getHoraFim()) ||
+                    reservaDTO.getHoraInicio().isBefore(catalogo.getHorario().getHoraInicio()) ||
+                    reservaDTO.getHoraFim().isAfter(catalogo.getHorario().getHoraFim())) {
                 throw new HorarioInvalidoException();
             }
             reserva.setHoraInicio(reservaDTO.getHoraInicio());
@@ -112,7 +107,7 @@ public class ReservaService {
         }
 
 
-        if(reservaDTO.getData().getDayOfWeek() != gradeAmbiente.getDiaSemana().getDayOfWeek()){
+        if(reservaDTO.getData().getDayOfWeek() != catalogo.getDiaSemana().getDayOfWeek()){
             throw new DataInvalidaException();
         }
 

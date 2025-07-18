@@ -1,16 +1,13 @@
 package com.api.reserva.dto;
 
-import com.api.reserva.entity.Ambiente;
-import com.api.reserva.entity.GradeAmbiente;
-import com.api.reserva.entity.Horario;
-import com.api.reserva.entity.Periodo;
+import com.api.reserva.entity.Catalogo;
 import com.api.reserva.enums.Agendamento;
 import com.api.reserva.enums.DiaSemana;
 import com.api.reserva.enums.Disponibilidade;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-public class GradeAmbienteDTO {
+public class CatalogoDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,11 +28,11 @@ public class GradeAmbienteDTO {
     @NotNull(message = "Indique a disponibilidade desta grade atualmente.")
     private Disponibilidade disponibilidade;
 
-    public GradeAmbienteDTO() {
+    public CatalogoDTO() {
     }
 
-    public GradeAmbienteDTO(Long idAmbiente, Long idPeriodo, Long idHorario, Agendamento agendamento,
-                            DiaSemana diaSemana ,Disponibilidade disponibilidade) {
+    public CatalogoDTO(Long idAmbiente, Long idPeriodo, Long idHorario, Agendamento agendamento,
+                       DiaSemana diaSemana , Disponibilidade disponibilidade) {
         this.idAmbiente = idAmbiente;
         this.idPeriodo = idPeriodo;
         this.idHorario = idHorario;
@@ -43,14 +40,14 @@ public class GradeAmbienteDTO {
         this.disponibilidade = disponibilidade;
     }
 
-    public GradeAmbienteDTO(GradeAmbiente gradeAmbiente) {
-        id = gradeAmbiente.getId();
-        idAmbiente = gradeAmbiente.getAmbiente().getId();
-        idPeriodo = gradeAmbiente.getPeriodo().getId();
-        idHorario = gradeAmbiente.getId();
-        agendamento = gradeAmbiente.getAgendamento();
-        diaSemana = gradeAmbiente.getDiaSemana();
-        disponibilidade = gradeAmbiente.getDisponibilidade();
+    public CatalogoDTO(Catalogo catalogo) {
+        id = catalogo.getId();
+        idAmbiente = catalogo.getAmbiente().getId();
+        idPeriodo = catalogo.getPeriodo().getId();
+        idHorario = catalogo.getId();
+        agendamento = catalogo.getAgendamento();
+        diaSemana = catalogo.getDiaSemana();
+        disponibilidade = catalogo.getDisponibilidade();
     }
 
     public Long getId() {

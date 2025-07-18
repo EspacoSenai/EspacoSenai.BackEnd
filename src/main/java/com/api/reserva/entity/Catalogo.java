@@ -1,44 +1,51 @@
-package com.api.reserva.dto;
+package com.api.reserva.entity;
 
-import com.api.reserva.entity.Ambiente;
-import com.api.reserva.entity.GradeAmbiente;
-import com.api.reserva.entity.Horario;
-import com.api.reserva.entity.Periodo;
 import com.api.reserva.enums.Agendamento;
 import com.api.reserva.enums.DiaSemana;
 import com.api.reserva.enums.Disponibilidade;
+import jakarta.persistence.*;
 
-public class GradeAmbienteReferenciaDTO {
+@Entity
+public class Catalogo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Ambiente ambiente;
-    private Agendamento agendamento;
-    private DiaSemana diaSemana;
-    private Periodo periodo;
-    private Horario horario;
-    private Disponibilidade disponibilidade;
 
-    public GradeAmbienteReferenciaDTO() {
+    @ManyToOne
+    @JoinColumn(name = "id_ambiente", nullable = false)
+    private Ambiente ambiente;
+
+    @ManyToOne
+    @JoinColumn(name = "id_periodo")
+    private Periodo periodo;
+
+    @ManyToOne
+    @JoinColumn(name = "id_horario")
+    private Horario horario;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Agendamento agendamento;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DiaSemana diaSemana;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Disponibilidade disponibilidade;
+    
+    public Catalogo() {
     }
 
-    public GradeAmbienteReferenciaDTO(Long id, Ambiente ambiente, Periodo periodo, Horario horario,
-                                      Agendamento agendamento, DiaSemana diaSemana, Disponibilidade disponibilidade) {
-        this.id = id;
+    public Catalogo(Ambiente ambiente, Periodo periodo, Horario horario, Agendamento agendamento,
+                    DiaSemana diaSemana, Disponibilidade disponibilidade) {
         this.ambiente = ambiente;
         this.periodo = periodo;
         this.horario = horario;
         this.agendamento = agendamento;
         this.diaSemana = diaSemana;
         this.disponibilidade = disponibilidade;
-    }
-
-    public GradeAmbienteReferenciaDTO(GradeAmbiente gradeAmbiente) {
-        id = gradeAmbiente.getId();
-        ambiente = gradeAmbiente.getAmbiente();
-        periodo = gradeAmbiente.getPeriodo();
-        horario = gradeAmbiente.getHorario();
-        agendamento = gradeAmbiente.getAgendamento();
-        diaSemana = gradeAmbiente.getDiaSemana();
-        disponibilidade = gradeAmbiente.getDisponibilidade();
     }
 
     public Long getId() {

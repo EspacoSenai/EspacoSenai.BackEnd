@@ -18,7 +18,7 @@ public class AmbienteReferenciaDTO {
     private Disponibilidade disponibilidade;
     private Aprovacao aprovacao;
 
-    private Set<Long> categorias;
+    private Set<CategoriaDTO> categorias;
 
     public AmbienteReferenciaDTO() {
     }
@@ -30,7 +30,7 @@ public class AmbienteReferenciaDTO {
         aprovacao = ambiente.getAprovacao();
         categorias = ambiente.getCategorias()
                 .stream()
-                .map(Categoria::getId)
+                .map(CategoriaDTO::new)
                 .collect(Collectors.toSet());
     }
 
@@ -66,19 +66,19 @@ public class AmbienteReferenciaDTO {
         this.aprovacao = aprovacao;
     }
 
-//    public Set<CategoriaReferenciaDTO> getCategorias() {
-//        return categorias;
-//    }
-//
-//    public void setCategorias(Set<CategoriaReferenciaDTO> categorias) {
-//        this.categorias = categorias;
-//    }
-
-    public Set<Long> getCategorias() {
+    public Set<CategoriaDTO> getCategorias() {
         return categorias;
     }
 
-    public void setCategorias(Set<Long> categorias) {
+    public void setCategorias(Set<CategoriaDTO> categorias) {
         this.categorias = categorias;
     }
+
+    //    public Set<Long> getCategorias() {
+//        return categorias;
+//    }
+//
+//    public void setCategorias(Set<Long> categorias) {
+//        this.categorias = categorias;
+//    }
 }

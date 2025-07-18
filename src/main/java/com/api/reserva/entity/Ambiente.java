@@ -29,6 +29,9 @@ public class Ambiente {
     @Enumerated(EnumType.STRING)
     private Aprovacao aprovacao;
 
+    @Column(nullable = false)
+    private Integer qtdPessoas;
+
     // Mapeamento muitos para muitos entre Ambiente e Categoria
     @ManyToMany
     @JoinTable(

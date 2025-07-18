@@ -1,64 +1,53 @@
-package com.api.reserva.entity;
+package com.api.reserva.dto;
 
-import com.api.reserva.dto.GradeAmbienteDTO;
+import com.api.reserva.entity.Catalogo;
+import com.api.reserva.entity.Horario;
 import com.api.reserva.enums.Agendamento;
 import com.api.reserva.enums.DiaSemana;
 import com.api.reserva.enums.Disponibilidade;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
-@Entity
-public class GradeAmbiente {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CatalogoReferenciaDTO {
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "id_ambiente", nullable = false)
-    private Ambiente ambiente;
-
-    @ManyToOne
-    @JoinColumn(name = "id_periodo")
-    private Periodo periodo;
-
-    @ManyToOne
-    @JoinColumn(name = "id_horario")
-    private Horario horario;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    private AmbienteReferenciaDTO ambiente;
     private Agendamento agendamento;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private DiaSemana diaSemana;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    private Periodo periodo;
+    private Horario horario;
     private Disponibilidade disponibilidade;
-    
-    public GradeAmbiente() {
+
+    public CatalogoReferenciaDTO() {
     }
 
-    public GradeAmbiente(Ambiente ambiente, Periodo periodo, Horario horario, Agendamento agendamento,
-                         DiaSemana diaSemana, Disponibilidade disponibilidade) {
+    public CatalogoReferenciaDTO(Long id, AmbienteReferenciaDTO ambiente, Agendamento agendamento,
+                                 DiaSemana diaSemana, Periodo periodo, Horario horario, Disponibilidade disponibilidade) {
+        this.id = id;
         this.ambiente = ambiente;
-        this.periodo = periodo;
-        this.horario = horario;
         this.agendamento = agendamento;
         this.diaSemana = diaSemana;
+        this.periodo = periodo;
+        this.horario = horario;
         this.disponibilidade = disponibilidade;
+    }
+
+    public CatalogoReferenciaDTO(Catalogo catalogo) {
+        id = catalogo.getId();
+        ambiente = new AmbienteReferenciaDTO(catalogo.getAmbiente());
+        periodo = catalogo.getPeriodo();
+        horario = catalogo.getHorario();
+        agendamento = catalogo.getAgendamento();
+        diaSemana = catalogo.getDiaSemana();
+        disponibilidade = catalogo.getDisponibilidade();
     }
 
     public Long getId() {
         return id;
     }
 
-    public Ambiente getAmbiente() {
+    public AmbienteReferenciaDTO getAmbiente() {
         return ambiente;
     }
 
-    public void setAmbiente(Ambiente ambiente) {
+    public void setAmbiente(AmbienteReferenciaDTO ambiente) {
         this.ambiente = ambiente;
     }
 

@@ -20,7 +20,7 @@ public class Reserva {
 
     @ManyToOne
     @JoinColumn(name = "idGradeAmbiente", nullable = false)
-    private GradeAmbiente gradeAmbiente;
+    private Catalogo catalogo;
 
     @Column(nullable = false)
     private LocalDate data;
@@ -44,11 +44,11 @@ public class Reserva {
     public Reserva() {
     }
 
-    public Reserva(Usuario usuario, GradeAmbiente gradeAmbiente, LocalDate data, LocalTime horaInicio,
+    public Reserva(Usuario usuario, Catalogo catalogo, LocalDate data, LocalTime horaInicio,
                    LocalTime horaFim, StatusReserva statusReserva, String msgUsuario, String msgInterna,
                    LocalDateTime dataHoraSolicitacao) {
         this.usuario = usuario;
-        this.gradeAmbiente = gradeAmbiente;
+        this.catalogo = catalogo;
         this.data = data;
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
@@ -70,12 +70,12 @@ public class Reserva {
         this.usuario = usuario;
     }
 
-    public GradeAmbiente getGradeAmbiente() {
-        return gradeAmbiente;
+    public Catalogo getGradeAmbiente() {
+        return catalogo;
     }
 
-    public void setGradeAmbiente(GradeAmbiente gradeAmbiente) {
-        this.gradeAmbiente = gradeAmbiente;
+    public void setGradeAmbiente(Catalogo catalogo) {
+        this.catalogo = catalogo;
     }
 
     public LocalDate getData() {
