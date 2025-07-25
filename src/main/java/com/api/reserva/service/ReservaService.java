@@ -4,10 +4,8 @@ import com.api.reserva.dto.ReservaDTO;
 import com.api.reserva.dto.ReservaReferenciaDTO;
 import com.api.reserva.entity.Catalogo;
 import com.api.reserva.entity.Reserva;
-import com.api.reserva.enums.Agendamento;
 import com.api.reserva.enums.StatusReserva;
 import com.api.reserva.exception.DataInvalidaException;
-import com.api.reserva.exception.HorarioInvalidoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.CatalogoRepository;
 import com.api.reserva.repository.ReservaRepository;
@@ -48,24 +46,24 @@ public class ReservaService {
 
         Catalogo catalogo = catalogoRepository.findById(reservaDTO.getIdGradeAmbiente()).orElseThrow(
                 () -> new SemResultadosException("associação: GradeAmbiente"));
-
-        if (catalogo.getAgendamento() == Agendamento.PERIODO) {
-
-            Periodo periodo = periodoRepository.findById(catalogo.getPeriodo().getId()).orElseThrow(
-                    () -> new SemResultadosException("associação: Período"));
-            reserva.setHoraInicio(periodo.getHoraInicio());
-            reserva.setHoraFim(periodo.getHoraFim());
-        } else {
-
-            if (reservaDTO.getHoraInicio().isAfter(catalogo.getHorario().getHoraFim()) ||
-                    reservaDTO.getHoraInicio().equals(catalogo.getHorario().getHoraFim()) ||
-                    reservaDTO.getHoraInicio().isBefore(catalogo.getHorario().getHoraInicio()) ||
-                    reservaDTO.getHoraFim().isAfter(catalogo.getHorario().getHoraFim())) {
-                throw new HorarioInvalidoException();
-            }
-            reserva.setHoraInicio(reservaDTO.getHoraInicio());
-            reserva.setHoraFim(reservaDTO.getHoraFim());
-        }
+//
+//        if (catalogo.getAgendamento() == Agendamento.PERIODO) {
+//
+//            Periodo periodo = periodoRepository.findById(catalogo.getPeriodo().getId()).orElseThrow(
+//                    () -> new SemResultadosException("associação: Período"));
+//            reserva.setHoraInicio(periodo.getHoraInicio());
+//            reserva.setHoraFim(periodo.getHoraFim());
+//        } else {
+//
+//            if (reservaDTO.getHoraInicio().isAfter(catalogo.getHorario().getHoraFim()) ||
+//                    reservaDTO.getHoraInicio().equals(catalogo.getHorario().getHoraFim()) ||
+//                    reservaDTO.getHoraInicio().isBefore(catalogo.getHorario().getHoraInicio()) ||
+//                    reservaDTO.getHoraFim().isAfter(catalogo.getHorario().getHoraFim())) {
+//                throw new HorarioInvalidoException();
+//            }
+//            reserva.setHoraInicio(reservaDTO.getHoraInicio());
+//            reserva.setHoraFim(reservaDTO.getHoraFim());
+//        }
 
 
         if(reservaDTO.getData().getDayOfWeek() != catalogo.getDiaSemana().getDayOfWeek()){
@@ -88,23 +86,23 @@ public class ReservaService {
         Catalogo catalogo = catalogoRepository.findById(reservaDTO.getIdGradeAmbiente()).orElseThrow(
                 () -> new SemResultadosException("associação: GradeAmbiente"));
 
-        if (catalogo.getAgendamento() == Agendamento.PERIODO) {
-
-            Periodo periodo = periodoRepository.findById(catalogo.getPeriodo().getId()).orElseThrow(
-                    () -> new SemResultadosException("associação: Período"));
-            reserva.setHoraInicio(periodo.getHoraInicio());
-            reserva.setHoraFim(periodo.getHoraFim());
-        } else {
-
-            if (reservaDTO.getHoraInicio().isAfter(catalogo.getHorario().getHoraFim()) ||
-                    reservaDTO.getHoraInicio().equals(catalogo.getHorario().getHoraFim()) ||
-                    reservaDTO.getHoraInicio().isBefore(catalogo.getHorario().getHoraInicio()) ||
-                    reservaDTO.getHoraFim().isAfter(catalogo.getHorario().getHoraFim())) {
-                throw new HorarioInvalidoException();
-            }
-            reserva.setHoraInicio(reservaDTO.getHoraInicio());
-            reserva.setHoraFim(reservaDTO.getHoraFim());
-        }
+//        if (catalogo.getAgendamento() == Agendamento.PERIODO) {
+//
+//            Periodo periodo = periodoRepository.findById(catalogo.getPeriodo().getId()).orElseThrow(
+//                    () -> new SemResultadosException("associação: Período"));
+//            reserva.setHoraInicio(periodo.getHoraInicio());
+//            reserva.setHoraFim(periodo.getHoraFim());
+//        } else {
+//
+//            if (reservaDTO.getHoraInicio().isAfter(catalogo.getHorario().getHoraFim()) ||
+//                    reservaDTO.getHoraInicio().equals(catalogo.getHorario().getHoraFim()) ||
+//                    reservaDTO.getHoraInicio().isBefore(catalogo.getHorario().getHoraInicio()) ||
+//                    reservaDTO.getHoraFim().isAfter(catalogo.getHorario().getHoraFim())) {
+//                throw new HorarioInvalidoException();
+//            }
+//            reserva.setHoraInicio(reservaDTO.getHoraInicio());
+//            reserva.setHoraFim(reservaDTO.getHoraFim());
+//        }
 
 
         if(reservaDTO.getData().getDayOfWeek() != catalogo.getDiaSemana().getDayOfWeek()){

@@ -1,14 +1,9 @@
 package com.api.reserva.dto;
 
 import com.api.reserva.entity.Ambiente;
-import com.api.reserva.entity.Categoria;
 import com.api.reserva.enums.Aprovacao;
 import com.api.reserva.enums.Disponibilidade;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,6 +12,7 @@ public class AmbienteReferenciaDTO {
     private String nome;
     private Disponibilidade disponibilidade;
     private Aprovacao aprovacao;
+
 
     private Set<CategoriaDTO> categorias;
 

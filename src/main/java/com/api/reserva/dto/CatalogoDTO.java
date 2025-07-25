@@ -4,7 +4,9 @@ import com.api.reserva.entity.Catalogo;
 import com.api.reserva.enums.Agendamento;
 import com.api.reserva.enums.DiaSemana;
 import com.api.reserva.enums.Disponibilidade;
-import jakarta.persistence.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 
 public class CatalogoDTO {
@@ -43,7 +45,6 @@ public class CatalogoDTO {
     public CatalogoDTO(Catalogo catalogo) {
         id = catalogo.getId();
         idAmbiente = catalogo.getAmbiente().getId();
-        idPeriodo = catalogo.getPeriodo().getId();
         idHorario = catalogo.getId();
         agendamento = catalogo.getAgendamento();
         diaSemana = catalogo.getDiaSemana();

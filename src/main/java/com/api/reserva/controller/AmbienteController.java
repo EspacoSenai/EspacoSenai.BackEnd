@@ -3,7 +3,6 @@ package com.api.reserva.controller;
 import com.api.reserva.dto.AmbienteCategoria;
 import com.api.reserva.dto.AmbienteDTO;
 import com.api.reserva.dto.AmbienteReferenciaDTO;
-import com.api.reserva.entity.Ambiente;
 import com.api.reserva.service.AmbienteService;
 import com.api.reserva.util.ResponseBuilder;
 import jakarta.validation.Valid;
@@ -54,5 +53,11 @@ public class  AmbienteController {
     public ResponseEntity<Object> associarCategorias(@PathVariable Long id, @RequestBody AmbienteCategoria ambienteCategoria) {
         ambienteService.associarCategorias(id, ambienteCategoria.getIdsCategorias());
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Categorias associadas.");
+    }
+
+    @PutMapping("/associarresponsaveis/{ambienteId}")
+    public ResponseEntity<Object> associarResponsaveis(@PathVariable Long ambienteId, @RequestBody Set<Long> responsaveisIds) {
+        ambienteService.associarResponsaveis(ambienteId, responsaveisIds);
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Responsáveis pelo ambiente adicionados.");
     }
 }

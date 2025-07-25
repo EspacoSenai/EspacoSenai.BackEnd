@@ -22,8 +22,7 @@ public class CatalogoService {
     public CatalogoRepository catalogoRepository;
     @Autowired
     public AmbienteRepository ambienteRepository;
-    @Autowired
-    public PeriodoRepository periodoRepository;
+
     @Autowired
     public HorarioRepository horarioRepository;
 
@@ -44,12 +43,8 @@ public class CatalogoService {
         catalogo.setAmbiente(ambienteRepository.findById(catalogoDTO.getIdAmbiente()).orElseThrow(() ->
                 new SemResultadosException("vinculação de Ambiente.")));
 
-        if (Objects.equals(catalogoDTO.getAgendamento(), Agendamento.PERIODO)
-                && catalogoDTO.getIdHorario() == null) {
-            catalogo.setAgendamento(Agendamento.PERIODO);
-            catalogo.setPeriodo(periodoRepository.findById(catalogoDTO.getIdPeriodo()).orElseThrow(()
-                    -> new SemResultadosException("vinculação de Periodo.")));
-        } else if (Objects.equals(catalogoDTO.getAgendamento(), Agendamento.HORARIO)
+
+        if (Objects.equals(catalogoDTO.getAgendamento(), Agendamento.HORARIO)
                 && catalogoDTO.getIdPeriodo() == null) {
             catalogo.setAgendamento(Agendamento.HORARIO);
             catalogo.setHorario(horarioRepository.findById(catalogoDTO.getIdHorario()).orElseThrow(()
@@ -70,12 +65,7 @@ public class CatalogoService {
         catalogo.setAmbiente(ambienteRepository.findById(catalogoDTO.getIdAmbiente()).orElseThrow(() ->
                 new SemResultadosException("vinculação de Ambiente.")));
 
-        if (Objects.equals(catalogoDTO.getAgendamento(), Agendamento.PERIODO)
-                && catalogoDTO.getIdHorario() == null) {
-            catalogo.setAgendamento(Agendamento.PERIODO);
-            catalogo.setPeriodo(periodoRepository.findById(catalogoDTO.getIdPeriodo()).orElseThrow(()
-                    -> new SemResultadosException("vinculação de Periodo.")));
-        } else if (Objects.equals(catalogoDTO.getAgendamento(), Agendamento.HORARIO)
+        if (Objects.equals(catalogoDTO.getAgendamento(), Agendamento.HORARIO)
                 && catalogoDTO.getIdPeriodo() == null) {
             catalogo.setAgendamento(Agendamento.HORARIO);
             catalogo.setHorario(horarioRepository.findById(catalogoDTO.getIdHorario()).orElseThrow(()

@@ -2,8 +2,6 @@ package com.api.reserva.controller;
 
 import com.api.reserva.dto.ReservaDTO;
 import com.api.reserva.dto.ReservaReferenciaDTO;
-import com.api.reserva.entity.Reserva;
-import com.api.reserva.repository.ReservaRepository;
 import com.api.reserva.service.ReservaService;
 import com.api.reserva.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;

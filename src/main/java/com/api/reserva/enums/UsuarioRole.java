@@ -5,8 +5,8 @@ public enum UsuarioRole {
         ESTUDANTE,
         /** Representa o papel de professor no sistema */
         PROFESSOR,
-        /** Representa o papel de responsável administrativo no sistema */
-        RESPONSAVEL,
+        /** Representa o papel de responsável pelos Ambientes e Associados */
+        COORDENADOR,
         /** Representa o papel de administrador com acesso total ao sistema */
         ADMIN
 }

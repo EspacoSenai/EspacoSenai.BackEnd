@@ -16,10 +16,6 @@ public class Catalogo {
     private Ambiente ambiente;
 
     @ManyToOne
-    @JoinColumn(name = "id_periodo")
-    private Periodo periodo;
-
-    @ManyToOne
     @JoinColumn(name = "id_horario")
     private Horario horario;
 
@@ -38,10 +34,9 @@ public class Catalogo {
     public Catalogo() {
     }
 
-    public Catalogo(Ambiente ambiente, Periodo periodo, Horario horario, Agendamento agendamento,
+    public Catalogo(Ambiente ambiente, Horario horario, Agendamento agendamento,
                     DiaSemana diaSemana, Disponibilidade disponibilidade) {
         this.ambiente = ambiente;
-        this.periodo = periodo;
         this.horario = horario;
         this.agendamento = agendamento;
         this.diaSemana = diaSemana;
@@ -58,14 +53,6 @@ public class Catalogo {
 
     public void setAmbiente(Ambiente ambiente) {
         this.ambiente = ambiente;
-    }
-
-    public Periodo getPeriodo() {
-        return periodo;
-    }
-
-    public void setPeriodo(Periodo periodo) {
-        this.periodo = periodo;
     }
 
     public Horario getHorario() {

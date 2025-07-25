@@ -41,6 +41,14 @@ public class Ambiente {
     )
     private Set<Categoria> categorias = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "tb_ambiente_responsavel",
+            joinColumns = @JoinColumn(name = "ambiente_id"),
+            inverseJoinColumns = @JoinColumn(name = "responsavel_id")
+    )
+    private Set<Usuario> responsaveis = new HashSet<>();
+
     public Ambiente() {
     }
 
@@ -101,5 +109,21 @@ public class Ambiente {
 
     public void setCategorias(Set<Categoria> categorias) {
         this.categorias = categorias;
+    }
+
+    public Set<Usuario> getResponsaveis() {
+        return responsaveis;
+    }
+
+    public void setResponsaveis(Set<Usuario> responsaveis) {
+        this.responsaveis = responsaveis;
+    }
+
+    public Integer getQtdPessoas() {
+        return qtdPessoas;
+    }
+
+    public void setQtdPessoas(Integer qtdPessoas) {
+        this.qtdPessoas = qtdPessoas;
     }
 }

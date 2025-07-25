@@ -2,7 +2,6 @@ package com.api.reserva.service;
 
 import com.api.reserva.dto.CategoriaDTO;
 import com.api.reserva.dto.CategoriaReferenciaDTO;
-import com.api.reserva.entity.Ambiente;
 import com.api.reserva.entity.Categoria;
 import com.api.reserva.exception.DadoDuplicadoException;
 import com.api.reserva.exception.SemResultadosException;

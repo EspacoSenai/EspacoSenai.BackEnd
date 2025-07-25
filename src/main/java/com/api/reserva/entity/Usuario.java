@@ -1,10 +1,14 @@
 package com.api.reserva.entity;
 
 import com.api.reserva.dto.UsuarioDTO;
-import com.api.reserva.enums.UsuarioGenero;
 import com.api.reserva.enums.UsuarioRole;
 import com.api.reserva.enums.UsuarioStatus;
 import jakarta.persistence.*;
+import org.hibernate.FetchMode;
+import org.hibernate.annotations.Fetch;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_usuario")
@@ -16,13 +20,16 @@ public class Usuario {
     @Column(length = 50, nullable = false)
     private String nome;
 
-    @Column(length = 100, nullable = false)
+    @Column(unique = true, length = 100, nullable = false)
     private String email;
 
     private String senha;
 
-    @Column(length = 11)
+    @Column(unique = true, length = 11)
     private String telefone;
+
+    @Column(unique = true, length = 8)
+    private String tag;
 
     @Enumerated(EnumType.STRING)
     private UsuarioStatus status;
@@ -33,22 +40,30 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String nome, String email, String senha, String telefone,
+    public Usuario(String nome, String email, String senha, String telefone) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.telefone = telefone;
+    }
+
+    public Usuario(String nome, String email, String senha, String telefone, String tag,
                    UsuarioStatus status, UsuarioRole role) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.telefone = telefone;
+        this.tag = tag;
         this.status = status;
         this.role = role;
     }
 
     public Usuario(UsuarioDTO usuarioDTO) {
-        id = usuarioDTO.getId();
         nome = usuarioDTO.getNome();
         email = usuarioDTO.getEmail();
         senha = usuarioDTO.getSenha();
         telefone = usuarioDTO.getTelefone();
+        tag = usuarioDTO.getTag();
         status = usuarioDTO.getStatus();
         role = usuarioDTO.getRole();
     }
@@ -103,5 +118,13 @@ public class Usuario {
 
     public void setRole(UsuarioRole role) {
         this.role = role;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }

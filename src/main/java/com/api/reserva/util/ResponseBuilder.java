@@ -12,7 +12,7 @@ public class ResponseBuilder {
         return ResponseEntity.status(status).body(Map.of("status", status.value(), "message", message));
     }
 
-    public static ResponseEntity<Object> respostaLista(HttpStatus status, List<Object> erros) {
+    public static ResponseEntity<Object> respostaLista(HttpStatus status, List<String> erros) {
         return ResponseEntity.status(status).body(Map.of("status", status.value(), "message", erros));
     }
 }

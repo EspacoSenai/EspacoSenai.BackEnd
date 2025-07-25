@@ -11,7 +11,6 @@ public class CatalogoReferenciaDTO {
     private AmbienteReferenciaDTO ambiente;
     private Agendamento agendamento;
     private DiaSemana diaSemana;
-    private Periodo periodo;
     private Horario horario;
     private Disponibilidade disponibilidade;
 
@@ -19,12 +18,11 @@ public class CatalogoReferenciaDTO {
     }
 
     public CatalogoReferenciaDTO(Long id, AmbienteReferenciaDTO ambiente, Agendamento agendamento,
-                                 DiaSemana diaSemana, Periodo periodo, Horario horario, Disponibilidade disponibilidade) {
+                                 DiaSemana diaSemana, Horario horario, Disponibilidade disponibilidade) {
         this.id = id;
         this.ambiente = ambiente;
         this.agendamento = agendamento;
         this.diaSemana = diaSemana;
-        this.periodo = periodo;
         this.horario = horario;
         this.disponibilidade = disponibilidade;
     }
@@ -32,7 +30,6 @@ public class CatalogoReferenciaDTO {
     public CatalogoReferenciaDTO(Catalogo catalogo) {
         id = catalogo.getId();
         ambiente = new AmbienteReferenciaDTO(catalogo.getAmbiente());
-        periodo = catalogo.getPeriodo();
         horario = catalogo.getHorario();
         agendamento = catalogo.getAgendamento();
         diaSemana = catalogo.getDiaSemana();
@@ -49,14 +46,6 @@ public class CatalogoReferenciaDTO {
 
     public void setAmbiente(AmbienteReferenciaDTO ambiente) {
         this.ambiente = ambiente;
-    }
-
-    public Periodo getPeriodo() {
-        return periodo;
-    }
-
-    public void setPeriodo(Periodo periodo) {
-        this.periodo = periodo;
     }
 
     public Horario getHorario() {

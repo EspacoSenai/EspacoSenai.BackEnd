@@ -2,14 +2,14 @@ package com.api.reserva.service;
 
 import com.api.reserva.dto.AmbienteDTO;
 import com.api.reserva.dto.AmbienteReferenciaDTO;
-import com.api.reserva.dto.CategoriaDTO;
-import com.api.reserva.dto.CategoriaReferenciaDTO;
 import com.api.reserva.entity.Ambiente;
-import com.api.reserva.entity.Categoria;
+import com.api.reserva.entity.Usuario;
+import com.api.reserva.enums.UsuarioRole;
 import com.api.reserva.exception.DadoDuplicadoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.AmbienteRepository;
 import com.api.reserva.repository.CategoriaRepository;
+import com.api.reserva.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +26,10 @@ import java.util.stream.Collectors;
 public class AmbienteService {
     @Autowired
     AmbienteRepository ambienteRepository;
-
     @Autowired
     CategoriaRepository categoriaRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     /**
      * Busca um ambiente específico pelo seu ID
@@ -137,5 +138,24 @@ public class AmbienteService {
                 .map(idCategoria -> categoriaRepository.findById(idCategoria)
                         .orElseThrow(() -> new SemResultadosException("associação.")))
                 .collect(Collectors.toSet()));
+    }
+
+    @Transactional
+    public void associarResponsaveis(Long ambienteId, Set<Long> responsaveisIds) {
+        Ambiente ambiente = ambienteRepository.findById(ambienteId).orElseThrow(() -> new SemResultadosException("Ambiente", "associação"));
+
+        Set<Usuario> usuarios = responsaveisIds.stream()
+                .map(id -> usuarioRepository.findById(id).orElseThrow(()
+                        -> new SemResultadosException("Usuário com o ID: " + id))).collect(Collectors.toSet());
+
+        for(Usuario usuario : usuarios) {
+            if(!usuario.getRole().equals(UsuarioRole.COORDENADOR) || !usuario.getRole().equals(UsuarioRole.ADMIN)) {
+                throw new SemResultadosException("Usuário não possui role permitida para associação");
+            }
+        }
+
+        ambiente.setResponsaveis(usuarios);
+
+        ambienteRepository.save(ambiente);
     }
 }
