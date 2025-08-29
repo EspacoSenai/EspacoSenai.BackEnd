@@ -17,18 +17,19 @@ public class ReservaController {
     @Autowired
     private ReservaService reservaService;
 
-    @GetMapping("/listar")
-    public ResponseEntity<List<ReservaReferenciaDTO>> listar() {
-        return ResponseEntity.ok(reservaService.listar());
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ReservaReferenciaDTO>> buscar() {
+        return ResponseEntity.ok(reservaService.buscar());
     }
 
-    @GetMapping("/listar/{id}")
-    public ResponseEntity<ReservaReferenciaDTO> listar (Long id) {
-        return ResponseEntity.ok(reservaService.listar(id));
+    @GetMapping("/buscar/{id}")
+    public ResponseEntity<ReservaReferenciaDTO> buscar (@PathVariable Long id) {
+        return ResponseEntity.ok(reservaService.buscar(id));
     }
 
-    @GetMapping("/salvar")
-    public ResponseEntity<Object> salvar(ReservaDTO reservaDTO) {
+    @PostMapping("/salvar")
+    public ResponseEntity<Object> salvar(@RequestBody ReservaDTO reservaDTO) {
         reservaService.salvar(reservaDTO);
         return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Pedido de reserva criado. Aguarde aprovação.");
     }
@@ -39,9 +40,9 @@ public class ReservaController {
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Reserva atualizada com sucesso.");
     }
 
-    @DeleteMapping("/excluir/{id}")
-    public ResponseEntity<Object> excluir(@PathVariable Long id) {
-        reservaService.excluir(id);
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Object> deletar(@PathVariable Long id) {
+        reservaService.deletar(id);
         return ResponseBuilder.respostaSimples(HttpStatus.NO_CONTENT, "Reserva excluída com sucesso.");
     }
 

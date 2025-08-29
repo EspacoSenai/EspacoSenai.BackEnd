@@ -25,14 +25,14 @@ public class ReservaService {
     @Autowired
     private CatalogoRepository catalogoRepository;
 
-    public List<ReservaReferenciaDTO> listar() {
+    public List<ReservaReferenciaDTO> buscar() {
         return reservaRepository.findAll()
                 .stream()
                 .map(ReservaReferenciaDTO::new)
                 .toList();
     }
 
-    public ReservaReferenciaDTO listar(Long id) {
+    public ReservaReferenciaDTO buscar(Long id) {
         return new ReservaReferenciaDTO(reservaRepository.findById(id).orElseThrow(
                 () -> new SemResultadosException()));
     }
@@ -41,11 +41,15 @@ public class ReservaService {
     public void salvar(ReservaDTO reservaDTO) {
         Reserva reserva = new Reserva();
 
-        reserva.setUsuario(usuarioRepository.findById(reservaDTO.getIdUsuario()).orElseThrow(
+//        reservaRepository.findAllByUsuario()
+//
+        reserva.setHost(usuarioRepository.findById(reservaDTO.getHostId()).orElseThrow(
                 () -> new SemResultadosException("associação: Usuario")));
 
-        Catalogo catalogo = catalogoRepository.findById(reservaDTO.getIdGradeAmbiente()).orElseThrow(
-                () -> new SemResultadosException("associação: GradeAmbiente"));
+        Catalogo catalogo = catalogoRepository.findById(reservaDTO.getCatalogoId()).orElseThrow(
+                () -> new SemResultadosException("associação: Catalogo"));
+
+
 //
 //        if (catalogo.getAgendamento() == Agendamento.PERIODO) {
 //
@@ -66,10 +70,13 @@ public class ReservaService {
 //        }
 
 
-        if(reservaDTO.getData().getDayOfWeek() != catalogo.getDiaSemana().getDayOfWeek()){
+        if (reservaDTO.getData().getDayOfWeek() != catalogo.getDiaSemana().getDayOfWeek()) {
             throw new DataInvalidaException();
         }
 
+        reserva.setCatalogo(catalogo);
+        reserva.setHoraInicio(reservaDTO.getHoraInicio());
+        reserva.setHoraFim(reservaDTO.getHoraFim());
         reserva.setData(reservaDTO.getData());
         reserva.setStatusReserva(StatusReserva.PENDENTE);
         reserva.setMsgInterna(reservaDTO.getMsgInterna());
@@ -80,10 +87,10 @@ public class ReservaService {
     public void atualizar(Long id, ReservaDTO reservaDTO) {
         Reserva reserva = reservaRepository.findById(id).orElseThrow(
                 () -> new SemResultadosException("atualização"));
-        reserva.setUsuario(usuarioRepository.findById(reservaDTO.getIdUsuario()).orElseThrow(
+        reserva.setHost(usuarioRepository.findById(reservaDTO.getHostId()).orElseThrow(
                 () -> new SemResultadosException("associação: Usuario")));
 
-        Catalogo catalogo = catalogoRepository.findById(reservaDTO.getIdGradeAmbiente()).orElseThrow(
+        Catalogo catalogo = catalogoRepository.findById(reservaDTO.getCatalogoId()).orElseThrow(
                 () -> new SemResultadosException("associação: GradeAmbiente"));
 
 //        if (catalogo.getAgendamento() == Agendamento.PERIODO) {
@@ -105,10 +112,13 @@ public class ReservaService {
 //        }
 
 
-        if(reservaDTO.getData().getDayOfWeek() != catalogo.getDiaSemana().getDayOfWeek()){
+        if (reservaDTO.getData().getDayOfWeek() != catalogo.getDiaSemana().getDayOfWeek()) {
             throw new DataInvalidaException();
         }
 
+        reserva.setCatalogo(catalogo);
+        reserva.setHoraInicio(reservaDTO.getHoraInicio());
+        reserva.setHoraFim(reservaDTO.getHoraFim());
         reserva.setData(reservaDTO.getData());
         reserva.setStatusReserva(StatusReserva.PENDENTE);
         reserva.setMsgInterna(reservaDTO.getMsgInterna());
@@ -116,7 +126,7 @@ public class ReservaService {
         reservaRepository.save(reserva);
     }
 
-    public void excluir(Long id) {
+    public void deletar(Long id) {
         Reserva reserva = reservaRepository.findById(id).orElseThrow(
                 () -> new SemResultadosException("exclusão;"));
         reservaRepository.delete(reserva);

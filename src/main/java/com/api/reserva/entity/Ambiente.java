@@ -15,7 +15,7 @@ public class Ambiente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false,  length = 50)
+    @Column(unique = true, nullable = false,  length = 100)
     private String nome;
 
     @Column(length = 500)
@@ -32,7 +32,7 @@ public class Ambiente {
     @Column(nullable = false)
     private Integer qtdPessoas;
 
-    // Mapeamento muitos para muitos entre Ambiente e Categoria
+    // Mapeamento muit  os para muitos entre Ambiente e Categoria
     @ManyToMany
     @JoinTable(
             name = "tb_ambiente_categoria",
@@ -52,19 +52,13 @@ public class Ambiente {
     public Ambiente() {
     }
 
-    public Ambiente(String nome, String descricao, Disponibilidade disponibilidade, Aprovacao aprovacao) {
-        this.nome = nome;
-        this.descricao = descricao;
-        this.disponibilidade = disponibilidade;
-        this.aprovacao = aprovacao;
-    }
 
     public Ambiente(AmbienteDTO ambienteDTO) {
-        id = ambienteDTO.getId();
         nome = ambienteDTO.getNome();
         descricao = ambienteDTO.getDescricao();
         disponibilidade = ambienteDTO.getDisponibilidade();
         aprovacao = ambienteDTO.getAprovacao();
+        qtdPessoas = ambienteDTO.getQtdPessoas();
     }
 
     public Long getId() {

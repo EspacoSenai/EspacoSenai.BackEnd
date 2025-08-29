@@ -3,6 +3,8 @@ package com.api.reserva.exception;
 import com.api.reserva.util.ResponseBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -64,5 +66,24 @@ public class ExceptionGlobal {
     public ResponseEntity<Object> handler (Exception e){
         return ResponseBuilder.respostaSimples(HttpStatus.INTERNAL_SERVER_ERROR, String.format(
                 "Erro interno servidor, tente novamente mais tarde. %s", e.getMessage()));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handler(BadCredentialsException e) {
+        return ResponseBuilder.respostaSimples(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<Object> handler(MailException e) {
+        return ResponseBuilder.respostaSimples(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                String.format("Erro ao enviar e-mail: %s", e.getMessage()));
+    }
+
+    @ExceptionHandler(CodigoInvalidoException.class)
+    public ResponseEntity<Object> handler(CodigoInvalidoException e) {
+        return ResponseBuilder.respostaSimples(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage());
     }
 }

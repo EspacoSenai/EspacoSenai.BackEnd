@@ -1,6 +1,5 @@
 package com.api.reserva.entity;
 
-import com.api.reserva.dto.TurmaDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -17,6 +16,14 @@ public class Turma {
     @Column(length = 100, nullable = false)
     private String nome;
 
+    @ManyToOne
+    @JoinColumn(name = "curso_id", nullable = false)
+    private Curso curso;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Modalidade modalidade;
+
     @Column(nullable = false)
     private LocalDate dataInicio;
 
@@ -25,11 +32,17 @@ public class Turma {
 
     @ManyToMany
     @JoinTable(
-            name = "tb_estudante_turma",
+            name = "tb_turmas_estudantes",
             joinColumns = @JoinColumn(name = "turma_id"),
-            inverseJoinColumns = @JoinColumn(name = "estudante_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "estudante_id"))
     private Set<Usuario> estudantes = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "tb_turmas_professores",
+            joinColumns = @JoinColumn(name = "turma_id"),
+            inverseJoinColumns = @JoinColumn(name = "professor_id"))
+    private Set<Usuario> professores = new HashSet<>();
 
     public Turma() {
     }
@@ -38,12 +51,6 @@ public class Turma {
         this.nome = nome;
         this.dataInicio = dataInicio;
         this.dataTermino = dataTermino;
-    }
-
-    public Turma(TurmaDTO turmaDTO) {
-        this.nome = turmaDTO.getNome();
-        this.dataInicio = turmaDTO.getDataInicio();
-        this.dataTermino = turmaDTO.getDataTermino();
     }
 
     public Long getId() {
@@ -80,5 +87,41 @@ public class Turma {
 
     public void setEstudantes(Set<Usuario> estudantes) {
         this.estudantes = estudantes;
+    }
+
+    public Modalidade getModalidade() {
+        return modalidade;
+    }
+
+    public void setModalidade(Modalidade modalidade) {
+        this.modalidade = modalidade;
+    }
+
+    public Curso getCurso() {
+        return curso;
+    }
+
+    public void setCurso(Curso curso) {
+        this.curso = curso;
+    }
+
+    public Set<Usuario> getProfessores() {
+        return professores;
+    }
+
+    public void setProfessores(Set<Usuario> professores) {
+        this.professores = professores;
+    }
+
+    public enum Modalidade {
+        FIC(1L),
+        TECNICO(2L),
+        FACULDADE(3L);
+
+        Long modalidadeId;
+
+        Modalidade(Long modalidadeId) {
+            this.modalidadeId = modalidadeId;
+        }
     }
 }

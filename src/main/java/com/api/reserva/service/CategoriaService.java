@@ -31,7 +31,7 @@ public class CategoriaService {
      * @return O DTO da categoria encontrada
      * @throws SemResultadosException se nenhuma categoria for encontrada com o ID fornecido
      */
-    public CategoriaReferenciaDTO listar(Long id) {
+    public CategoriaReferenciaDTO buscar(Long id) {
         return new CategoriaReferenciaDTO(categoriaRepository.findById(id).orElseThrow(SemResultadosException::new));
     }
 
@@ -40,7 +40,7 @@ public class CategoriaService {
      *
      * @return Uma lista de DTOs de todas as categorias
      */
-    public List<CategoriaDTO> listar() {
+    public List<CategoriaDTO> buscar() {
         //retorna todas as categorias
         List<Categoria> categorias = categoriaRepository.findAll();
         //converte a lista de categorias para uma lista de CategoriaDTO
@@ -112,7 +112,7 @@ public class CategoriaService {
      * @throws SemResultadosException se a categoria com o ID especificado não for encontrada
      */
     @Transactional
-    public void excluir(Long id) {
+    public void deletar(Long id) {
         //busca a categoria pelo id, se não existir, lança uma exceção
         Categoria categoria = categoriaRepository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão"));
         //deleta a categoria do banco

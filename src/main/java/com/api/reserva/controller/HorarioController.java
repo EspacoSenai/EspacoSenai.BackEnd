@@ -16,14 +16,14 @@ public class HorarioController {
     @Autowired
     private HorarioService horarioService;
 
-    @GetMapping("/listar")
-    public ResponseEntity<List<HorarioDTO>> listar() {
-        return ResponseEntity.ok(horarioService.listar());
+    @GetMapping("/buscar")
+    public ResponseEntity<List<HorarioDTO>> buscar() {
+        return ResponseEntity.ok(horarioService.buscar());
     }
 
-    @GetMapping("listar/{id}")
-    public ResponseEntity<HorarioDTO> listar (@PathVariable Long id) {
-        return ResponseEntity.ok(horarioService.listar(id));
+    @GetMapping("buscar/{id}")
+    public ResponseEntity<HorarioDTO> buscar(@PathVariable Long id) {
+        return ResponseEntity.ok(horarioService.buscar(id));
     }
 
     @PostMapping("/salvar")
@@ -38,9 +38,9 @@ public class HorarioController {
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Horário atualizado com sucesso.");
     }
 
-    @DeleteMapping("/excluir/{id}")
-    public ResponseEntity<Object> excluir(@PathVariable Long id) {
-        horarioService.excluir(id);
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Object> deletar(@PathVariable Long id) {
+        horarioService.deletar(id);
         return ResponseBuilder.respostaSimples(HttpStatus.NO_CONTENT, "Horário excluído com sucesso.");
     }
 }

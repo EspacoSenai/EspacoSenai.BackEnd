@@ -1,13 +1,17 @@
 package com.api.reserva.controller;
 
 import com.api.reserva.dto.UsuarioDTO;
+import com.api.reserva.dto.UsuarioReferenciaDTO;
 import com.api.reserva.entity.Usuario;
+import com.api.reserva.service.CodigoService;
 import com.api.reserva.service.UsuarioService;
 import com.api.reserva.util.ResponseBuilder;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,34 +23,28 @@ public class UsuarioController {
 
     @Autowired
     UsuarioService usuarioService;
+    @Autowired
+    private CodigoService codigoService;
 
-    @GetMapping("/listar")
-    public ResponseEntity<List<UsuarioDTO>> listarTudo() {
-            List<UsuarioDTO> usuarios = usuarioService.listar();
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
+    @GetMapping("/buscar")
+    public ResponseEntity<List<UsuarioReferenciaDTO>> buscar() {
+            List<UsuarioReferenciaDTO> usuarios = usuarioService.buscar();
             return ResponseEntity.ok(usuarios);
     }
 
-    @GetMapping("/listar/{id}")
-    public ResponseEntity<UsuarioDTO> listar(@PathVariable Long id) {
-            UsuarioDTO usuario = usuarioService.listar(id);
-            return ResponseEntity.ok(usuario);
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
+    @GetMapping("/buscar/{id}")
+    public ResponseEntity<UsuarioReferenciaDTO> buscar(@PathVariable Long id) {
+            UsuarioReferenciaDTO usuarioReferenciaDTO = usuarioService.buscar(id);
+            return ResponseEntity.ok(usuarioReferenciaDTO);
     }
 
-    @PostMapping("/salvar/estudante")
-    public ResponseEntity<Object> salvarEstudante(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-        usuarioService.salvarEstudante(usuarioDTO);
-        return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Usuário criado com sucesso.");
-    }
-
-    @PostMapping("/salvar/estudantes/planilha")
-    public ResponseEntity<List<Usuario>> salvarEstudantesPlanilha(@RequestParam MultipartFile planilha) {
-        return ResponseEntity.ok(usuarioService.salvarEstudantesPlanilha(planilha));
-    }
-
-    @PostMapping("/salvar/interno")
-    public ResponseEntity<Object> salvarInterno(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-        usuarioService.salvarInterno(usuarioDTO);
-        return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Usuário criado com sucesso.");
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
+    @GetMapping("/buscar/tag/{tag}")
+    public ResponseEntity<UsuarioReferenciaDTO> buscarPorTag(@PathVariable String tag) {
+        UsuarioReferenciaDTO usuarioReferenciaDTO = usuarioService.buscarPorTag(tag);
+        return ResponseEntity.ok(usuarioReferenciaDTO);
     }
 
     @PatchMapping("/atualizar/{id}")
@@ -55,9 +53,24 @@ public class UsuarioController {
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Usuário atualizado com sucesso.");
     }
 
-    @DeleteMapping("/excluir/{id}")
-    public ResponseEntity<Object> excluir(@PathVariable Long id) {
-        usuarioService.excluir(id);
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_PROFESSOR')")
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Object> deletar(@PathVariable Long id) {
+        usuarioService.deletar(id);
         return ResponseBuilder.respostaSimples(HttpStatus.NO_CONTENT , "Usuário excluído com sucesso.");
     }
+
+    @GetMapping("/confirmar-conta/{token}/{codigo}")
+    public ResponseEntity<Object> confirmarConta(@PathVariable String token, @PathVariable String codigo) {
+        usuarioService.confirmarConta(token, codigo);
+        return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Conta confirmada e criada.");
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_PROFESSOR')")
+    @PostMapping("/criar-interno")
+    public ResponseEntity<Object> criarInterno(@Valid @RequestBody UsuarioDTO usuarioDTO, Usuario autenticacao ) {
+        usuarioService.criarInterno(usuarioDTO, autenticacao);
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Usuário criado com sucesso.");
+    }
+
 }

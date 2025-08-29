@@ -6,32 +6,47 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     /**
-     * Verifica se existe um usuário com o email ou telefone fornecido.
+     * Verifica se existe um usuário com o email.
      * Usado para validação de duplicidade no cadastro.
      */
-    boolean existsByEmailOrTelefone(String email, String telefone);
+    boolean existsByEmail(String email);
+    Usuario findByEmail(String email);
 
     /**
-     * Verifica se existe um usuário com o email ou telefone fornecido. Usado para validação de duplicidade na atualização.
+     * Verifica se existe um usuário com o email. Usado para validação de duplicidade na atualização.
      */
     @Query("SELECT COUNT(u) > 0 " +
             "FROM Usuario u " +
             "WHERE u.id <> :id " +
-            "AND ((:email is not null AND u.email = :email) " +
-            "     OR (:telefone is not null AND u.telefone = :telefone))")
-    boolean existsByEmailOrTelefoneAndIdNot(@Param("email") String email,
-                                            @Param("telefone") String telefone,
+            "AND (:email is not null AND u.email = :email) ")
+    boolean existsByEmailAndIdNot(@Param("email") String email,
                                             @Param("id") Long id);
 
-    @Query("SELECT u " +
-            "FROM Usuario u" +
-            " WHERE u.role IN  ('ADMIN', 'COORDENADOR')"
+//    @Query("SELECT u " +
+//            "FROM Usuario u" +
+//            " WHERE u.role IN  ('ADMIN', 'COORDENADOR')"
+//    )
+//    List<Usuario> findByResponsaveis();
+
+    @Query(
+            "SELECT u " +
+                    "FROM Usuario u " +
+                    "WHERE u.email = :identificador OR u.tag = :identificador"
     )
-    List<Usuario> findByResponsaveis();
+    Usuario findByIdentificador(@Param("identificador") String identificador);
+
+    Optional<Usuario> findByTag(String tag);
+
+//    @Query(
+//            "SELECT u " +
+//                    "FROM Usuario u " +
+//                    "WHERE 'ESTUDANTE' MEMBER OF u.roles"
+//    )
+//    List<Usuario> findByRoleEstudante();
 }

@@ -1,0 +1,4 @@
+quadra 12:00 15:00 - 15:30 16:00
+
+nome da turma - tipo de turma - inicio e termino das aulas
+subir planilha - cadastro individual

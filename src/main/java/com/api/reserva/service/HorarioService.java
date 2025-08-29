@@ -16,12 +16,12 @@ public class HorarioService {
     @Autowired
     private HorarioRepository horarioRepository;
 
-    public List<HorarioDTO> listar() {
+    public List<HorarioDTO> buscar() {
         return horarioRepository.findAll().stream()
                 .map(HorarioDTO::new).toList();
     }
 
-    public HorarioDTO listar(Long id) {
+    public HorarioDTO buscar(Long id) {
         return new HorarioDTO(horarioRepository.findById(id).orElseThrow(SemResultadosException::new));
     }
 
@@ -54,7 +54,7 @@ public class HorarioService {
         horarioRepository.save(horario);
     }
 
-    public void excluir (Long id) {
+    public void deletar (Long id) {
         Horario horario = horarioRepository.findById(id).orElseThrow(() -> new SemResultadosException("exclusão"));
         horarioRepository.delete(horario);
     }
