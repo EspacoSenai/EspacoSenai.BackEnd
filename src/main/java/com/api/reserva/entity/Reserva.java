@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_reserva")
@@ -15,11 +17,14 @@ public class Reserva {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "host_id", nullable = false)
+    private Usuario host;
+
+    @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ReservaConvidados> convidados;
 
     @ManyToOne
-    @JoinColumn(name = "idGradeAmbiente", nullable = false)
+    @JoinColumn(name = "catalogo_id", nullable = false)
     private Catalogo catalogo;
 
     @Column(nullable = false)
@@ -27,16 +32,17 @@ public class Reserva {
 
     @Column(nullable = false)
     private LocalTime horaInicio;
+
     @Column(nullable = false)
     private LocalTime horaFim;
 
     @Enumerated(EnumType.STRING)
     private StatusReserva statusReserva;
 
-    @Column(length = 255)
+    @Column(length = 500)
     private String msgUsuario;
 
-    @Column(length = 255)
+    @Column(length = 500)
     private String msgInterna;
 
     private LocalDateTime dataHoraSolicitacao;
@@ -44,10 +50,10 @@ public class Reserva {
     public Reserva() {
     }
 
-    public Reserva(Usuario usuario, Catalogo catalogo, LocalDate data, LocalTime horaInicio,
+    public Reserva(Usuario host, Catalogo catalogo, LocalDate data, LocalTime horaInicio,
                    LocalTime horaFim, StatusReserva statusReserva, String msgUsuario, String msgInterna,
                    LocalDateTime dataHoraSolicitacao) {
-        this.usuario = usuario;
+        this.host = host;
         this.catalogo = catalogo;
         this.data = data;
         this.horaInicio = horaInicio;
@@ -62,12 +68,12 @@ public class Reserva {
         return id;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Usuario getHost() {
+        return host;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setHost(Usuario host) {
+        this.host = host;
     }
 
     public Catalogo getGradeAmbiente() {
@@ -132,5 +138,13 @@ public class Reserva {
 
     public void setDataHoraSolicitacao(LocalDateTime dataHoraSolicitacao) {
         this.dataHoraSolicitacao = dataHoraSolicitacao;
+    }
+
+    public Catalogo getCatalogo() {
+        return catalogo;
+    }
+
+    public void setCatalogo(Catalogo catalogo) {
+        this.catalogo = catalogo;
     }
 }

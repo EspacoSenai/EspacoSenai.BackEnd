@@ -7,6 +7,6 @@ public class DataInvalidaException extends RuntimeException {
     }
 
     public DataInvalidaException() {
-        super("Data incompatível com esta grade.");
+        super("A data da reserva deve ser no dia da semana deste catalogo.");
     }
 }

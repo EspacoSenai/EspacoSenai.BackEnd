@@ -21,14 +21,14 @@ public class CategoriaController {
     @Autowired
     CategoriaService categoriaService;
 
-    @GetMapping("/listar")
-    public ResponseEntity<List<CategoriaDTO>> listar() {
-        return ResponseEntity.ok(categoriaService.listar());
+    @GetMapping("/buscar")
+    public ResponseEntity<List<CategoriaDTO>> buscar() {
+        return ResponseEntity.ok(categoriaService.buscar());
     }
 
-    @GetMapping("/listar/{id}")
-    public ResponseEntity<CategoriaReferenciaDTO> listar(@PathVariable Long id) {
-        return ResponseEntity.ok(categoriaService.listar(id));
+    @GetMapping("/buscar/{id}")
+    public ResponseEntity<CategoriaReferenciaDTO> buscar(@PathVariable Long id) {
+        return ResponseEntity.ok(categoriaService.buscar(id));
     }
 
     @PostMapping("/salvar")
@@ -43,9 +43,9 @@ public class CategoriaController {
         return ResponseEntity.status(HttpStatus.OK.value()).body("Categoria atualizada com sucesso.");
     }
 
-    @DeleteMapping("/excluir/{id}")
-    public ResponseEntity<Object> excluir(@PathVariable Long id) {
-        categoriaService.excluir(id);
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Object> deletar(@PathVariable Long id) {
+        categoriaService.deletar(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT.value()).body("Categoria excluída com sucesso.");
     }
 }

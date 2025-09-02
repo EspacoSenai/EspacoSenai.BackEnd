@@ -37,27 +37,33 @@ public class TurmaController {
 
     @PatchMapping("/atualizar/{id}")
     public ResponseEntity<Object> atualizar(@Valid @RequestBody TurmaDTO turmaDTO, @PathVariable Long id) {
-        turmaService.atualizar(id, turmaDTO);
+        turmaService.atualizar(turmaDTO, id);
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Turma atualizada com sucesso.");
     }
 
-    @DeleteMapping("/excluir/{id}")
-    public ResponseEntity<Object> excluir(@PathVariable Long id) {
-        turmaService.excluir(id);
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Object> deletar(@PathVariable Long id) {
+        turmaService.deletar(id);
         return ResponseBuilder.respostaSimples(HttpStatus.NO_CONTENT, "Turma excluída com sucesso.");
     }
 
-    @PostMapping("/associarestudante/{turmaId}/{estudanteId}")
-    public ResponseEntity<Object> associarEstudante(@PathVariable Long turmaId, @PathVariable Long estudanteId) {
-        turmaService.associarEstudante(turmaId, estudanteId);
-        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Estudante associado à turma com sucesso.");
+    @PutMapping("/definirestudantes/{turmaId}")
+    public ResponseEntity<Object> definirEstudantes(@PathVariable Long turmaId, @RequestBody List<Long> estudanteIds) {
+        turmaService.definirEstudantes(turmaId, estudanteIds);
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Estudantes associados à turma com sucesso.");
     }
 
-    @DeleteMapping("/desassociarestudante/{turmaId}/{estudanteId}")
-    public ResponseEntity<Object> desassociarEstudante(@PathVariable Long turmaId, @PathVariable Long estudanteId) {
-        turmaService.desassociarEstudante(turmaId, estudanteId);
-        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Estudante removido da turma com sucesso.");
-    }
 
+//    @PostMapping("/associarestudante/{turmaId}/{estudanteId}")
+//    public ResponseEntity<Object> associarEstudante(@PathVariable Long turmaId, @PathVariable Long estudanteId) {
+//        turmaService.associarEstudante(turmaId, estudanteId);
+//        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Estudante associado à turma com sucesso.");
+//    }
+//
+//    @DeleteMapping("/desassociarestudante/{turmaId}/{estudanteId}")
+//    public ResponseEntity<Object> desassociarEstudante(@PathVariable Long turmaId, @PathVariable Long estudanteId) {
+//        turmaService.desassociarEstudante(turmaId, estudanteId);
+//        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Estudante removido da turma com sucesso.");
+//    }
 
 }

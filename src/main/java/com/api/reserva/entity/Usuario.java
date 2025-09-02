@@ -1,23 +1,22 @@
 package com.api.reserva.entity;
 
 import com.api.reserva.dto.UsuarioDTO;
-import com.api.reserva.enums.UsuarioRole;
 import com.api.reserva.enums.UsuarioStatus;
 import jakarta.persistence.*;
-import org.hibernate.FetchMode;
-import org.hibernate.annotations.Fetch;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 @Entity
-@Table(name = "tb_usuario")
+@Table(name = "tb_usuarios")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 100, nullable = false)
     private String nome;
 
     @Column(unique = true, length = 100, nullable = false)
@@ -25,47 +24,44 @@ public class Usuario {
 
     private String senha;
 
-    @Column(unique = true, length = 11)
-    private String telefone;
-
-    @Column(unique = true, length = 8)
+    @Column(unique = true, length = 7)
     private String tag;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UsuarioStatus status;
 
-    @Enumerated(EnumType.STRING)
-    private UsuarioRole role;
+    @OneToMany(mappedBy = "convidado", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ReservaConvidados> convites = new HashSet<>();
+
+
+    @Column(nullable = false)
+    @ManyToMany
+    @JoinTable(
+            name = "tb_usuarios_roles",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     public Usuario() {
     }
 
-    public Usuario(String nome, String email, String senha, String telefone) {
+    public Usuario(String nome, String email, String senha, String tag,
+                   UsuarioStatus status) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.telefone = telefone;
-    }
-
-    public Usuario(String nome, String email, String senha, String telefone, String tag,
-                   UsuarioStatus status, UsuarioRole role) {
-        this.nome = nome;
-        this.email = email;
-        this.senha = senha;
-        this.telefone = telefone;
         this.tag = tag;
         this.status = status;
-        this.role = role;
     }
 
     public Usuario(UsuarioDTO usuarioDTO) {
         nome = usuarioDTO.getNome();
         email = usuarioDTO.getEmail();
         senha = usuarioDTO.getSenha();
-        telefone = usuarioDTO.getTelefone();
         tag = usuarioDTO.getTag();
         status = usuarioDTO.getStatus();
-        role = usuarioDTO.getRole();
     }
 
     public Long getId() {
@@ -96,14 +92,6 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
     public UsuarioStatus getStatus() {
         return status;
     }
@@ -112,12 +100,12 @@ public class Usuario {
         this.status = status;
     }
 
-    public UsuarioRole getRole() {
-        return role;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(UsuarioRole role) {
-        this.role = role;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String getTag() {
@@ -126,5 +114,34 @@ public class Usuario {
 
     public void setTag(String tag) {
         this.tag = tag;
+
+    }
+
+    public void gerarTag() {
+        Random random = new Random();
+        Integer nmrTag = random.nextInt(9999) + 1;
+//
+////        if (this.roles == UsuarioRole.ESTUDANTE) {
+////            this.tag = String.format("ESE%05d", nmrTag);
+////        } else if (this.role == UsuarioRole.COORDENADOR) {
+////            this.tag = String.format("ESC%05d", nmrTag);
+////        } else if (this.role == UsuarioRole.ADMIN) {
+////            this.tag = String.format("ESA%05d", nmrTag);
+////        } else {
+////            throw new TagCriacaoException();
+////        }
+        this.tag = String.format("%07d", nmrTag);
+    }
+
+    public boolean isLoginValid(String rawPassword, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(rawPassword, this.senha);
+    }
+
+    public Set<ReservaConvidados> getConvites() {
+        return convites;
+    }
+
+    public void setConvites(Set<ReservaConvidados> convites) {
+        this.convites = convites;
     }
 }

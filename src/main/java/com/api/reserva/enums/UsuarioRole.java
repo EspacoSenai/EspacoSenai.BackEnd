@@ -1,12 +1,14 @@
-package com.api.reserva.enums;
-
-public enum UsuarioRole {
-    /** Representa o papel de estudante no sistema */
-        ESTUDANTE,
-        /** Representa o papel de professor no sistema */
-        PROFESSOR,
-        /** Representa o papel de responsável pelos Ambientes e Associados */
-        COORDENADOR,
-        /** Representa o papel de administrador com acesso total ao sistema */
-        ADMIN
-}
+//package com.api.reserva.enums;
+//
+//public enum UsuarioRole {
+//    ADMIN(1L),
+//    COORDENADOR(2L),
+//    ESTUDANTE(3L),
+//    BASIC(4L);
+//
+//    Long roleId;
+//
+//    UsuarioRole(Long roleId) {
+//        this.roleId = roleId;
+//    }
+//}

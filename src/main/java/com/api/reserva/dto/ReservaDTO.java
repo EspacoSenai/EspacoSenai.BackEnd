@@ -2,24 +2,30 @@ package com.api.reserva.dto;
 
 import com.api.reserva.entity.Reserva;
 import com.api.reserva.enums.StatusReserva;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Set;
 
 public class ReservaDTO {
 
     private Long id;
 
     @NotNull(message = "Informe o usuário que será vinculado a essa Reserva.")
-    private Long idUsuario;
+    private Long hostId;
 
-    @NotNull(message = "Informe a Grade.")
-    private Long idGradeAmbiente;
+    // Lista de IDs dos convidados vinculados à reserva
+    private Set<Long> convidadosIds;
+
+    @NotNull(message = "Informe a Catalogo desejado.")
+    private Long catalogoId;
 
     @NotNull(message = "Informe a data para a Reserva.")
+    @Future(message = "A data da reserva deve ser futura.")
     private LocalDate data;
 
     @NotNull(message = "Informe o horário de início da reserva.")
@@ -30,10 +36,10 @@ public class ReservaDTO {
 
     private StatusReserva statusReserva;
 
-    @Size(max = 255)
+    @Size(max = 500)
     private String msgUsuario;
 
-    @Size(max = 255)
+    @Size(max = 500)
     private String msgInterna;
 
     private LocalDateTime dataHoraSolicitacao;
@@ -42,36 +48,40 @@ public class ReservaDTO {
     }
 
     public ReservaDTO(Reserva reserva) {
-        id = reserva.getId();
-        idUsuario = reserva.getUsuario().getId();
-        idGradeAmbiente = reserva.getGradeAmbiente().getId();
-        data = reserva.getData();
-        horaInicio = reserva.getHoraInicio();
-        horaFim = reserva.getHoraFim();
-        statusReserva = reserva.getStatusReserva();
-        msgUsuario = reserva.getMsgUsuario();
-        msgInterna = reserva.getMsgInterna();
-        dataHoraSolicitacao = reserva.getDataHoraSolicitacao();
+        this.id = reserva.getId();
+        this.hostId = reserva.getHost().getId();
+        this.catalogoId = reserva.getCatalogo().getId();
+        this.data = reserva.getData();
+        this.horaInicio = reserva.getHoraInicio();
+        this.horaFim = reserva.getHoraFim();
+        this.statusReserva = reserva.getStatusReserva();
+        this.msgUsuario = reserva.getMsgUsuario();
+        this.msgInterna = reserva.getMsgInterna();
+        this.dataHoraSolicitacao = reserva.getDataHoraSolicitacao();
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getIdUsuario() {
-        return idUsuario;
+    public Long getHostId() {
+        return hostId;
     }
 
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
+    public Set<Long> getConvidadosIds() {
+        return convidadosIds;
     }
 
-    public Long getIdGradeAmbiente() {
-        return idGradeAmbiente;
+    public void setConvidadosIds(Set<Long> convidadosIds) {
+        this.convidadosIds = convidadosIds;
     }
 
-    public void setIdGradeAmbiente(Long idGradeAmbiente) {
-        this.idGradeAmbiente = idGradeAmbiente;
+    public Long getCatalogoId() {
+        return catalogoId;
+    }
+
+    public void setCatalogoId(Long catalogoId) {
+        this.catalogoId = catalogoId;
     }
 
     public LocalDate getData() {

@@ -1,5 +1,6 @@
 package com.api.reserva.dto;
 
+import com.api.reserva.entity.Curso;
 import com.api.reserva.entity.Turma;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +15,12 @@ public class TurmaDTO {
     @NotBlank(message = "O nome da turma é obrigatório.")
     @Size(max = 100, message = "O nome da turma deve ter no máximo 100 caracteres.")
     private String nome;
+
+    @NotNull(message = "Escolha um curso para a turma.")
+    private Curso curso;
+
+    @NotNull(message = "Escolha a modalidade da turma.")
+    private Turma.Modalidade modalidade;
 
     @NotNull(message = "A data que turma começa o curso é obrigatória.")
     private LocalDate dataInicio;
@@ -63,5 +70,21 @@ public class TurmaDTO {
 
     public void setDataTermino(LocalDate dataTermino) {
         this.dataTermino = dataTermino;
+    }
+
+    public Curso getCurso() {
+        return curso;
+    }
+
+    public void setCurso(Curso curso) {
+        this.curso = curso;
+    }
+
+    public Turma.Modalidade getModalidade() {
+        return modalidade;
+    }
+
+    public void setModalidade(Turma.Modalidade modalidade) {
+        this.modalidade = modalidade;
     }
 }

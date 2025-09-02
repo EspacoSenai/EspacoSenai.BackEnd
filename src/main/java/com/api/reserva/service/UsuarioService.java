@@ -1,122 +1,142 @@
 package com.api.reserva.service;
 
+import com.api.reserva.dto.DadosCodigoDTO;
 import com.api.reserva.dto.UsuarioDTO;
+import com.api.reserva.dto.UsuarioReferenciaDTO;
+import com.api.reserva.entity.Role;
 import com.api.reserva.entity.Usuario;
-import com.api.reserva.enums.UsuarioRole;
 import com.api.reserva.enums.UsuarioStatus;
+import com.api.reserva.exception.CodigoInvalidoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.exception.UsuarioDuplicadoException;
+import com.api.reserva.repository.PreCadastroRepository;
+import com.api.reserva.repository.RoleRepository;
 import com.api.reserva.repository.UsuarioRepository;
-import com.api.reserva.util.MetodosUsuario;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.api.reserva.util.MetodosAuth;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UsuarioService {
 
     @Autowired
     UsuarioRepository usuarioRepository;
-
-    /**
-     * Cria um novo usuário no sistema.
-     */
-
-    public UsuarioDTO listar(Long id) {
-        return new UsuarioDTO(usuarioRepository.findById(id)
-                .orElseThrow(SemResultadosException::new));
-    }
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PreCadastroRepository preCadastroRepository;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private PreCadastroService preCadastroService;
+    @Autowired
+    @Lazy
+    private CodigoService codigoService;
 
     /**
      * Lista todos os usuários do sistema.
      */
-    public List<UsuarioDTO> listar() {
+    public List<UsuarioReferenciaDTO> buscar() {
         List<Usuario> usuarios = usuarioRepository.findAll();
-        return usuarios.stream().map(UsuarioDTO::new).toList();
-    }
 
-    /**
-     * Salva um novo usuário no sistema.
-     */
-    public void salvarEstudante(UsuarioDTO usuarioDTO) {
-
-        if (usuarioRepository.existsByEmailOrTelefone(usuarioDTO.getEmail(), usuarioDTO.getTelefone())) {
-            throw new UsuarioDuplicadoException();
+        if (usuarios.isEmpty()) {
+            throw new SemResultadosException("Nenhum usuário encontrado.");
         }
 
+        return usuarios.stream().map(UsuarioReferenciaDTO::new).toList();
+    }
 
-        Usuario usuario = new Usuario(usuarioDTO);
-        usuario.setStatus(UsuarioStatus.INATIVO);
-        usuario.setRole(UsuarioRole.ESTUDANTE);
-        usuario.setTag(MetodosUsuario.gerarTag(usuario));
+    public UsuarioReferenciaDTO buscar(Long id) {
+        return new UsuarioReferenciaDTO(usuarioRepository.findById(id)
+                .orElseThrow(SemResultadosException::new));
+    }
 
-        usuarioRepository.save(usuario);
+    public UsuarioReferenciaDTO buscarPorTag(String tag) {
+        return new UsuarioReferenciaDTO(usuarioRepository
+                .findByTag(tag)
+                .orElseThrow(SemResultadosException::new));
     }
 
     @Transactional
-    public List<Usuario> salvarEstudantesPlanilha(MultipartFile planilha) {
-        List<Usuario> estudantes = new ArrayList<>();
-        try (InputStream is = planilha.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
-            Sheet sheet = workbook.getSheetAt(0);
-                for (Row row : sheet) {
-                    if(row.getRowNum() == 0) continue;
-                    String nome = row.getCell(0).getStringCellValue();
-                    String email = row.getCell(1).getStringCellValue();
-                    String telefone = String.format("%.0f", row.getCell(4).getNumericCellValue());
-                    Usuario estudante = new Usuario();
-                    estudante.setNome(nome);
-                    estudante.setEmail(email);
-                    estudante.setSenha(null);
-                    estudante.setTelefone(telefone);
-                    estudante.setRole(UsuarioRole.ESTUDANTE);
-                    estudante.setStatus(UsuarioStatus.INATIVO);
-                    estudante.setTag(MetodosUsuario.gerarTag(estudante));
-                    while (estudantes.stream().anyMatch(e -> e.getTag().equals(estudante.getTag()))) {
-                        estudante.setTag(MetodosUsuario.gerarTag(estudante));
+    public void confirmarConta(String token, String codigo) {
 
-                    }
+//        Set<String> rolesToken;
 
-                    estudantes.add(estudante);
-                    System.out.print(estudante.getTag());
-                    System.out.print(estudante.getNome());
+        DadosCodigoDTO dadosCodigoDTO = codigoService.buscarCodigo(token);
 
-
-                }
-                usuarioRepository.saveAll(estudantes);
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao processar a planilha: " + e.getMessage());
+        if(dadosCodigoDTO == null || !dadosCodigoDTO.getCodigo().equals(codigo)) {
+            throw new CodigoInvalidoException();
         }
-        return estudantes;
-    }
 
-    public void salvarInterno(UsuarioDTO usuarioDTO) {
+        String nome = dadosCodigoDTO.getDado("nome").toString();
+        String email = dadosCodigoDTO.getDado("email").toString();
+        String senhaCriptografada = dadosCodigoDTO.getDado("senhaCriptografada").toString();
 
-        if (usuarioRepository.existsByEmailOrTelefone(usuarioDTO.getEmail(), usuarioDTO.getTelefone())) {
-            throw new UsuarioDuplicadoException();
-        }
-        Usuario usuario = new Usuario(usuarioDTO);
-        usuario.setStatus(UsuarioStatus.INATIVO);
+        Usuario usuario = new Usuario();
+        usuario.setNome(nome);
+        usuario.setEmail(email);
+//        usuario.setTelefone(usuarioDTO.getTelefone());
+        usuario.setSenha(senhaCriptografada);
+        usuario.gerarTag();
+        usuario.setStatus(UsuarioStatus.ATIVO);
 
+        Role roleEstudante = roleRepository.findByRoleNome(Role.Values.ESTUDANTE)
+                .orElseThrow(() -> new SemResultadosException("Role ESTUDANTE"));
+        usuario.getRoles().add(roleEstudante);
         usuarioRepository.save(usuario);
+        preCadastroService.bu(usuario.getEmail());
+        codigoService.deletarCodigo(token);
     }
+
+//    @Transactional
+//    public void salvar(UsuarioDTO usuarioDTO, Authentication authentication) {
+//        if (usuarioRepository.existsByEmail(usuarioDTO.getEmail())) {
+//            throw new UsuarioDuplicadoException();
+//        }
+//
+//        Set<String> rolesToken;
+//
+//        if (authentication != null) {
+//            rolesToken = MetodosAuth.extrairRole(authentication);
+//        } else {
+//            rolesToken = Collections.emptySet();
+//        }
+//
+//        Usuario usuario = new Usuario();
+//        usuario.setNome(usuarioDTO.getNome());
+//        usuario.setEmail(usuarioDTO.getEmail());
+//        usuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
+//        usuario.gerarTag();
+//        usuario.setStatus(UsuarioStatus.INATIVO);
+//
+//        List<Role> roles = roleRepository.findAllById(usuarioDTO.getRolesIds());
+//        roles.removeIf(role -> Role.Values.ADMIN.equals(role.getRoleNome()));
+//
+//        if (rolesToken.contains("SCOPE_ADMIN")) {
+//            usuario.setStatus(usuarioDTO.getStatus());
+//            usuario.setRoles(new HashSet<>(roles));
+//            usuarioRepository.save(usuario);
+//        } else if (preCadastroService.verificarElegibilidade(usuarioDTO.getEmail(), usuarioDTO.getTelefone())) {
+//            usuario.getRoles().add(roleRepository.findByRoleNome(Role.Values.ESTUDANTE)
+//                    .orElseThrow(() -> new SemResultadosException("Role ESTUDANTE")));
+//            usuarioRepository.save(usuario);
+//        }
+//    }
 
 
     /**
      * Atualiza os dados de um usuário existente.
      */
     public void atualizar(Long id, UsuarioDTO usuarioDTO) {
-
-        if (usuarioRepository.existsByEmailOrTelefoneAndIdNot(usuarioDTO.getEmail(), usuarioDTO.getTelefone(), id)) {
+        if (usuarioRepository.existsByEmailAndIdNot(usuarioDTO.getEmail(), id)) {
             throw new UsuarioDuplicadoException();
         }
 
@@ -126,7 +146,6 @@ public class UsuarioService {
         usuario.setNome(usuarioDTO.getNome());
         usuario.setEmail(usuarioDTO.getEmail());
         usuario.setSenha(usuarioDTO.getSenha());
-        usuario.setTelefone(usuarioDTO.getTelefone());
 
         usuarioRepository.save(usuario);
     }
@@ -134,11 +153,14 @@ public class UsuarioService {
     /**
      * Exclui um usuário do sistema.
      */
-
-    public void excluir(Long id) {
+    public void deletar(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(SemResultadosException::new);
         usuarioRepository.delete(usuario);
+    }
+
+    public boolean usuarioExistePorEmail(String email) {
+        return usuarioRepository.existsByEmail(email);
     }
 
 }

@@ -2,6 +2,7 @@ package com.api.reserva.entity;
 
 import com.api.reserva.dto.HorarioDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
 
@@ -11,9 +12,11 @@ public class Horario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+
+    @NotNull
     private LocalTime horaInicio;
-    @Column(nullable = false)
+
+    @NotNull
     private LocalTime horaFim;
 
     public Horario() {}
