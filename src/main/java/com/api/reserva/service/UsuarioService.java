@@ -178,7 +178,8 @@ public class UsuarioService {
         // ✅ Roles do autenticado
         Set<Role> rolesAutenticacao = autenticacao.getRoles();
         boolean isAdmin = rolesAutenticacao.stream()
-                .anyMatch(r -> r.getRoleNome() == Role.Values.ADMIN);
+                .anyMatch(r -> r.getRoleNome().equals(Role.Values.ADMIN));
+
 
         // ✅ Roles solicitadas
         List<Role> rolesSolicitadas = roleRepository.findAllById(internoDTO.getRolesIds());
@@ -192,8 +193,9 @@ public class UsuarioService {
             if (role.getRoleNome() == Role.Values.ADMIN) {
                 throw new SemPermissaoException("Não é permitido criar novos administradores");
             }
-            if (role.getRoleNome() == Role.Values.COORDENADOR && !isAdmin) {
-                throw new SemPermissaoException("Apenas administradores podem criar coordenadores");
+            if (role.getRoleNome().equals(Role.Values.ADMIN) && !isAdmin) {
+                String teste = String.valueOf(role.getRoleNome());
+                throw new SemPermissaoException("Apenas ADMINS podem criar outros coordenadores: " + teste);
             }
             rolesParaAdicionar.add(role);
         }
