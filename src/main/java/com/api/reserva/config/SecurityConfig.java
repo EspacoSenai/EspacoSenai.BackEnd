@@ -56,9 +56,9 @@ public class SecurityConfig {
                 // Configura as autorizações para as requisições HTTP
                 .authorizeHttpRequests(authorization -> authorization
                         // Permite acesso público ao endpoint de login (POST e GET)
-                        .requestMatchers(HttpMethod.POST, "/signup").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/signin").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/usuario/confirmar-conta/{token}/{codigo}").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/usuario/confirmar-conta/{token}/{codigo}").permitAll()
                         // Exige autenticação para qualquer outra requisição
                         .anyRequest().authenticated())
                 // Desabilita a proteção contra CSRF

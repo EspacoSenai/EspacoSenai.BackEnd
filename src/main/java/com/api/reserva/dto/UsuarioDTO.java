@@ -15,7 +15,7 @@ public class UsuarioDTO {
 
     private Long id;
 
-    @Size(min = 5, max = 100, message = "O nome deve ter entre 5 e 100 caracteres.")
+    @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres.")
     @NotBlank(message = "Nome é obrigatório.")
     private String nome;
 
@@ -26,7 +26,7 @@ public class UsuarioDTO {
     private String email;
 
     @NotBlank(message = "Senha é obrigatória.")
-    @Size(min = 8, message = "A senha deve ter no mínimo 6 caracteres.")
+    @Size(min = 8, max = 15,  message = "A senha deve possuir entre 8 e 15 caracteres.")
     private String senha;
 
     private String tag;

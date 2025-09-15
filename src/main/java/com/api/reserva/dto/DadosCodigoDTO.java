@@ -8,7 +8,7 @@ public class DadosCodigoDTO {
 
     private String codigo;
 
-    private String email;
+    private String identificador;
 
     private Finalidade finalidade;
 
@@ -16,15 +16,18 @@ public class DadosCodigoDTO {
 
     private LocalDateTime criadoEm;
 
+    private boolean validado;
+
     public DadosCodigoDTO() {
     }
 
-    public DadosCodigoDTO(String codigo, String email, Finalidade finalidade) {
+    public DadosCodigoDTO(String codigo, String identificador, Finalidade finalidade) {
         this.codigo = codigo;
-        this.email = email;
+        this.identificador = identificador;
         this.finalidade = finalidade;
         this.criadoEm = LocalDateTime.now();
         this.dadosAdicionais = new HashMap<>();
+        this.validado = false;
     }
 
     public enum Finalidade {
@@ -53,12 +56,12 @@ public class DadosCodigoDTO {
         this.codigo = codigo;
     }
 
-    public String getEmail() {
-        return email;
+    public String getIdentificador() {
+        return identificador;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setIdentificador(String identificador) {
+        this.identificador = identificador;
     }
 
     public Finalidade getFinalidade() {
@@ -75,5 +78,13 @@ public class DadosCodigoDTO {
 
     public void setDadosAdicionais(Map<String, Object> dadosAdicionais) {
         this.dadosAdicionais = dadosAdicionais;
+    }
+
+    public boolean isValidado() {
+        return validado;
+    }
+
+    public void setValidado(boolean validado) {
+        this.validado = validado;
     }
 }

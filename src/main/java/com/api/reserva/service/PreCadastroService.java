@@ -86,6 +86,7 @@ public class PreCadastroService {
         PreCadastro preCadastro = new PreCadastro();
         preCadastro.setNome(preCadastroDTO.getNome());
         preCadastro.setEmail(preCadastroDTO.getEmail());
+        preCadastro.setSeCadastrou(false);
 
         emailService.enviarEmail(preCadastroDTO.getEmail(),
                 "Espaço Senai. Você foi pré-cadastrado",
@@ -153,7 +154,7 @@ public class PreCadastroService {
         }
     }
 
-    public PreCadastroDTO buscarPreCadastroPorEmail(String email) {
-        return new PreCadastroDTO(preCadastroRepository.findByEmail(email));
+    public PreCadastro buscarPreCadastroPorEmail(String email) {
+        return preCadastroRepository.findByEmail(email);
     }
 }

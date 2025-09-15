@@ -31,7 +31,7 @@ public class PreCadastro {
     public PreCadastro(PreCadastroDTO preCadastroDTO) {
         nome = preCadastroDTO.getNome();
         email = preCadastroDTO.getEmail();
-        seCadastrou = preCadastroDTO.getSeCadastrou();
+        seCadastrou = preCadastroDTO.isSeCadastrou();
     }
 
     public Long getId() {

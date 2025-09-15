@@ -25,7 +25,6 @@ public class PreCadastroDTO {
     }
 
     public PreCadastroDTO(String email,  boolean seCadastrou) {
-        this.id = id;
         this.email = email;
         this.seCadastrou = seCadastrou;
     }
@@ -59,5 +58,9 @@ public class PreCadastroDTO {
 
     public boolean isSeCadastrou() {
         return seCadastrou;
+    }
+
+    public void setSeCadastrou(boolean seCadastrou) {
+        this.seCadastrou = seCadastrou;
     }
 }

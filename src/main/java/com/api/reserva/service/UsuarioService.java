@@ -3,6 +3,7 @@ package com.api.reserva.service;
 import com.api.reserva.dto.DadosCodigoDTO;
 import com.api.reserva.dto.UsuarioDTO;
 import com.api.reserva.dto.UsuarioReferenciaDTO;
+import com.api.reserva.entity.PreCadastro;
 import com.api.reserva.entity.Role;
 import com.api.reserva.entity.Usuario;
 import com.api.reserva.enums.UsuarioStatus;
@@ -12,10 +13,8 @@ import com.api.reserva.exception.UsuarioDuplicadoException;
 import com.api.reserva.repository.PreCadastroRepository;
 import com.api.reserva.repository.RoleRepository;
 import com.api.reserva.repository.UsuarioRepository;
-import com.api.reserva.util.MetodosAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,9 +91,52 @@ public class UsuarioService {
                 .orElseThrow(() -> new SemResultadosException("Role ESTUDANTE"));
         usuario.getRoles().add(roleEstudante);
         usuarioRepository.save(usuario);
-        preCadastroService.bu(usuario.getEmail());
+
+        PreCadastro preCadastro = preCadastroService.buscarPreCadastroPorEmail(email);
+        preCadastro.setSeCadastrou(true);
+        preCadastroRepository.save(preCadastro);
+
         codigoService.deletarCodigo(token);
+
+        emailService.enviarEmail(
+                email,
+                "EspacoSenai. Conta confirmada.",
+                "Sua conta está ativa e pronta para uso. Agradecemos pela confirmação."
+        );
     }
+
+    public boolean redefinirSenhaValidarCodigo(String token, String codigo) {
+        DadosCodigoDTO dadosCodigoDTO = codigoService.buscarCodigo(token);
+        if(dadosCodigoDTO == null || !dadosCodigoDTO.getCodigo().equals(codigo)) {
+            throw new CodigoInvalidoException();
+        }
+
+        dadosCodigoDTO.setValidado(true);
+        return true;
+    }
+
+    @Transactional
+     public void redefinirSenhaNovaSenha(String token, String novaSenha) {
+        DadosCodigoDTO dadosCodigoDTO = codigoService.buscarCodigo(token);
+
+        if(!dadosCodigoDTO.isValidado()) {
+            throw new CodigoInvalidoException();
+        }
+
+        Usuario usuario = usuarioRepository.findByIdentificador(dadosCodigoDTO.getIdentificador());
+
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        usuarioRepository.save(usuario);
+
+         codigoService.deletarCodigo(token);
+
+         emailService.enviarEmail(
+                usuario.getEmail(),
+                "Espaco Senai. Senha alterada.",
+                "Sua senha foi alterada com sucesso."
+        );
+    }
+
 
 //    @Transactional
 //    public void salvar(UsuarioDTO usuarioDTO, Authentication authentication) {
