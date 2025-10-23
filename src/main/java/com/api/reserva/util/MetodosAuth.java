@@ -18,4 +18,9 @@ public class MetodosAuth {
                 .collect(Collectors.toSet());
         return userRoles;
     }
+
+    public static Long extrairId(Authentication authentication) {
+        Long id = Long.parseLong(authentication.getName());
+        return id;
+    }
 }

@@ -24,7 +24,7 @@ public class Reserva {
     private Set<ReservaConvidados> convidados;
 
     @ManyToOne
-    @JoinColumn(name = "catalogo_id", nullable = false)
+    @JoinColumn(name = "catalogo_id")
     private Catalogo catalogo;
 
     @Column(nullable = false)
@@ -146,5 +146,13 @@ public class Reserva {
 
     public void setCatalogo(Catalogo catalogo) {
         this.catalogo = catalogo;
+    }
+
+    public Set<ReservaConvidados> getConvidados() {
+        return convidados;
+    }
+
+    public void setConvidados(Set<ReservaConvidados> convidados) {
+        this.convidados = convidados;
     }
 }

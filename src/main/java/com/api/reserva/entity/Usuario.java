@@ -24,12 +24,15 @@ public class Usuario {
 
     private String senha;
 
-    @Column(unique = true, length = 7)
+    @Column(unique = true, length = 5)
     private String tag;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UsuarioStatus status;
+
+    @OneToMany(mappedBy = "usuario")
+    private Set<Notificacao> notificacoes = new HashSet<>();
 
     @OneToMany(mappedBy = "convidado", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ReservaConvidados> convites = new HashSet<>();

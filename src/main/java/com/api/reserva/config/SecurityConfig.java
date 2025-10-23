@@ -54,13 +54,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 // Configura as autorizações para as requisições HTTP
-                .authorizeHttpRequests(authorization -> authorization
-                        // Permite acesso público ao endpoint de login (POST e GET)
-                        .requestMatchers(HttpMethod.GET,"/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/usuario/confirmar-conta/{token}/{codigo}").permitAll()
-                        // Exige autenticação para qualquer outra requisição
-                        .anyRequest().authenticated())
+        .authorizeHttpRequests(authorization -> authorization
+            // Endpoints de autenticação
+            .requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+            // Páginas públicas e assets
+                        .requestMatchers(HttpMethod.GET, "/", "/login", "/signup", "/home", "/templates/**", "/static/**", "/favicon.ico").permitAll()
+            // Exige autenticação para qualquer outra requisição
+            .anyRequest().authenticated())
                 // Desabilita a proteção contra CSRF
                 .csrf(AbstractHttpConfigurer::disable)
                 // Configura o servidor de recursos OAuth2 para usar JWT

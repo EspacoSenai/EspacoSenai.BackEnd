@@ -13,6 +13,8 @@ import com.api.reserva.exception.UsuarioDuplicadoException;
 import com.api.reserva.repository.PreCadastroRepository;
 import com.api.reserva.repository.RoleRepository;
 import com.api.reserva.repository.UsuarioRepository;
+import com.api.reserva.util.CodigoUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -84,7 +87,7 @@ public class UsuarioService {
         usuario.setEmail(email);
 //        usuario.setTelefone(usuarioDTO.getTelefone());
         usuario.setSenha(senhaCriptografada);
-        usuario.gerarTag();
+        usuario.setTag(CodigoUtil.gerarCodigo(5));
         usuario.setStatus(UsuarioStatus.ATIVO);
 
         Role roleEstudante = roleRepository.findByRoleNome(Role.Values.ESTUDANTE)
@@ -92,7 +95,7 @@ public class UsuarioService {
         usuario.getRoles().add(roleEstudante);
         usuarioRepository.save(usuario);
 
-        PreCadastro preCadastro = preCadastroService.buscarPreCadastroPorEmail(email);
+        PreCadastro preCadastro = preCadastroRepository.findByEmail(email);
         preCadastro.setSeCadastrou(true);
         preCadastroRepository.save(preCadastro);
 
@@ -137,6 +140,44 @@ public class UsuarioService {
         );
     }
 
+    @Transactional
+    public void salvarPrivilegiado(@Valid UsuarioDTO internoDTO) {
+
+//        // ✅ Validações iniciais
+//        if (internoDTO == null) {
+//            throw new IllegalArgumentException("Dados inválidos para criação de usuário");
+//        }
+
+        if (usuarioRepository.existsByEmail(internoDTO.getEmail())) {
+            throw new UsuarioDuplicadoException("Email já cadastrado no sistema");
+        }
+
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setNome(internoDTO.getNome());
+        novoUsuario.setEmail(internoDTO.getEmail());
+        novoUsuario.setTag(CodigoUtil.gerarCodigo(5));
+        novoUsuario.setSenha(passwordEncoder.encode(internoDTO.getSenha()));
+        novoUsuario.setStatus(internoDTO.getStatus());
+
+        Set<Role> roles = new HashSet<>(roleRepository.findAllById(internoDTO.getRolesIds()));
+        roles.removeIf(userRole -> Role.Values.ADMIN.equals(userRole.getRoleNome()));
+
+        if(roles.isEmpty()) {
+            throw new SemResultadosException("Role(s)");
+        }
+
+        novoUsuario.setRoles(roles);
+
+        List<String> rolesString = roles.stream()
+                .map(r -> r.getRoleNome().toString())
+                .collect(Collectors.toList());
+
+        usuarioRepository.save(novoUsuario);
+        emailService.enviarEmail(
+                internoDTO.getEmail(),
+                "EspacoSenai. Um administrador te cadastrou.",
+                STR."Olá \{novoUsuario.getNome()}, você foi cadastrado por um administrador. Sua TAG é: \{novoUsuario.getTag()}. Seu privilégio é: \{rolesString}");
+    }
 
 //    @Transactional
 //    public void salvar(UsuarioDTO usuarioDTO, Authentication authentication) {
@@ -196,8 +237,7 @@ public class UsuarioService {
      * Exclui um usuário do sistema.
      */
     public void deletar(Long id) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(SemResultadosException::new);
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(SemResultadosException::new);
         usuarioRepository.delete(usuario);
     }
 

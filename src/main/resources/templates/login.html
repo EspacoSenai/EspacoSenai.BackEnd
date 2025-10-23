@@ -1,24 +1,40 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Login - Espaço Senai</title>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="/templates/dark.css" />
+    <link rel="stylesheet" href="/templates/login.css" />
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Usuário" required><br>
-            <input type="password" id="password" placeholder="Senha" required><br>
-            <button type="submit">Entrar</button>
-        </form>
-        <div id="loginError" style="color:red;display:none;"></div>
-    </div>
-    <div id="adminPanel" style="display:none;">
-        <h2>Ambientes e Catálogos</h2>
-        <div id="ambientesContainer"></div>
-    </div>
-    <script src="login.js"></script>
+<div class="container">
+    <form id="loginForm" class="card" novalidate>
+        <h2>Entrar</h2>
+
+        <div class="field">
+            <label for="identificador">Email ou tag</label>
+            <input id="identificador" name="identificador" type="text" required autocomplete="username" />
+        </div>
+
+        <div class="field">
+            <label for="senha">Senha</label>
+            <input id="senha" name="senha" type="password" required autocomplete="current-password" />
+        </div>
+
+        <div class="actions">
+            <button type="submit" id="submitBtn">Entrar</button>
+            <a id="esqueciLink" href="#">Esqueci minha senha</a>
+        </div>
+
+        <div id="feedback" role="status" aria-live="polite" class="feedback"></div>
+
+        <footer class="small">
+            <span>Não tem conta? </span><a id="signupLink" href="#">Criar conta</a>
+        </footer>
+    </form>
+</div>
+
+<script src="/templates/login.js"></script>
 </body>
 </html>

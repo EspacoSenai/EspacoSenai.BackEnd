@@ -8,12 +8,14 @@ import com.api.reserva.enums.Disponibilidade;
 import com.api.reserva.enums.StatusReserva;
 import com.api.reserva.exception.DadoDuplicadoException;
 import com.api.reserva.exception.EntidadeJaExistente;
+import com.api.reserva.exception.SemPermissaoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.AmbienteRepository;
-import com.api.reserva.repository.CategoriaRepository;
 import com.api.reserva.repository.ReservaRepository;
 import com.api.reserva.repository.UsuarioRepository;
+import com.api.reserva.util.MetodosAuth;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +32,6 @@ public class AmbienteService {
     @Autowired
     AmbienteRepository ambienteRepository;
     @Autowired
-    CategoriaRepository categoriaRepository;
-    @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
     private ReservaRepository reservaRepository;
@@ -39,7 +39,7 @@ public class AmbienteService {
     /**
      * Busca um ambiente específico pelo seu ID
      *
-     * @param id identificador único do ambiente
+     * @param id identificador único do ambienteb
      * @return o DTO do ambiente encontrado
      * @throws SemResultadosException se nenhum ambiente com id fornecido for encontraodo
      */
@@ -69,37 +69,33 @@ public class AmbienteService {
     @Transactional
     public void salvar(AmbienteDTO ambienteDTO) {
 
-        Ambiente ambiente = new Ambiente(ambienteDTO);
-
         if (ambienteRepository.existsByNome(ambienteDTO.getNome())) {
             throw new EntidadeJaExistente("Ambiente");
         }
 
+        Ambiente ambiente = new Ambiente(ambienteDTO);
+        ambiente.setNome(ambienteDTO.getNome());
+        ambiente.setDescricao(ambienteDTO.getDescricao());
+        ambiente.setDisponibilidade(ambienteDTO.getDisponibilidade());
+        ambiente.setAprovacao(ambienteDTO.getAprovacao());
+        ambiente.setQtdPessoas(ambienteDTO.getQtdPessoas());
+        ambiente.setEmUso(false);
+
+
         if (ambienteDTO.getResponsaveisIds() != null) {
             Set<Usuario> responsaveis = usuarioRepository.findAllById(ambienteDTO.getResponsaveisIds())
                     .stream()
-                    .filter(usuario -> usuario.getRoles().contains(Role.Values.COORDENADOR))
+                    .filter(usuario -> usuario.getRoles()
+                            .stream()
+                            .anyMatch(role -> role.getRoleNome() == Role.Values.COORDENADOR))
                     .collect(Collectors.toSet());
             ambiente.setResponsaveis(responsaveis);
         }
 
-        if (ambienteDTO.getCategoriasIds() != null) {
-            List<Categoria> categorias = categoriaRepository.findAllById(ambienteDTO.getCategoriasIds());
-            ambiente.setCategorias(new HashSet<>(categorias));
-        }
-
-//        if (ambienteDTO.getCategorias() != null) {
-//            ambiente.setCategorias(ambienteDTO.getCategorias()
-//                    .stream()
-//                    .map(categoriaId -> categoriaRepository.findById(categoriaId.getId())
-//                            .orElseThrow(() -> new SemResultadosException(String
-//                                    .format("associação com Id: %s.", categoriaId))))
-//                    .collect(Collectors.toSet()));
-//        }
         ambienteRepository.save(ambiente);
     }
 
-    /**
+    /*
      * Atualiza um ambiente
      *
      * @param ambienteDTO os novos dados ao ambiente
@@ -109,44 +105,66 @@ public class AmbienteService {
      * @throws DadoDuplicadoException caso já haja um dado unico existente
      */
     @Transactional
-    public void atualizar(Long id, AmbienteDTO ambienteDTO) {
+    public void atualizar(Long id, AmbienteDTO ambienteDTO, Authentication authentication) {
         Ambiente ambiente = ambienteRepository.findById(id).orElseThrow(() -> new SemResultadosException("atualização"));
 
-        Set<Reserva> reservasDoAmbiente = reservaRepository.findAll()
-                .stream()
-                .filter(reserva -> reserva.getCatalogo().getAmbiente().equals(ambiente))
-                .collect(Collectors.toSet());
+        if (ambienteRepository.existsByNomeAndIdNot(ambienteDTO.getNome(), id)) {
+            throw new EntidadeJaExistente("Ambiente");
+        }
+
+        Long responsavelId = MetodosAuth.extrairId(authentication);
+        Usuario responsavel = usuarioRepository.findById(responsavelId)
+                .orElseThrow(() -> new SemResultadosException("Usuário do token"));
+
+        if(!responsavel.getRoles().contains(Role.Values.ADMIN) || !ambiente.getResponsaveis().contains(responsavel)) {
+            throw new SemPermissaoException();
+        }
 
         ambiente.setNome(ambienteDTO.getNome());
         ambiente.setDescricao(ambienteDTO.getDescricao());
-        ambiente.setCategorias(new HashSet<>(categoriaRepository.findAllById(ambienteDTO.getCategoriasIds())));
 
-        /*
-         *
-         * */
-        if (ambienteDTO.getDisponibilidade() == Disponibilidade.INDISPONIVEL) {
+        // Se disponibilidade mudou para indisponível -> cancelar reservas aprovadas ou pendentes
+        if (ambiente.getDisponibilidade() != ambienteDTO.getDisponibilidade() &&
+                ambienteDTO.getDisponibilidade() == Disponibilidade.INDISPONIVEL) {
+            Set<Reserva> reservasDoAmbiente = reservaRepository.findAllByCatalogo_Ambiente_Id(id);
             reservasDoAmbiente.forEach(reserva -> {
-                reserva.setStatusReserva(StatusReserva.CANCELADA);
-                reserva.setMsgInterna("O ambiente ficou indisponível.");
+                if (reserva.getStatusReserva().equals(StatusReserva.APROVADA) || reserva.getStatusReserva().equals(StatusReserva.PENDENTE)) {
+                    reserva.setStatusReserva(StatusReserva.CANCELADA);
+                    reserva.setMsgInterna("O ambiente ficou indisponível.");
+                }
             });
         }
 
-        if (ambiente.getAprovacao() != ambienteDTO.getAprovacao() &&
-                ambiente.getDisponibilidade() == Disponibilidade.DISPONIVEL) {
+        // Se tipo de aprovação mudou e ambiente está disponível -> aprovar pendentes quando passar para automática
+        else if (ambiente.getAprovacao() != ambienteDTO.getAprovacao()
+                && ambienteDTO.getDisponibilidade() == Disponibilidade.DISPONIVEL) {
             if (ambienteDTO.getAprovacao() == Aprovacao.AUTOMATICA) {
+                Set<Reserva> reservasDoAmbiente = reservaRepository.findAllByCatalogo_Ambiente_Id(id);
                 reservasDoAmbiente.forEach(reserva -> {
-                    reserva.setStatusReserva(StatusReserva.APROVADA);
-                    reserva.setMsgInterna("Aprovação automática realizada."); // Adicionado argumento esperado
+                    StatusReserva status = reserva.getStatusReserva();
+                    if (status == StatusReserva.PENDENTE) {
+                        reserva.setStatusReserva(StatusReserva.APROVADA);
+                        reserva.setMsgInterna("Aprovação automática realizada.");
+                    }
                 });
             }
         }
-
-        reservaRepository.saveAll(reservasDoAmbiente);
-
+        if(ambiente.getQtdPessoas() != ambienteDTO.getQtdPessoas()) {
+            Set<Reserva> reservasDoAmbiente = reservaRepository.findAllByCatalogo_Ambiente_Id(id);
+            reservasDoAmbiente.forEach(reserva -> {
+                // +1 para incluir o solicitante
+                int totalPessoas = reserva.getConvidados().size() + 1;
+                if(totalPessoas > ambienteDTO.getQtdPessoas() &&
+                   (reserva.getStatusReserva() == StatusReserva.APROVADA ||
+                    reserva.getStatusReserva() == StatusReserva.PENDENTE)) {
+                    reserva.setStatusReserva(StatusReserva.CANCELADA);
+                    reserva.setMsgInterna("A quantidade de pessoas do ambiente foi reduzida.");
+                }
+            });
+        }
         ambienteRepository.save(ambiente);
-    }
 
-    /**
+    }    /**
      * Exclui um ambiente
      *
      * @param id o identificador unico do ambiente a ser excluido
@@ -157,16 +175,7 @@ public class AmbienteService {
         Ambiente ambiente = ambienteRepository.findById(id).orElseThrow(() -> new SemResultadosException("ambiente"));
         ambienteRepository.delete(ambiente);
     }
-//
-//    @Transactional
-//    public void associarCategorias(Long ambienteId, Set<Long> categoriasIds) {
-//        Ambiente ambiente = ambienteRepository.findById(ambienteId).orElseThrow(() -> new SemResultadosException("ambiente"));
-//
-//        ambiente.setCategorias(idsCategorias.stream()
-//                .map(idCategoria -> categoriaRepository.findById(idCategoria)
-//                        .orElseThrow(() -> new SemResultadosException("associação.")))
-//                .collect(Collectors.toSet()));
-//    }
+
 
     @Transactional
     public void associarResponsaveis(Long ambienteId, Set<Long> responsaveisIds) {

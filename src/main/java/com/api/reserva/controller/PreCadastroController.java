@@ -43,6 +43,13 @@ public class PreCadastroController {
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Estudantes pré-cadastros com sucesso.");
     }
 
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_PROFESSOR')")
+    @PostMapping("/atualizar/{id}")
+    public ResponseEntity<Object> atualizar(@PathVariable Long id, @Valid @RequestBody PreCadastroDTO preCadastroDTO) {
+        preCadastroService.atualizar(id, preCadastroDTO);
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Pré-cadastro atualizado com sucesso.");
+    }
+
 //    @GetMapping("/verificar/{identificador}")
 //    public ResponseEntity<Object> verificarElegibilidade(@PathVariable String identificador) {
 //        boolean elegivel = preCadastroService.verificarElegibilidade(identificador);

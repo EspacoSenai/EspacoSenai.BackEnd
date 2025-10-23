@@ -1,5 +1,6 @@
 package com.api.reserva.entity;
 
+import com.api.reserva.util.CodigoUtil;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -30,6 +31,9 @@ public class Turma {
     @Column(nullable = false)
     private LocalDate dataTermino;
 
+    @Column(nullable = false, unique = true)
+    private String codigoAcesso;
+
     @ManyToMany
     @JoinTable(
             name = "tb_turmas_estudantes",
@@ -37,20 +41,19 @@ public class Turma {
             inverseJoinColumns = @JoinColumn(name = "estudante_id"))
     private Set<Usuario> estudantes = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "tb_turmas_professores",
-            joinColumns = @JoinColumn(name = "turma_id"),
-            inverseJoinColumns = @JoinColumn(name = "professor_id"))
-    private Set<Usuario> professores = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "professor_id")
+    private Usuario professor;
 
     public Turma() {
     }
 
-    public Turma(String nome, LocalDate dataInicio, LocalDate dataTermino) {
+    public Turma(String nome, Modalidade modalidade, LocalDate dataInicio, LocalDate dataTermino) {
         this.nome = nome;
+        this.modalidade = modalidade;
         this.dataInicio = dataInicio;
         this.dataTermino = dataTermino;
+        this.codigoAcesso = CodigoUtil.gerarCodigo(5);
     }
 
     public Long getId() {
@@ -81,6 +84,14 @@ public class Turma {
         this.dataTermino = dataTermino;
     }
 
+    public String getCodigoAcesso() {
+        return codigoAcesso;
+    }
+
+    public void setCodigoAcesso(String codigoAcesso) {
+        this.codigoAcesso = codigoAcesso;
+    }
+
     public Set<Usuario> getEstudantes() {
         return estudantes;
     }
@@ -105,12 +116,12 @@ public class Turma {
         this.curso = curso;
     }
 
-    public Set<Usuario> getProfessores() {
-        return professores;
+    public Usuario getProfessor() {
+        return professor;
     }
 
-    public void setProfessores(Set<Usuario> professores) {
-        this.professores = professores;
+    public void setProfessor(Usuario professor) {
+        this.professor = professor;
     }
 
     public enum Modalidade {

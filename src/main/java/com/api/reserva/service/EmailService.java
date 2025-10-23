@@ -8,6 +8,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 public class EmailService {
     @Autowired
@@ -25,4 +27,12 @@ public class EmailService {
         javaMailSender.send(simpleMailMessage);
         return true;
     }
+
+    public boolean enviarMultiplosEmail(Set<String> emails, String assunto, String mensagem) {
+        emails.forEach(email -> {
+            enviarEmail(email, assunto, mensagem);
+        });
+        return true;
+    }
 }
+

@@ -3,6 +3,8 @@ package com.api.reserva.controller;
 import com.api.reserva.dto.UsuarioDTO;
 import com.api.reserva.dto.UsuarioReferenciaDTO;
 import com.api.reserva.entity.Usuario;
+import com.api.reserva.exception.SemResultadosException;
+import com.api.reserva.repository.UsuarioRepository;
 import com.api.reserva.service.CodigoService;
 import com.api.reserva.service.UsuarioService;
 import com.api.reserva.util.ResponseBuilder;
@@ -25,6 +27,8 @@ public class UsuarioController {
     UsuarioService usuarioService;
     @Autowired
     private CodigoService codigoService;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
     @GetMapping("/buscar")
@@ -53,17 +57,23 @@ public class UsuarioController {
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Usuário atualizado com sucesso.");
     }
 
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_PROFESSOR')")
-    @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<Object> deletar(@PathVariable Long id) {
-        usuarioService.deletar(id);
-        return ResponseBuilder.respostaSimples(HttpStatus.NO_CONTENT , "Usuário excluído com sucesso.");
-    }
-
     @GetMapping("/confirmar-conta/{token}/{codigo}")
     public ResponseEntity<Object> confirmarConta(@PathVariable String token, @PathVariable String codigo) {
         usuarioService.confirmarConta(token, codigo);
         return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Conta confirmada e criada.");
     }
 
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
+    @PostMapping("/salvar-privilegiado")
+    public ResponseEntity<Object> salvarPrivilegiado(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+        usuarioService.salvarPrivilegiado(usuarioDTO);
+        return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Usuário salvo com sucesso.");
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        usuarioService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -9,24 +9,6 @@ import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.exception.UsuarioDuplicadoException;
 import com.api.reserva.repository.PreCadastroRepository;
 import com.api.reserva.repository.UsuarioRepository;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import com.api.reserva.util.CodigoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;

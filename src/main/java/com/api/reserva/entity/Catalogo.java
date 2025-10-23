@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_catalogo")
@@ -40,16 +42,19 @@ public class Catalogo {
     @Column(nullable = false)
     private Disponibilidade disponibilidade;
 
+    @OneToMany(mappedBy = "catalogo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reserva> reservas = new HashSet<>();
+
     public Catalogo() {
     }
 
-    public Catalogo(Ambiente ambiente,
-                    DiaSemana diaSemana, Disponibilidade disponibilidade, LocalTime horaInicio, LocalTime horaFim) {
+    public Catalogo(Ambiente ambiente, LocalTime horaInicio, LocalTime horaFim, DiaSemana diaSemana,
+                    Disponibilidade disponibilidade) {
         this.ambiente = ambiente;
-        this.diaSemana = diaSemana;
-        this.disponibilidade = disponibilidade;
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
+        this.diaSemana = diaSemana;
+        this.disponibilidade = disponibilidade;
     }
 
     public Long getId() {
@@ -102,5 +107,13 @@ public class Catalogo {
 
     public void setHoraFim(LocalTime horaFim) {
         this.horaFim = horaFim;
+    }
+
+    public Set<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void setReservas(Set<Reserva> reservas) {
+        this.reservas = reservas;
     }
 }

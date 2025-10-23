@@ -2,6 +2,8 @@ package com.api.reserva.service;
 
 import com.api.reserva.dto.CursoDTO;
 import com.api.reserva.entity.Curso;
+import com.api.reserva.entity.Turma;
+import com.api.reserva.enums.NotificacaoTipo;
 import com.api.reserva.exception.EntidadeJaAssociadaException;
 import com.api.reserva.exception.EntidadeJaExistente;
 import com.api.reserva.exception.SemResultadosException;
@@ -15,6 +17,8 @@ import java.util.List;
 public class CursoService {
     @Autowired
     private CursoRepository cursoRepository;
+    @Autowired
+    private NotificacaoService notificacaoService;
 
     public List<CursoDTO> buscar() {
         return cursoRepository.findAll()
@@ -45,12 +49,25 @@ public class CursoService {
             throw new EntidadeJaExistente("Curso com nome " + cursoDTO.getNome());
         }
 
+        boolean mudou;
+
         Curso curso = cursoRepository.findById(id)
                 .orElseThrow(SemResultadosException::new);
 
         curso.setNome(cursoDTO.getNome());
         curso.setDescricao(cursoDTO.getDescricao());
         cursoRepository.save(curso);
+
+        for (Turma turma : curso.getTurmas()) {
+            if (turma.getProfessor() != null) {
+                notificacaoService.novaNotificacao(
+                        turma.getProfessor(),
+                        NotificacaoTipo.ALTERACOES,
+                        "Curso atualizado",
+                        "O curso " + curso.getNome() + " foi atualizado."
+                );
+            }
+        }
     }
 
     public void deletar(Long id) {
