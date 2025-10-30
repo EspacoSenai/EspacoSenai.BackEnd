@@ -20,11 +20,16 @@ public class Reserva {
     @JoinColumn(name = "host_id", nullable = false)
     private Usuario host;
 
-    @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ReservaConvidados> convidados;
+    @ManyToMany
+    @JoinTable(
+            name = "tb_reserva_participantes",
+            joinColumns = @JoinColumn(name = "reserva_id"),
+            inverseJoinColumns = @JoinColumn(name = "usuario_id")
+    )
+    private Set<Usuario> membros = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "catalogo_id", nullable = false)
+    @JoinColumn(name = "catalogo_id")
     private Catalogo catalogo;
 
     @Column(nullable = false)
@@ -74,14 +79,6 @@ public class Reserva {
 
     public void setHost(Usuario host) {
         this.host = host;
-    }
-
-    public Catalogo getGradeAmbiente() {
-        return catalogo;
-    }
-
-    public void setGradeAmbiente(Catalogo catalogo) {
-        this.catalogo = catalogo;
     }
 
     public LocalDate getData() {
@@ -146,5 +143,13 @@ public class Reserva {
 
     public void setCatalogo(Catalogo catalogo) {
         this.catalogo = catalogo;
+    }
+
+    public Set<Usuario> getMembros() {
+        return membros;
+    }
+
+    public void setMembros(Set<Usuario> convidados) {
+        this.membros = convidados;
     }
 }

@@ -4,7 +4,6 @@ import com.api.reserva.dto.PreCadastroDTO;
 import com.api.reserva.entity.PreCadastro;
 import com.api.reserva.entity.Role;
 import com.api.reserva.entity.Usuario;
-import com.api.reserva.enums.UsuarioStatus;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.exception.UsuarioDuplicadoException;
 import com.api.reserva.repository.PreCadastroRepository;
@@ -14,7 +13,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,9 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class PreCadastroService {
@@ -57,7 +55,7 @@ public class PreCadastroService {
     public boolean verificarElegibilidade(String email) {
         PreCadastro preCadastro = preCadastroRepository.findByEmail(email);
 
-        if(preCadastro != null) {
+        if (preCadastro != null) {
             return true;
         }
 
@@ -89,8 +87,8 @@ public class PreCadastroService {
         preCadastro.setSeCadastrou(false);
 
         emailService.enviarEmail(preCadastroDTO.getEmail(),
-                "Espaço Senai. Você foi pré-cadastrado",
-                "Você está apto para criar uma conta. Acesse a página principal de cadastro. ");
+                "Espaço Senai Você foi pré-cadastrado",
+                "Você está apto para criar uma conta. Acesse a página principal de cadastro.");
 
         preCadastroRepository.save(preCadastro);
     }
@@ -98,6 +96,7 @@ public class PreCadastroService {
     @Transactional
     public List<PreCadastro> salvarEstudantesPlanilha(MultipartFile planilha) {
         List<PreCadastro> preCadastros = new ArrayList<>();
+        Set<String> emailsPreCadastrados = new HashSet<>();
         try (InputStream is = planilha.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
             Role roleEstudante = roleRepository.findByRoleNome(Role.Values.ESTUDANTE).orElseThrow(() ->
                     new SemResultadosException(String.format("Role %s", Role.Values.ESTUDANTE.name())));
@@ -116,10 +115,15 @@ public class PreCadastroService {
 //                while (estudantes.stream().anyMatch(e -> e.getTag().equals(estudante.getTag()))) {
 //                    estudante.gerarTag();
 //                }
-
                 preCadastros.add(preCadastro);
+                emailsPreCadastrados.add(email);
             }
             preCadastroRepository.saveAll(preCadastros);
+            emailService.enviarMultiplosEmail(
+                    emailsPreCadastrados,
+                    "Espaço Senai Você foi pré-cadastrado",
+                    "Você está apto para criar uma conta. Acesse a página principal de cadastro."
+            );
         } catch (IOException e) {
             throw new RuntimeException("Erro ao processar a planilha: " + e.getMessage());
         }
@@ -137,24 +141,27 @@ public class PreCadastroService {
 //        return false;
 //    }
 
-    public void deletarPorEmail(String email) {
-        PreCadastro preCadastro = preCadastroRepository.findByEmail(email);
-        if (preCadastro != null) {
-            preCadastroRepository.delete(preCadastro);
-        } else {
-            throw new SemResultadosException("Pré-cadastro", "exclusão");
-        }
+    @Transactional
+    public void atualizar(Long id, PreCadastroDTO preCadastroDTO) {
+        PreCadastro preCadastro = preCadastroRepository.findById(id).orElseThrow(() ->
+                new SemResultadosException("Pré-cadastro", "atualização"));
+        preCadastro.setNome(preCadastroDTO.getNome());
+        preCadastro.setEmail(preCadastroDTO.getEmail());
+        preCadastroRepository.save(preCadastro);
+
+    }
+
+    public void deletar(Long id) {
+        PreCadastro preCadastro = preCadastroRepository.findById(id).orElseThrow(() ->
+                new SemResultadosException("Pré-cadastro", "exclusão"));
+        preCadastroRepository.delete(preCadastro);
     }
 
     public boolean isElegivel(String email) {
-        if(preCadastroRepository.existsByEmail(email)){
+        if (preCadastroRepository.existsByEmail(email)) {
             return true;
         } else {
             return false;
         }
-    }
-
-    public PreCadastro buscarPreCadastroPorEmail(String email) {
-        return preCadastroRepository.findByEmail(email);
     }
 }

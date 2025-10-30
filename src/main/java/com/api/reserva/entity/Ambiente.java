@@ -15,7 +15,7 @@ public class Ambiente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false,  length = 100)
+    @Column(unique = true, nullable = false, length = 100)
     private String nome;
 
     @Column(length = 500)
@@ -32,14 +32,10 @@ public class Ambiente {
     @Column(nullable = false)
     private Integer qtdPessoas;
 
-    // Mapeamento muit  os para muitos entre Ambiente e Categoria
-    @ManyToMany
-    @JoinTable(
-            name = "tb_ambiente_categoria",
-            joinColumns = @JoinColumn(name = "id_ambiente"),
-            inverseJoinColumns = @JoinColumn(name = "id_categoria")
-    )
-    private Set<Categoria> categorias = new HashSet<>();
+    private boolean emUso;
+
+    @OneToMany(mappedBy = "ambiente", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Catalogo> catalogos = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -48,6 +44,7 @@ public class Ambiente {
             inverseJoinColumns = @JoinColumn(name = "responsavel_id")
     )
     private Set<Usuario> responsaveis = new HashSet<>();
+
 
     public Ambiente() {
     }
@@ -59,6 +56,7 @@ public class Ambiente {
         disponibilidade = ambienteDTO.getDisponibilidade();
         aprovacao = ambienteDTO.getAprovacao();
         qtdPessoas = ambienteDTO.getQtdPessoas();
+        emUso = ambienteDTO.isEmUso();
     }
 
     public Long getId() {
@@ -97,14 +95,6 @@ public class Ambiente {
         this.aprovacao = aprovacao;
     }
 
-    public Set<Categoria> getCategorias() {
-        return categorias;
-    }
-
-    public void setCategorias(Set<Categoria> categorias) {
-        this.categorias = categorias;
-    }
-
     public Set<Usuario> getResponsaveis() {
         return responsaveis;
     }
@@ -119,5 +109,21 @@ public class Ambiente {
 
     public void setQtdPessoas(Integer qtdPessoas) {
         this.qtdPessoas = qtdPessoas;
+    }
+
+    public boolean isEmUso() {
+        return emUso;
+    }
+
+    public void setEmUso(boolean emUso) {
+        this.emUso = emUso;
+    }
+
+    public Set<Catalogo> getCatalogos() {
+        return catalogos;
+    }
+
+    public void setCatalogos(Set<Catalogo> catalogos) {
+        this.catalogos = catalogos;
     }
 }

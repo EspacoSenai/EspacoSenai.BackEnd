@@ -3,10 +3,6 @@ package com.api.reserva.dto;
 import com.api.reserva.entity.Role;
 import com.api.reserva.entity.Usuario;
 import com.api.reserva.enums.UsuarioStatus;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 import java.util.Set;
 

@@ -14,7 +14,7 @@ public class AmbienteDTO {
     private Long id;
 
     @NotBlank(message = "Nome do ambiente é obrigatório.")
-    @Size(min = 5, max = 100, message = "Nome do ambiente deve possuir entre 5 e 100 caracteres.")
+    @Size(max = 100, message = "Nome do ambiente deve possuir no máximo 100 caracteres.")
     private String nome;
 
     @Size(max = 500, message = "Descrição não deve ultrapassar 500 caracteres.")
@@ -26,25 +26,24 @@ public class AmbienteDTO {
     @NotNull(message = "Escolha uma aprovação.")
     private Aprovacao aprovacao;
 
-//    private Set<CategoriaReferenciaDTO> categorias = new HashSet<>();
-    private Set<Long> categoriasIds = new HashSet<>();
-
     private Set<Long> responsaveisIds = new HashSet<>();
 
     private Integer qtdPessoas;
+
+    private boolean emUso;
 
     public AmbienteDTO() {
     }
 
     public AmbienteDTO(String nome, String descricao, Disponibilidade disponibilidade, Aprovacao aprovacao,
-                       Set<Long> categoriasIds, Set<Long> responsaveisIds, Integer qtdPessoas) {
+                       Set<Long> responsaveisIds, Integer qtdPessoas, boolean emUso) {
         this.nome = nome;
         this.descricao = descricao;
         this.disponibilidade = disponibilidade;
         this.aprovacao = aprovacao;
-        this.categoriasIds = categoriasIds;
         this.responsaveisIds = responsaveisIds;
         this.qtdPessoas = qtdPessoas;
+        this.emUso = emUso;
     }
 
     public AmbienteDTO(Ambiente ambiente) {
@@ -54,13 +53,7 @@ public class AmbienteDTO {
         disponibilidade = ambiente.getDisponibilidade();
         aprovacao = ambiente.getAprovacao();
         qtdPessoas = ambiente.getQtdPessoas();
-//        categoriasIds = ambiente.getCategorias().stream()
-//                .map(Categoria::getId)
-//                .collect(Collectors.toSet());
-////        categorias = ambiente.getCategorias()
-////                .stream()
-////                .map(CategoriaReferenciaDTO::new)
-////                .collect(Collectors.toSet());
+        emUso = ambiente.isEmUso();
     }
 
     public Long getId() {
@@ -99,23 +92,6 @@ public class AmbienteDTO {
         this.aprovacao = aprovacao;
     }
 
-    public Set<Long> getCategoriasIds() {
-        return categoriasIds;
-    }
-
-    public void setCategoriasIds(Set<Long> categoriasIds) {
-        this.categoriasIds = categoriasIds;
-    }
-
-//    public Set<CategoriaReferenciaDTO> getCategorias() {
-//        return categorias;
-//    }
-//
-//    public void setCategorias(Set<CategoriaReferenciaDTO> categorias) {
-//        this.categorias = categorias;
-//    }
-
-
     public Set<Long> getResponsaveisIds() {
         return responsaveisIds;
     }
@@ -126,5 +102,17 @@ public class AmbienteDTO {
 
     public Integer getQtdPessoas() {
         return qtdPessoas;
+    }
+
+    public void setQtdPessoas(Integer qtdPessoas) {
+        this.qtdPessoas = qtdPessoas;
+    }
+
+    public boolean isEmUso() {
+        return emUso;
+    }
+
+    public void setEmUso(boolean emUso) {
+        this.emUso = emUso;
     }
 }

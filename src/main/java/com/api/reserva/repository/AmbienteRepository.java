@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 public interface AmbienteRepository extends JpaRepository<Ambiente, Long> {
     boolean existsByNome(String nome);
 
+    boolean existsByNomeAndIdNot(String nome, Long id);
+
 //    /**
 //     * Este método retorna uma String derivada de uma Query que leva THEN, identificando o exato campo duplicado.
 //     * (cadastro e atualização.)

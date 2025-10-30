@@ -27,7 +27,7 @@ public class ReservaReferenciaDTO {
     public ReservaReferenciaDTO(Reserva reserva) {
         id = reserva.getId();
         usuario = reserva.getHost();
-        catalogo = reserva.getGradeAmbiente();
+        catalogo = reserva.getCatalogo();
         data = reserva.getData();
         horaInicio = reserva.getHoraInicio();
         horaFim = reserva.getHoraFim();

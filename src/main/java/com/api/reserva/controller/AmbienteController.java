@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,8 +41,9 @@ public class  AmbienteController {
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
     @PatchMapping("/atualizar/{id}")
-    public ResponseEntity<Object> atualizar (@PathVariable Long id, @Valid @RequestBody AmbienteDTO ambienteDTO) {
-        ambienteService.atualizar(id, ambienteDTO);
+    public ResponseEntity<Object> atualizar (@PathVariable Long id, @Valid @RequestBody AmbienteDTO ambienteDTO,
+                                             Authentication authentication) {
+        ambienteService.atualizar(id, ambienteDTO, authentication);
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Ambiente atualizado com sucesso.");
     }
 
@@ -51,13 +53,6 @@ public class  AmbienteController {
         ambienteService.deletar(id);
         return ResponseBuilder.respostaSimples(HttpStatus.NO_CONTENT, "Ambiente excluído com sucesso.");
     }
-
-//    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
-//    @PutMapping("/associarcategorias/{id}")
-//    public ResponseEntity<Object> associarCategorias(@PathVariable Long ambienteId, @RequestBody Set<Long> categoriasIds) {
-//        ambienteService.associarCategorias(categoriasIds, ambienteId);
-//        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Categorias associadas.");
-//    }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
     @PutMapping("/associarresponsaveis/{ambienteId}")

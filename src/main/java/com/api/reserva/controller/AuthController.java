@@ -26,6 +26,7 @@ public class AuthController {
     private UsuarioService usuarioService;
     @Autowired
     private CodigoService codigoService;
+
     @Autowired
     private PreCadastroService preCadastroService;
     @Autowired
@@ -35,16 +36,6 @@ public class AuthController {
         return UUID.randomUUID().toString();
     }
 
-//    @PostMapping("/signup")
-//    public ResponseEntity<Object> salvar(@Valid @RequestBody UsuarioDTO usuarioDTO, Authentication authentication) {
-//
-//        if(preCadastroService.verificarElegibilidade(usuarioDTO.getEmail())) {
-//
-//        }
-//
-//        return ResponseBuilder.respostaSimples(HttpStatus.CREATED,
-//                "Se elegível para o cadastro, um e-mail de confirmação foi enviado.");
-//    }
 
     @PostMapping("/signin")
     public ResponseEntity<LoginResponse> signIn(@RequestBody LoginRequest loginRequest) {

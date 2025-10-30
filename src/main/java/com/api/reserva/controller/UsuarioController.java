@@ -2,8 +2,7 @@ package com.api.reserva.controller;
 
 import com.api.reserva.dto.UsuarioDTO;
 import com.api.reserva.dto.UsuarioReferenciaDTO;
-import com.api.reserva.entity.Usuario;
-import com.api.reserva.service.CodigoService;
+import com.api.reserva.repository.UsuarioRepository;
 import com.api.reserva.service.UsuarioService;
 import com.api.reserva.util.ResponseBuilder;
 import jakarta.validation.Valid;
@@ -11,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,8 +20,10 @@ public class UsuarioController {
 
     @Autowired
     UsuarioService usuarioService;
+//    @Autowired
+//    private CodigoService codigoService;
     @Autowired
-    private CodigoService codigoService;
+    private UsuarioRepository usuarioRepository;
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
     @GetMapping("/buscar")
@@ -52,18 +51,24 @@ public class UsuarioController {
         usuarioService.atualizar(id, usuarioDTO);
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Usuário atualizado com sucesso.");
     }
+//
+//    @GetMapping("/confirmar-conta/{token}/{codigo}")
+//    public ResponseEntity<Object> confirmarConta(@PathVariable String token, @PathVariable String codigo) {
+//        usuarioService.confirmarConta(token, codigo);
+//        return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Conta confirmada e criada.");
+//    }
 
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_PROFESSOR')")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
+    @PostMapping("/salvar-privilegiado")
+    public ResponseEntity<Object> salvarPrivilegiado(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+        usuarioService.salvarPrivilegiado(usuarioDTO);
+        return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Usuário salvo com sucesso.");
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<Object> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
         usuarioService.deletar(id);
-        return ResponseBuilder.respostaSimples(HttpStatus.NO_CONTENT , "Usuário excluído com sucesso.");
+        return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/confirmar-conta/{token}/{codigo}")
-    public ResponseEntity<Object> confirmarConta(@PathVariable String token, @PathVariable String codigo) {
-        usuarioService.confirmarConta(token, codigo);
-        return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Conta confirmada e criada.");
-    }
-
 }

@@ -1,12 +1,12 @@
 package com.api.reserva.dto;
 
-import com.api.reserva.entity.Curso;
 import com.api.reserva.entity.Turma;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public class TurmaDTO {
 
@@ -17,7 +17,7 @@ public class TurmaDTO {
     private String nome;
 
     @NotNull(message = "Escolha um curso para a turma.")
-    private Curso curso;
+    private Long cursoId;
 
     @NotNull(message = "Escolha a modalidade da turma.")
     private Turma.Modalidade modalidade;
@@ -27,6 +27,12 @@ public class TurmaDTO {
 
     @NotNull(message = "A data que turma termina o curso é obrigatória.")
     private LocalDate dataTermino;
+
+    private String codigoAcesso;
+
+    private Long professorId;
+
+    private Set<Long> estudantesIds;
 
     public TurmaDTO() {
     }
@@ -40,8 +46,11 @@ public class TurmaDTO {
     public TurmaDTO(Turma turma) {
         this.id = turma.getId();
         this.nome = turma.getNome();
+        this.cursoId = turma.getCurso().getId();
+        this.modalidade = turma.getModalidade();
         this.dataInicio = turma.getDataInicio();
         this.dataTermino = turma.getDataTermino();
+        this.codigoAcesso = turma.getCodigoAcesso();
     }
 
     public Long getId() {
@@ -72,12 +81,12 @@ public class TurmaDTO {
         this.dataTermino = dataTermino;
     }
 
-    public Curso getCurso() {
-        return curso;
+    public Long getCursoId() {
+        return cursoId;
     }
 
-    public void setCurso(Curso curso) {
-        this.curso = curso;
+    public void setCursoId(Long cursoId) {
+        this.cursoId = cursoId;
     }
 
     public Turma.Modalidade getModalidade() {
@@ -86,5 +95,29 @@ public class TurmaDTO {
 
     public void setModalidade(Turma.Modalidade modalidade) {
         this.modalidade = modalidade;
+    }
+
+    public String getCodigoAcesso() {
+        return codigoAcesso;
+    }
+
+    public void setCodigoAcesso(String codigoAcesso) {
+        this.codigoAcesso = codigoAcesso;
+    }
+
+    public Set<Long> getEstudantesIds() {
+        return estudantesIds;
+    }
+
+    public void setEstudantesIds(Set<Long> estudantesIds) {
+        this.estudantesIds = estudantesIds;
+    }
+
+    public Long getProfessorId() {
+        return professorId;
+    }
+
+    public void setProfessorId(Long professorId) {
+        this.professorId = professorId;
     }
 }

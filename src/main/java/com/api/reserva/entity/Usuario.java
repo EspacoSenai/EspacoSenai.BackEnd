@@ -24,16 +24,15 @@ public class Usuario {
 
     private String senha;
 
-    @Column(unique = true, length = 7)
+    @Column(unique = true, length = 5)
     private String tag;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UsuarioStatus status;
 
-    @OneToMany(mappedBy = "convidado", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ReservaConvidados> convites = new HashSet<>();
-
+    @OneToMany(mappedBy = "usuario")
+    private Set<Notificacao> notificacoes = new HashSet<>();
 
     @Column(nullable = false)
     @ManyToMany
@@ -43,6 +42,12 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "host")
+    private Set<Reserva> hostReservas = new HashSet<>();
+
+    @ManyToMany(mappedBy = "membros", fetch = FetchType.LAZY)
+    private Set<Reserva> membroReservas = new HashSet<>();
 
     public Usuario() {
     }
@@ -62,6 +67,26 @@ public class Usuario {
         senha = usuarioDTO.getSenha();
         tag = usuarioDTO.getTag();
         status = usuarioDTO.getStatus();
+    }
+
+    public void gerarTag() {
+        Random random = new Random();
+        Integer nmrTag = random.nextInt(9999) + 1;
+//
+////        if (this.roles == UsuarioRole.ESTUDANTE) {
+////            this.tag = String.format("ESE%05d", nmrTag);
+////        } else if (this.role == UsuarioRole.COORDENADOR) {
+////            this.tag = String.format("ESC%05d", nmrTag);
+////        } else if (this.role == UsuarioRole.ADMIN) {
+////            this.tag = String.format("ESA%05d", nmrTag);
+////        } else {
+////            throw new TagCriacaoException();
+////        }
+        this.tag = String.format("%07d", nmrTag);
+    }
+
+    public boolean isLoginValid(String rawPassword, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(rawPassword, this.senha);
     }
 
     public Long getId() {
@@ -117,31 +142,27 @@ public class Usuario {
 
     }
 
-    public void gerarTag() {
-        Random random = new Random();
-        Integer nmrTag = random.nextInt(9999) + 1;
-//
-////        if (this.roles == UsuarioRole.ESTUDANTE) {
-////            this.tag = String.format("ESE%05d", nmrTag);
-////        } else if (this.role == UsuarioRole.COORDENADOR) {
-////            this.tag = String.format("ESC%05d", nmrTag);
-////        } else if (this.role == UsuarioRole.ADMIN) {
-////            this.tag = String.format("ESA%05d", nmrTag);
-////        } else {
-////            throw new TagCriacaoException();
-////        }
-        this.tag = String.format("%07d", nmrTag);
+    public Set<Reserva> getMembroReservas() {
+        return membroReservas;
     }
 
-    public boolean isLoginValid(String rawPassword, PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(rawPassword, this.senha);
+    public void setMembroReservas(Set<Reserva> participacoes) {
+        this.membroReservas = participacoes;
     }
 
-    public Set<ReservaConvidados> getConvites() {
-        return convites;
+    public Set<Notificacao> getNotificacoes() {
+        return notificacoes;
     }
 
-    public void setConvites(Set<ReservaConvidados> convites) {
-        this.convites = convites;
+    public void setNotificacoes(Set<Notificacao> notificacoes) {
+        this.notificacoes = notificacoes;
+    }
+
+    public Set<Reserva> getHostReservas() {
+        return hostReservas;
+    }
+
+    public void setHostReservas(Set<Reserva> minhasReservas) {
+        this.hostReservas = minhasReservas;
     }
 }
