@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gerenciar Cursos - Espaço Senai</title>
+  <link rel="stylesheet" href="/templates/dark.css" />
+  <style>
+    header { display:flex; align-items:center; justify-content:space-between; margin-bottom: 1rem; }
+    .badgelike { padding: .15rem .4rem; border-radius: .35rem; background: var(--muted-2); color: var(--text); font-size: .8rem; }
+    .actions { display:flex; gap:.4rem; }
+    form.inline { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .hidden { display:none !important; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { padding:.5rem; border-bottom:1px solid var(--muted-2); text-align:left; }
+  </style>
+  <script defer src="/templates/cursos.js"></script>
+  <script>
+    // Proteção simples: se não houver token, volta pro login
+    (function(){
+      try { if(!localStorage.getItem('accessToken')) location.href='/login'; } catch(e) { location.href='/login'; }
+    })();
+  </script>
+  </head>
+<body>
+<div class="container" style="align-items: start;">
+  <div class="card" style="max-width: 980px; width: 100%;">
+    <header>
+      <h2>Cursos</h2>
+      <div>
+        <a class="badgelike" href="/home">Voltar</a>
+      </div>
+    </header>
+
+    <section id="toolbar" class="card-lite">
+      <h3>Ações</h3>
+      <div class="actions">
+        <button id="btnNovo" class="hidden">Novo curso</button>
+        <button id="btnRecarregar">Recarregar</button>
+      </div>
+    </section>
+
+    <section class="card-lite">
+      <h3>Lista</h3>
+      <table>
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th style="width:1%">Ações</th>
+        </tr>
+        </thead>
+        <tbody id="tbodyCursos">
+        <tr><td colspan="4">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="secForm" class="card-lite hidden">
+      <h3 id="formTitulo">Novo curso</h3>
+      <form id="formCurso" class="inline">
+        <input type="hidden" id="cursoId" />
+        <label>
+          <span>Nome</span>
+          <input id="cursoNome" required />
+        </label>
+        <label style="flex:1">
+          <span>Descrição</span>
+          <input id="cursoDesc" />
+        </label>
+        <div class="actions">
+          <button id="btnSalvar" type="submit">Salvar</button>
+          <button id="btnCancelar" type="button">Cancelar</button>
+        </div>
+      </form>
+    </section>
+
+    <div id="feedback" class="feedback" style="margin-top:1rem"></div>
+  </div>
+  
+</div>
+
+</body>
+</html>
