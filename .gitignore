@@ -20,6 +20,7 @@ target/
 *.ipr
 src/main/resources/app.key
 src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
 
 
 ### NetBeans ###
