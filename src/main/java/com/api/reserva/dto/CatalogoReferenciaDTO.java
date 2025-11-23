@@ -1,36 +1,38 @@
 package com.api.reserva.dto;
 
 import com.api.reserva.entity.Catalogo;
-import com.api.reserva.entity.Horario;
-import com.api.reserva.enums.Agendamento;
 import com.api.reserva.enums.DiaSemana;
 import com.api.reserva.enums.Disponibilidade;
 
+import java.time.LocalTime;
+
 public class CatalogoReferenciaDTO {
     private Long id;
-    private AmbienteReferenciaDTO ambiente;
-//    private Agendamento agendamento;
+    private Long ambienteId;  // ← Apenas ID, não o objeto completo
     private DiaSemana diaSemana;
-//    private Horario horario;
+    private LocalTime horaInicio;
+    private LocalTime horaFim;
     private Disponibilidade disponibilidade;
 
     public CatalogoReferenciaDTO() {
     }
 
-    public CatalogoReferenciaDTO(Long id, AmbienteReferenciaDTO ambiente, Agendamento agendamento,
-                                 DiaSemana diaSemana, Horario horario, Disponibilidade disponibilidade) {
+    public CatalogoReferenciaDTO(Long id, Long ambienteId, DiaSemana diaSemana,
+                                 LocalTime horaInicio, LocalTime horaFim, Disponibilidade disponibilidade) {
         this.id = id;
-        this.ambiente = ambiente;
-//        this.agendamento = agendamento;
+        this.ambienteId = ambienteId;
         this.diaSemana = diaSemana;
-//        this.horario = horario;
+        this.horaInicio = horaInicio;
+        this.horaFim = horaFim;
         this.disponibilidade = disponibilidade;
     }
 
     public CatalogoReferenciaDTO(Catalogo catalogo) {
         id = catalogo.getId();
-        ambiente = new AmbienteReferenciaDTO(catalogo.getAmbiente());
+        ambienteId = catalogo.getAmbiente().getId();  // ← Apenas ID
         diaSemana = catalogo.getDiaSemana();
+        horaInicio = catalogo.getHoraInicio();
+        horaFim = catalogo.getHoraFim();
         disponibilidade = catalogo.getDisponibilidade();
     }
 
@@ -38,14 +40,13 @@ public class CatalogoReferenciaDTO {
         return id;
     }
 
-    public AmbienteReferenciaDTO getAmbiente() {
-        return ambiente;
+    public Long getAmbienteId() {
+        return ambienteId;
     }
 
-    public void setAmbiente(AmbienteReferenciaDTO ambiente) {
-        this.ambiente = ambiente;
+    public void setAmbienteId(Long ambienteId) {
+        this.ambienteId = ambienteId;
     }
-
 
     public DiaSemana getDiaSemana() {
         return diaSemana;
@@ -61,5 +62,21 @@ public class CatalogoReferenciaDTO {
 
     public void setDisponibilidade(Disponibilidade disponibilidade) {
         this.disponibilidade = disponibilidade;
+    }
+
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public LocalTime getHoraFim() {
+        return horaFim;
+    }
+
+    public void setHoraFim(LocalTime horaFim) {
+        this.horaFim = horaFim;
     }
 }

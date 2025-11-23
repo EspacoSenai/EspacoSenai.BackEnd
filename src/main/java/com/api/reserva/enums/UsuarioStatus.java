@@ -2,17 +2,11 @@ package com.api.reserva.enums;
 
 public enum UsuarioStatus {
     // Usuario está ativo e pode acessar normalmente o sistema.
-    ATIVO,
-    // Usuario foi pré-cadastrado (planilha ou externo) e precisa confirmar o código enviado por e-mail.
-    INATIVO,
-    // Cadastro externo: usuário confirmou o e-mail, mas aguarda aprovação manual do administrador/coordenador.
-    PENDENTE,
-    // Usuario teve o acesso bloqueado, geralmente por violação de regras.
-    BLOQUEADO,
-    // Usuario foi removido do sistema e não tem mais acesso.
-    EXCLUIDO,
+    ATIVO(1L),
+    // Usuario teve o acesso bloqueado indefinidamente.
+    BLOQUEADO(3L),
     // Usuario teve a matrícula expirada e não pode acessar o sistema.
-    MATRICULA_EXPIRADA
+    MATRICULA_EXPIRADA(5L);
     /*
      * Fluxo de status:
      * - Pré-cadastro (planilha ou externo): INATIVO → (confirma e-mail)
@@ -20,4 +14,29 @@ public enum UsuarioStatus {
      *   - Se for externo: INATIVO → PENDENTE → (aprovado) → ATIVO
      * - ATIVO pode virar BLOQUEADO, EXCLUIDO ou MATRICULA_EXPIRADA conforme regras.
      */
-}
+
+    private final Long id;
+
+    UsuarioStatus(Long codigo) {
+        this.id = codigo;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    // Retorna o UsuarioStatus correspondente ao id fornecido.
+    // Lança IllegalArgumentException se nenhum status corresponder ao id.
+    public static UsuarioStatus fromId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id não pode ser nulo");
+        }
+        for (UsuarioStatus s : values()) {
+            if (s.getId().equals(id)) {
+                return s;
+            }
+        }
+        throw new IllegalArgumentException("Nenhum UsuarioStatus para id: " + id);
+    }
+
+  }

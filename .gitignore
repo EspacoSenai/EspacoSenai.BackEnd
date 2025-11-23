@@ -21,6 +21,7 @@ target/
 src/main/resources/app.key
 src/main/resources/application-dev.properties
 
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

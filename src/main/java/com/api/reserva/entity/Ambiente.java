@@ -15,7 +15,7 @@ public class Ambiente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false,  length = 100)
+    @Column(unique = true, nullable = false, length = 100)
     private String nome;
 
     @Column(length = 500)
@@ -29,36 +29,27 @@ public class Ambiente {
     @Enumerated(EnumType.STRING)
     private Aprovacao aprovacao;
 
-    @Column(nullable = false)
-    private Integer qtdPessoas;
+    private boolean emUso;
 
-    // Mapeamento muit  os para muitos entre Ambiente e Categoria
-    @ManyToMany
-    @JoinTable(
-            name = "tb_ambiente_categoria",
-            joinColumns = @JoinColumn(name = "id_ambiente"),
-            inverseJoinColumns = @JoinColumn(name = "id_categoria")
-    )
-    private Set<Categoria> categorias = new HashSet<>();
+    @OneToMany(mappedBy = "ambiente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Recurso> recursos = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "tb_ambiente_responsavel",
-            joinColumns = @JoinColumn(name = "ambiente_id"),
-            inverseJoinColumns = @JoinColumn(name = "responsavel_id")
-    )
-    private Set<Usuario> responsaveis = new HashSet<>();
+    @OneToMany(mappedBy = "ambiente", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Catalogo> catalogos = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "responsavel_id")
+    private Usuario responsavel;
 
     public Ambiente() {
     }
-
 
     public Ambiente(AmbienteDTO ambienteDTO) {
         nome = ambienteDTO.getNome();
         descricao = ambienteDTO.getDescricao();
         disponibilidade = ambienteDTO.getDisponibilidade();
         aprovacao = ambienteDTO.getAprovacao();
-        qtdPessoas = ambienteDTO.getQtdPessoas();
+        emUso = ambienteDTO.isEmUso();
     }
 
     public Long getId() {
@@ -97,27 +88,35 @@ public class Ambiente {
         this.aprovacao = aprovacao;
     }
 
-    public Set<Categoria> getCategorias() {
-        return categorias;
+    public Usuario getResponsavel() {
+        return responsavel;
     }
 
-    public void setCategorias(Set<Categoria> categorias) {
-        this.categorias = categorias;
+    public void setResponsavel(Usuario responsavel) {
+        this.responsavel = responsavel;
     }
 
-    public Set<Usuario> getResponsaveis() {
-        return responsaveis;
+    public boolean isEmUso() {
+        return emUso;
     }
 
-    public void setResponsaveis(Set<Usuario> responsaveis) {
-        this.responsaveis = responsaveis;
+    public void setEmUso(boolean emUso) {
+        this.emUso = emUso;
     }
 
-    public Integer getQtdPessoas() {
-        return qtdPessoas;
+    public Set<Catalogo> getCatalogos() {
+        return catalogos;
     }
 
-    public void setQtdPessoas(Integer qtdPessoas) {
-        this.qtdPessoas = qtdPessoas;
+    public void setCatalogos(Set<Catalogo> catalogos) {
+        this.catalogos = catalogos;
+    }
+
+    public Set<Recurso> getRecursos() {
+        return recursos;
+    }
+
+    public void setRecursos(Set<Recurso> recursos) {
+        this.recursos = recursos;
     }
 }

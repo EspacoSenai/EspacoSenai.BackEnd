@@ -3,7 +3,6 @@ package com.api.reserva.dto;
 import com.api.reserva.entity.Role;
 import com.api.reserva.entity.Usuario;
 import com.api.reserva.enums.UsuarioStatus;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -29,8 +28,6 @@ public class UsuarioDTO {
     @Size(min = 8, max = 15,  message = "A senha deve possuir entre 8 e 15 caracteres.")
     private String senha;
 
-    private String tag;
-
     private UsuarioStatus status;
 
     private Set<Long> rolesIds = new HashSet<>(); ;
@@ -43,17 +40,15 @@ public class UsuarioDTO {
         this.nome = usuario.getNome();
         this.email = usuario.getEmail();
         this.senha = usuario.getSenha();
-        this.tag = usuario.getTag();
         this.status = usuario.getStatus();
         this.rolesIds = usuario.getRoles().stream().map(Role::getId).collect(java.util.stream.Collectors.toSet());
     }
 
-    public UsuarioDTO(String nome, String email, String senha, String tag,
+    public UsuarioDTO(String nome, String email, String senha,
                       UsuarioStatus status, Set<Long> roles) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.tag = tag;
         this.status = status;
         this.rolesIds = roles;
     }
@@ -103,11 +98,4 @@ public class UsuarioDTO {
         this.rolesIds = rolesIds;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
 }

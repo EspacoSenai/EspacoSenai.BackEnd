@@ -26,6 +26,7 @@ public class AuthController {
     private UsuarioService usuarioService;
     @Autowired
     private CodigoService codigoService;
+
     @Autowired
     private PreCadastroService preCadastroService;
     @Autowired
@@ -35,20 +36,22 @@ public class AuthController {
         return UUID.randomUUID().toString();
     }
 
-//    @PostMapping("/signup")
-//    public ResponseEntity<Object> salvar(@Valid @RequestBody UsuarioDTO usuarioDTO, Authentication authentication) {
-//
-//        if(preCadastroService.verificarElegibilidade(usuarioDTO.getEmail())) {
-//
-//        }
-//
-//        return ResponseBuilder.respostaSimples(HttpStatus.CREATED,
-//                "Se elegível para o cadastro, um e-mail de confirmação foi enviado.");
-//    }
 
     @PostMapping("/signin")
-    public ResponseEntity<LoginResponse> signIn(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(tokenService.signIn(loginRequest));
+    public ResponseEntity<LoginResponse> signIn(@RequestBody LoginRequest loginRequest, 
+                                                 jakarta.servlet.http.HttpServletResponse response) {
+        LoginResponse loginResponse = tokenService.signIn(loginRequest);
+        
+        // Create HTTP-only cookie with JWT token
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("access_token", loginResponse.accessToken());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // Set to true in production with HTTPS
+        cookie.setPath("/");
+        cookie.setMaxAge(Math.toIntExact(loginResponse.expiresIn())); // Convert to seconds
+        
+        response.addCookie(cookie);
+        
+        return ResponseEntity.ok(loginResponse);
     }
 
     @PostMapping("/signup")
@@ -61,7 +64,7 @@ public class AuthController {
                 .body(Map.of(
                         "status", HttpStatus.OK.value(),
                         "message", "Se elegível para cadastro, " +
-                                "um código de verificação foi enviado para" + usuarioDTO.getEmail(),
+                                "um código de verificação foi enviado para " + usuarioDTO.getEmail(),
                         "token", token));
     }
 
@@ -93,5 +96,19 @@ public class AuthController {
     public ResponseEntity<Object> redefinirSenhaNovaSenha(@PathVariable String token, @RequestBody NovaSenhaRequest novaSenhaRequest) {
         usuarioService.redefinirSenhaNovaSenha(token, novaSenhaRequest.getNovaSenha());
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Senha redefinida com sucesso.");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Object> logout(jakarta.servlet.http.HttpServletResponse response) {
+        // Clear the access_token cookie
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("access_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // Delete cookie
+        
+        response.addCookie(cookie);
+        
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Logout realizado com sucesso.");
     }
 }

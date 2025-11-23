@@ -15,12 +15,13 @@ public class CatalogoDTO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Escolha um ambiente para vincular a esta grade.")
+    @NotNull(message = "Escolha um ambiente para vincular a este catálogo.")
     private Long idAmbiente;
 
 //    private Long idHorario;
 
     @NotNull(message = "Defina a partir de que horário o ambiente ficará disponível.")
+
     private LocalTime horaInicio;
 
     @NotNull(message = "Defina a partir de que horário o ambiente ficará indisponível.")
@@ -32,7 +33,7 @@ public class CatalogoDTO {
     @NotNull(message = "Escolha um dia da semana.")
     private DiaSemana diaSemana;
 
-    @NotNull(message = "Indique a disponibilidade desta grade atualmente.")
+    @NotNull(message = "Indique a disponibilidade deste catalogo atualmente.")
     private Disponibilidade disponibilidade;
 
     public CatalogoDTO() {

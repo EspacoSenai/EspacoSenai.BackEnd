@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("ambiente")
@@ -21,11 +21,13 @@ public class  AmbienteController {
     @Autowired
     private AmbienteService ambienteService;
 
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
     @GetMapping("/buscar")
     public ResponseEntity<List<AmbienteReferenciaDTO>> buscar() {
         return ResponseEntity.ok(ambienteService.buscar());
     }
 
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
     @GetMapping("/buscar/{id}")
     public ResponseEntity<AmbienteReferenciaDTO> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(ambienteService.buscar(id));
@@ -40,8 +42,9 @@ public class  AmbienteController {
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
     @PatchMapping("/atualizar/{id}")
-    public ResponseEntity<Object> atualizar (@PathVariable Long id, @Valid @RequestBody AmbienteDTO ambienteDTO) {
-        ambienteService.atualizar(id, ambienteDTO);
+    public ResponseEntity<Object> atualizar (@PathVariable Long id, @Valid @RequestBody AmbienteDTO ambienteDTO,
+                                             Authentication authentication) {
+        ambienteService.atualizar(id, ambienteDTO, authentication);
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Ambiente atualizado com sucesso.");
     }
 
@@ -52,17 +55,24 @@ public class  AmbienteController {
         return ResponseBuilder.respostaSimples(HttpStatus.NO_CONTENT, "Ambiente excluído com sucesso.");
     }
 
-//    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
-//    @PutMapping("/associarcategorias/{id}")
-//    public ResponseEntity<Object> associarCategorias(@PathVariable Long ambienteId, @RequestBody Set<Long> categoriasIds) {
-//        ambienteService.associarCategorias(categoriasIds, ambienteId);
-//        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Categorias associadas.");
-//    }
-
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
-    @PutMapping("/associarresponsaveis/{ambienteId}")
-    public ResponseEntity<Object> associarResponsaveis(@PathVariable Long ambienteId, @RequestBody Set<Long> responsaveisIds) {
-        ambienteService.associarResponsaveis(ambienteId, responsaveisIds);
-        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Responsáveis pelo ambiente adicionados.");
+    @PutMapping("/atribuir-responsavel/{ambienteId}/{responsavelId}")
+    public ResponseEntity<Object> atribuirResponsavel(@PathVariable Long ambienteId, @PathVariable Long responsavelId) {
+        ambienteService.atribuirResponsavel(ambienteId, responsavelId);
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Responsável atribuído ao ambiente com sucesso.");
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
+    @PatchMapping("/indisponibilizar/{id}")
+    public ResponseEntity<Object> indisponibilizarAmbiente(@PathVariable Long id) {
+        ambienteService.indisponibilizarAmbiente(id);
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Ambiente indisponibilizado. Todas as reservas pendentes foram canceladas.");
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
+    @PatchMapping("/disponibilizar/{id}")
+    public ResponseEntity<Object> disponibilizarAmbiente(@PathVariable Long id) {
+        ambienteService.disponibilizarAmbiente(id);
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Ambiente disponibilizado. Todos os catálogos foram reativados.");
     }
 }

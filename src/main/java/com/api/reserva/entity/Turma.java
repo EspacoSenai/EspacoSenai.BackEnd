@@ -1,5 +1,6 @@
 package com.api.reserva.entity;
 
+import com.api.reserva.util.CodigoUtil;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -13,22 +14,24 @@ public class Turma {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100, nullable = false, unique = true)
     private String nome;
-
-    @ManyToOne
-    @JoinColumn(name = "curso_id", nullable = false)
-    private Curso curso;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Modalidade modalidade;
+
+    @Column(length = 100, nullable = false)
+    private String curso;
 
     @Column(nullable = false)
     private LocalDate dataInicio;
 
     @Column(nullable = false)
     private LocalDate dataTermino;
+
+    @Column(nullable = false, unique = true)
+    private String codigoAcesso;
 
     @ManyToMany
     @JoinTable(
@@ -37,20 +40,24 @@ public class Turma {
             inverseJoinColumns = @JoinColumn(name = "estudante_id"))
     private Set<Usuario> estudantes = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "tb_turmas_professores",
-            joinColumns = @JoinColumn(name = "turma_id"),
-            inverseJoinColumns = @JoinColumn(name = "professor_id"))
-    private Set<Usuario> professores = new HashSet<>();
+    @Column(nullable = false)
+    private Integer capacidade;
+
+    @ManyToOne
+    @JoinColumn(name = "professor_id", nullable = false)
+    private Usuario professor;
 
     public Turma() {
     }
 
-    public Turma(String nome, LocalDate dataInicio, LocalDate dataTermino) {
+    public Turma(String nome, Modalidade modalidade, String curso, LocalDate dataInicio, LocalDate dataTermino, Integer capacidade) {
         this.nome = nome;
+        this.modalidade = modalidade;
+        this.curso = curso;
         this.dataInicio = dataInicio;
         this.dataTermino = dataTermino;
+        this.capacidade = capacidade;
+        this.codigoAcesso = CodigoUtil.gerarCodigo(5);
     }
 
     public Long getId() {
@@ -81,6 +88,14 @@ public class Turma {
         this.dataTermino = dataTermino;
     }
 
+    public String getCodigoAcesso() {
+        return codigoAcesso;
+    }
+
+    public void setCodigoAcesso(String codigoAcesso) {
+        this.codigoAcesso = codigoAcesso;
+    }
+
     public Set<Usuario> getEstudantes() {
         return estudantes;
     }
@@ -97,20 +112,28 @@ public class Turma {
         this.modalidade = modalidade;
     }
 
-    public Curso getCurso() {
+    public String getCurso() {
         return curso;
     }
 
-    public void setCurso(Curso curso) {
+    public void setCurso(String curso) {
         this.curso = curso;
     }
 
-    public Set<Usuario> getProfessores() {
-        return professores;
+    public Usuario getProfessor() {
+        return professor;
     }
 
-    public void setProfessores(Set<Usuario> professores) {
-        this.professores = professores;
+    public void setProfessor(Usuario professor) {
+        this.professor = professor;
+    }
+
+    public int getCapacidade() {
+        return capacidade;
+    }
+
+    public void setCapacidade(Integer capacidadeMaxima) {
+        this.capacidade = capacidadeMaxima;
     }
 
     public enum Modalidade {

@@ -1,18 +1,17 @@
 package com.api.reserva.dto;
 
-import com.api.reserva.entity.Catalogo;
 import com.api.reserva.entity.Reserva;
-import com.api.reserva.entity.Usuario;
 import com.api.reserva.enums.StatusReserva;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Set;
 
 public class ReservaReferenciaDTO {
     private Long id;
-    private Usuario usuario;
-    private Catalogo catalogo;
+    private UsuarioReferenciaDTO host;
+    private CatalogoReferenciaDTO catalogo;
     private LocalDate data;
     private LocalTime horaInicio;
     private LocalTime horaFim;
@@ -20,22 +19,25 @@ public class ReservaReferenciaDTO {
     private String msgUsuario;
     private String msgInterna;
     private LocalDateTime dataHoraSolicitacao;
+    private Set<UsuarioReferenciaDTO> membros;
 
     public ReservaReferenciaDTO() {
     }
 
     public ReservaReferenciaDTO(Reserva reserva) {
         id = reserva.getId();
-        usuario = reserva.getHost();
-        catalogo = reserva.getGradeAmbiente();
+        host = new UsuarioReferenciaDTO(reserva.getHost());
+        catalogo = new CatalogoReferenciaDTO(reserva.getCatalogo());
         data = reserva.getData();
         horaInicio = reserva.getHoraInicio();
         horaFim = reserva.getHoraFim();
         statusReserva = reserva.getStatusReserva();
         msgUsuario = reserva.getMsgUsuario();
         msgInterna = reserva.getMsgInterna();
+        membros = reserva.getMembros().stream().map(UsuarioReferenciaDTO::new).collect(java.util.stream.Collectors.toSet());
         dataHoraSolicitacao = reserva.getDataHoraSolicitacao();
     }
+
 
     public Long getId() {
         return id;
@@ -45,19 +47,27 @@ public class ReservaReferenciaDTO {
         this.id = id;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public UsuarioReferenciaDTO getHost() {
+        return host;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setHost(UsuarioReferenciaDTO host) {
+        this.host = host;
     }
 
-    public Catalogo getGradeAmbiente() {
+    public Set<UsuarioReferenciaDTO> getMembros() {
+        return membros;
+    }
+
+    public void setMembros(Set<UsuarioReferenciaDTO> membros) {
+        this.membros = membros;
+    }
+
+    public CatalogoReferenciaDTO getCatalogo() {
         return catalogo;
     }
 
-    public void setGradeAmbiente(Catalogo catalogo) {
+    public void setCatalogo(CatalogoReferenciaDTO catalogo) {
         this.catalogo = catalogo;
     }
 

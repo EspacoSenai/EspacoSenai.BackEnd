@@ -7,7 +7,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.core.io.Resource;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,18 +20,27 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.util.StringUtils;
 
+import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${jwt.private.key}")
-    private RSAPrivateKey privateKey;
+    @Value("${jwt.private.key:}")
+    private String privateKeyLocation;
+
+    @Value("${JWT_PRIVATE_KEY:}")
+    private String privateKeyContent;
 
     @Value("${jwt.public.key}")
     private RSAPublicKey publicKey;
@@ -53,20 +62,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                // Configura as autorizações para as requisições HTTP
-                .authorizeHttpRequests(authorization -> authorization
-                        // Permite acesso público ao endpoint de login (POST e GET)
-                        .requestMatchers(HttpMethod.GET,"/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/usuario/confirmar-conta/{token}/{codigo}").permitAll()
-                        // Exige autenticação para qualquer outra requisição
-                        .anyRequest().authenticated())
-                // Desabilita a proteção contra CSRF
+        .authorizeHttpRequests(authorization -> authorization
+                .requestMatchers("/").permitAll()
+                .requestMatchers("/index.html").permitAll()
+                .requestMatchers("/dashboard.html").permitAll()
+                .requestMatchers("/login").permitAll()
+                .requestMatchers("/register").permitAll()
+                .requestMatchers("/auth/signin").permitAll()
+                .requestMatchers("/auth/signup").permitAll()
+                .requestMatchers("/auth/confirmar-conta/**").permitAll()
+                .requestMatchers("/auth/redefinir-senha/**").permitAll()
+                .requestMatchers("/auth/logout").permitAll()
+                .requestMatchers("/css/**").permitAll()
+                .requestMatchers("/js/**").permitAll()
+                .requestMatchers("/images/**").permitAll()
+                .requestMatchers("/assets/**").permitAll()
+                .requestMatchers("/static/**").permitAll()
+                .requestMatchers("/webjars/**").permitAll()
+                .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
-                // Configura o servidor de recursos OAuth2 para usar JWT
                 .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(Customizer.withDefaults()))
-                // Define a política de criação de sessão como sem estado
+                    oauth2.bearerTokenResolver(cookieBearerTokenResolver()).jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
@@ -98,6 +114,8 @@ public class SecurityConfig {
      */
     @Bean
     public JwtEncoder jwtEncoder() {
+        RSAPrivateKey privateKey = loadPrivateKey();
+
         // Cria um objeto JWK (JSON Web Key) com a chave pública e privada RSA
         JWK jwk = new RSAKey.Builder((this.publicKey)) // Configura a chave pública RSA
                 .privateKey(privateKey) // Configura a chave privada RSA
@@ -108,6 +126,73 @@ public class SecurityConfig {
 
         // Retorna um codificador de JWT configurado com o JWKSet
         return new NimbusJwtEncoder(jwks);
+    }
+
+    @Bean
+    public BearerTokenResolver cookieBearerTokenResolver() {
+        return new CookieBearerTokenResolver();
+    }
+
+    /**
+     * Carrega a chave privada RSA de forma flexível:
+     * 1. Tenta carregar de arquivo (via jwt.private.key) - usado em dev local
+     * 2. Se não encontrar, tenta carregar de variável de ambiente JWT_PRIVATE_KEY como string PEM - usado em produção
+     *
+     * @return RSAPrivateKey carregada
+     * @throws RuntimeException se não conseguir carregar a chave de nenhuma fonte
+     */
+    private RSAPrivateKey loadPrivateKey() {
+        try {
+            // Cenário 1: Dev local - carrega de arquivo
+            if (StringUtils.hasText(privateKeyLocation) && privateKeyLocation.startsWith("classpath:")) {
+                return loadPrivateKeyFromFile();
+            }
+
+            // Cenário 2: Produção - carrega de variável de ambiente como string
+            if (StringUtils.hasText(privateKeyContent)) {
+                return loadPrivateKeyFromString(privateKeyContent);
+            }
+
+            throw new IllegalStateException(
+                "Chave privada não configurada. Configure jwt.private.key (arquivo) ou JWT_PRIVATE_KEY (string PEM)"
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao carregar chave privada RSA", e);
+        }
+    }
+
+    /**
+     * Carrega chave privada de arquivo (dev local)
+     */
+    private RSAPrivateKey loadPrivateKeyFromFile() throws Exception {
+        org.springframework.core.io.ResourceLoader resourceLoader =
+            new org.springframework.core.io.DefaultResourceLoader();
+        Resource resource = resourceLoader.getResource(privateKeyLocation);
+
+        String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        return loadPrivateKeyFromString(content);
+    }
+
+    /**
+     * Converte string PEM para RSAPrivateKey
+     */
+    private RSAPrivateKey loadPrivateKeyFromString(String keyContent) throws Exception {
+        // Remove cabeçalhos e rodapés PEM e quebras de linha
+        String privateKeyPEM = keyContent
+            .replace("-----BEGIN PRIVATE KEY-----", "")
+            .replace("-----END PRIVATE KEY-----", "")
+            .replace("-----BEGIN RSA PRIVATE KEY-----", "")
+            .replace("-----END RSA PRIVATE KEY-----", "")
+            .replaceAll("\\s", "");
+
+        // Decodifica Base64
+        byte[] encoded = Base64.getDecoder().decode(privateKeyPEM);
+
+        // Gera a chave privada
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
+        return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
     }
 
     /**

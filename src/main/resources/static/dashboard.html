@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Espaço SENAI</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>Espaço SENAI</h1>
+                <div class="user-info">
+                    <span id="user-name">Carregando...</span>
+                    <button onclick="logout()" class="btn btn-logout">Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="dashboard-welcome">
+                <h2>Bem-vindo ao Dashboard</h2>
+                <p>Sistema de Gestão de Reservas do Espaço SENAI</p>
+            </div>
+
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3>Minhas Reservas</h3>
+                    <p>Visualize e gerencie suas reservas ativas</p>
+                    <button class="btn btn-secondary" onclick="showMinhasReservas()">Ver Reservas</button>
+                </div>
+
+                <div class="card">
+                    <h3>Ambientes</h3>
+                    <p>Explore os ambientes disponíveis para reserva</p>
+                    <button class="btn btn-secondary" onclick="showAmbientes()">Ver Ambientes</button>
+                </div>
+
+                <div class="card">
+                    <h3>Nova Reserva</h3>
+                    <p>Faça uma nova reserva de ambiente</p>
+                    <button class="btn btn-secondary" onclick="showNovaReserva()">Reservar</button>
+                </div>
+
+                <div class="card">
+                    <h3>Turmas</h3>
+                    <p>Gerencie turmas e estudantes</p>
+                    <button class="btn btn-secondary" onclick="showTurmas()">Ver Turmas</button>
+                </div>
+
+                <div class="card">
+                    <h3>Meu Perfil</h3>
+                    <p>Visualize e edite suas informações</p>
+                    <button class="btn btn-secondary" onclick="loadProfile()">Ver Perfil</button>
+                </div>
+            </div>
+
+            <div id="profile-section" class="content-section" style="display: none;">
+                <h3>Meu Perfil</h3>
+                <div id="profile-content" class="profile-content">
+                    <p>Carregando informações...</p>
+                </div>
+            </div>
+
+            <!-- Minhas Reservas Section -->
+            <div id="reservas-section" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h3>Minhas Reservas</h3>
+                    <button class="btn btn-secondary" onclick="hideAllSections()">Voltar</button>
+                </div>
+                <div id="reservas-content" class="content-grid">
+                    <p>Carregando reservas...</p>
+                </div>
+            </div>
+
+            <!-- Ambientes Section -->
+            <div id="ambientes-section" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h3>Ambientes Disponíveis</h3>
+                    <button class="btn btn-secondary" onclick="hideAllSections()">Voltar</button>
+                </div>
+                <div id="ambientes-content" class="content-grid">
+                    <p>Carregando ambientes...</p>
+                </div>
+            </div>
+
+            <!-- Nova Reserva Section -->
+            <div id="nova-reserva-section" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h3>Nova Reserva</h3>
+                    <button class="btn btn-secondary" onclick="hideAllSections()">Voltar</button>
+                </div>
+                <div class="form-container">
+                    <form id="nova-reserva-form">
+                        <div class="form-group">
+                            <label for="reserva-ambiente">Ambiente</label>
+                            <select id="reserva-ambiente" name="ambienteId" required onchange="loadCatalogos()">
+                                <option value="">Selecione um ambiente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reserva-catalogo">Horário Disponível</label>
+                            <select id="reserva-catalogo" name="catalogoId" required disabled>
+                                <option value="">Selecione um ambiente primeiro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reserva-data">Data</label>
+                            <input type="date" id="reserva-data" name="data" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reserva-hora-inicio">Hora Início</label>
+                                <input type="time" id="reserva-hora-inicio" name="horaInicio" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reserva-hora-fim">Hora Fim</label>
+                                <input type="time" id="reserva-hora-fim" name="horaFim" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reserva-mensagem">Mensagem (opcional)</label>
+                            <textarea id="reserva-mensagem" name="msgUsuario" rows="3" maxlength="500" placeholder="Descreva o propósito da reserva..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Criar Reserva</button>
+                        <div id="reserva-error" class="error-message"></div>
+                        <div id="reserva-success" class="success-message"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Turmas Section -->
+            <div id="turmas-section" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h3>Turmas</h3>
+                    <button class="btn btn-secondary" onclick="hideAllSections()">Voltar</button>
+                </div>
+                <div id="turmas-actions" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="showNovaTurma()" id="btn-nova-turma" style="display: none;">Nova Turma</button>
+                    <button class="btn btn-primary" onclick="showIngressarTurma()">Ingressar por Código</button>
+                </div>
+                <div id="turmas-content" class="content-grid">
+                    <p>Carregando turmas...</p>
+                </div>
+            </div>
+
+            <!-- Nova/Editar Turma Section -->
+            <div id="form-turma-section" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h3 id="form-turma-title">Nova Turma</h3>
+                    <button class="btn btn-secondary" onclick="showTurmas()">Voltar</button>
+                </div>
+                <div class="form-container">
+                    <form id="form-turma">
+                        <input type="hidden" id="turma-id">
+                        <div class="form-group">
+                            <label for="turma-nome">Nome da Turma *</label>
+                            <input type="text" id="turma-nome" required maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="turma-curso">Curso *</label>
+                            <input type="text" id="turma-curso" required maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="turma-modalidade">Modalidade *</label>
+                            <select id="turma-modalidade" required>
+                                <option value="">Selecione...</option>
+                                <option value="FIC">FIC</option>
+                                <option value="TECNICO">Técnico</option>
+                                <option value="FACULDADE">Faculdade</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="turma-capacidade">Capacidade *</label>
+                            <input type="number" id="turma-capacidade" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="turma-data-inicio">Data de Início *</label>
+                            <input type="date" id="turma-data-inicio" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="turma-data-termino">Data de Término *</label>
+                            <input type="date" id="turma-data-termino" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar Turma</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Detalhes da Turma Section -->
+            <div id="detalhes-turma-section" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h3 id="detalhes-turma-title">Detalhes da Turma</h3>
+                    <button class="btn btn-secondary" onclick="showTurmas()">Voltar</button>
+                </div>
+                <div id="detalhes-turma-content"></div>
+            </div>
+
+            <!-- Ingressar por Código Section -->
+            <div id="ingressar-turma-section" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h3>Ingressar em Turma</h3>
+                    <button class="btn btn-secondary" onclick="showTurmas()">Voltar</button>
+                </div>
+                <div class="form-container">
+                    <form id="form-ingressar-turma">
+                        <div class="form-group">
+                            <label for="codigo-acesso">Código de Acesso *</label>
+                            <input type="text" id="codigo-acesso" required maxlength="10" placeholder="Digite o código">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ingressar</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/reservas.js"></script>
+    <script src="js/turmas.js"></script>
+</body>
+</html>

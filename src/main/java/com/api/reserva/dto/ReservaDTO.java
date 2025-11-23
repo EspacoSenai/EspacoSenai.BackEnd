@@ -2,7 +2,6 @@ package com.api.reserva.dto;
 
 import com.api.reserva.entity.Reserva;
 import com.api.reserva.enums.StatusReserva;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -15,20 +14,19 @@ public class ReservaDTO {
 
     private Long id;
 
-    @NotNull(message = "Informe o usuário que será vinculado a essa Reserva.")
     private Long hostId;
 
     // Lista de IDs dos convidados vinculados à reserva
-    private Set<Long> convidadosIds;
+    private Set<Long> membrosIds;
 
     @NotNull(message = "Informe a Catalogo desejado.")
     private Long catalogoId;
 
     @NotNull(message = "Informe a data para a Reserva.")
-    @Future(message = "A data da reserva deve ser futura.")
     private LocalDate data;
 
     @NotNull(message = "Informe o horário de início da reserva.")
+
     private LocalTime horaInicio;
 
     @NotNull(message = "Informe o horário de término da reserva.")
@@ -58,6 +56,8 @@ public class ReservaDTO {
         this.msgUsuario = reserva.getMsgUsuario();
         this.msgInterna = reserva.getMsgInterna();
         this.dataHoraSolicitacao = reserva.getDataHoraSolicitacao();
+        this.membrosIds = reserva.getMembros().stream().map(membro ->
+                membro.getId()).collect(java.util.stream.Collectors.toSet());
     }
 
     public Long getId() {
@@ -68,12 +68,12 @@ public class ReservaDTO {
         return hostId;
     }
 
-    public Set<Long> getConvidadosIds() {
-        return convidadosIds;
+    public Set<Long> getMembrosIds() {
+        return membrosIds;
     }
 
-    public void setConvidadosIds(Set<Long> convidadosIds) {
-        this.convidadosIds = convidadosIds;
+    public void setMembrosIds(Set<Long> membrosIds) {
+        this.membrosIds = membrosIds;
     }
 
     public Long getCatalogoId() {
@@ -140,3 +140,5 @@ public class ReservaDTO {
         this.dataHoraSolicitacao = dataHoraSolicitacao;
     }
 }
+
+

@@ -3,10 +3,6 @@ package com.api.reserva.dto;
 import com.api.reserva.entity.Role;
 import com.api.reserva.entity.Usuario;
 import com.api.reserva.enums.UsuarioStatus;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 import java.util.Set;
 
@@ -19,23 +15,32 @@ public class UsuarioReferenciaDTO {
 
     private String senha;
 
-    private String tag;
-
     private UsuarioStatus status;
 
+
+    private Set<NotificacaoDTO> notificacoes;
+
     private Set<Role> roles;
+
+//    private Set<ReservaReferenciaDTO>  hostReservas;
+//
+//    private Set<ReservaReferenciaDTO> membroReservas;
+
 
     public UsuarioReferenciaDTO() {
     }
 
-    public UsuarioReferenciaDTO(Long id, String nome, String email, String senha, String tag, UsuarioStatus status, Set<Role> roles) {
+    public UsuarioReferenciaDTO(Long id, String nome, String email, String senha, UsuarioStatus status, Set<Role> roles,
+                                Set<NotificacaoDTO> notificacoes, Set<ReservaReferenciaDTO> hostReservas, Set<ReservaReferenciaDTO> membroReservas) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.tag = tag;
         this.status = status;
+        this.notificacoes = notificacoes;
         this.roles = roles;
+//        this.hostReservas = hostReservas;
+//        this.membroReservas = membroReservas;
     }
 
     public UsuarioReferenciaDTO(Usuario usuario) {
@@ -43,9 +48,12 @@ public class UsuarioReferenciaDTO {
         nome = usuario.getNome();
         email = usuario.getEmail();
         senha = usuario.getSenha();
-        tag = usuario.getTag();
+//        tag = usuario.getTag();
         status = usuario.getStatus();
+        notificacoes = usuario.getNotificacoes().stream().map(NotificacaoDTO::new).collect(java.util.stream.Collectors.toSet());
         roles = usuario.getRoles();
+//        hostReservas = usuario.getHostReservas().stream().map(ReservaReferenciaDTO::new).collect(java.util.stream.Collectors.toSet());
+//        membroReservas = usuario.getMembroReservas().stream().map(ReservaReferenciaDTO::new).collect(java.util.stream.Collectors.toSet());
     }
 
     public Long getId() {
@@ -80,20 +88,20 @@ public class UsuarioReferenciaDTO {
         this.senha = senha;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
     public UsuarioStatus getStatus() {
         return status;
     }
 
     public void setStatus(UsuarioStatus status) {
         this.status = status;
+    }
+
+    public Set<NotificacaoDTO> getNotificacoes() {
+        return notificacoes;
+    }
+
+    public void setNotificacoes(Set<NotificacaoDTO> notificacoes) {
+        this.notificacoes = notificacoes;
     }
 
     public Set<Role> getRoles() {
@@ -103,4 +111,20 @@ public class UsuarioReferenciaDTO {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+//
+//    public Set<ReservaReferenciaDTO> getHostReservas() {
+//        return hostReservas;
+//    }
+//
+//    public void setHostReservas(Set<ReservaReferenciaDTO> hostReservas) {
+//        this.hostReservas = hostReservas;
+//    }
+//
+//    public Set<ReservaReferenciaDTO> getMembroReservas() {
+//        return membroReservas;
+//    }
+//
+//    public void setMembroReservas(Set<ReservaReferenciaDTO> membroReservas) {
+//        this.membroReservas = membroReservas;
+//    }
 }

@@ -1,7 +1,9 @@
 package com.api.reserva.entity;
 
 import com.api.reserva.enums.StatusReserva;
+import com.api.reserva.util.CodigoUtil;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CurrentTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,11 +22,16 @@ public class Reserva {
     @JoinColumn(name = "host_id", nullable = false)
     private Usuario host;
 
-    @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ReservaConvidados> convidados;
+    @ManyToMany
+    @JoinTable(
+            name = "tb_reserva_participantes",
+            joinColumns = @JoinColumn(name = "reserva_id"),
+            inverseJoinColumns = @JoinColumn(name = "usuario_id")
+    )
+    private Set<Usuario> membros = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "catalogo_id", nullable = false)
+    @JoinColumn(name = "catalogo_id")
     private Catalogo catalogo;
 
     @Column(nullable = false)
@@ -45,23 +52,28 @@ public class Reserva {
     @Column(length = 500)
     private String msgInterna;
 
+    @Column(unique = true, nullable = false, length = 5)
+    private String codigo;
+
+    @CurrentTimestamp
     private LocalDateTime dataHoraSolicitacao;
 
     public Reserva() {
     }
 
     public Reserva(Usuario host, Catalogo catalogo, LocalDate data, LocalTime horaInicio,
-                   LocalTime horaFim, StatusReserva statusReserva, String msgUsuario, String msgInterna,
-                   LocalDateTime dataHoraSolicitacao) {
+                   LocalTime horaFim, String msgUsuario, String msgInterna) {
         this.host = host;
         this.catalogo = catalogo;
         this.data = data;
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
-        this.statusReserva = statusReserva;
+        this.statusReserva = StatusReserva.PENDENTE;
         this.msgUsuario = msgUsuario;
         this.msgInterna = msgInterna;
-        this.dataHoraSolicitacao = dataHoraSolicitacao;
+        this.dataHoraSolicitacao = LocalDateTime.now();
+        // Gerar código único de 5 caracteres alfanuméricos
+        this.codigo = CodigoUtil.gerarCodigo(5);
     }
 
     public Long getId() {
@@ -74,14 +86,6 @@ public class Reserva {
 
     public void setHost(Usuario host) {
         this.host = host;
-    }
-
-    public Catalogo getGradeAmbiente() {
-        return catalogo;
-    }
-
-    public void setGradeAmbiente(Catalogo catalogo) {
-        this.catalogo = catalogo;
     }
 
     public LocalDate getData() {
@@ -146,5 +150,21 @@ public class Reserva {
 
     public void setCatalogo(Catalogo catalogo) {
         this.catalogo = catalogo;
+    }
+
+    public Set<Usuario> getMembros() {
+        return membros;
+    }
+
+    public void setMembros(Set<Usuario> convidados) {
+        this.membros = convidados;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 }

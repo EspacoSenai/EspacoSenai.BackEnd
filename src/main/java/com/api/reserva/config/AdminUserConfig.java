@@ -3,7 +3,6 @@ package com.api.reserva.config;
 import com.api.reserva.entity.Role;
 import com.api.reserva.entity.Usuario;
 import com.api.reserva.enums.UsuarioStatus;
-import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.RoleRepository;
 import com.api.reserva.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class AdminUserConfig implements CommandLineRunner {
                 admin.setEmail("admin");
                 admin.setSenha(passwordEncoder.encode("1234"));
                 admin.getRoles().add(roleAdmin.get());
-                admin.setTag("0000001");
+//                admin.setTag(CodigoUtil.gerarCodigo(5));
                 admin.setStatus(UsuarioStatus.ATIVO);
                 usuarioRepository.save(admin);
                 System.out.println("admin criado");

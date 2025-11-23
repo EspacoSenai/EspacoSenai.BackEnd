@@ -11,7 +11,7 @@ public class HelloWorld {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @GetMapping
+    @GetMapping("/api")
     public String helloWorld() {
         return "Hello, World!";
     }

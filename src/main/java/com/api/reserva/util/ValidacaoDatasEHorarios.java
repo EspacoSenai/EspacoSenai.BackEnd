@@ -43,20 +43,61 @@ public class ValidacaoDatasEHorarios {
     }
 
     public static boolean validarHorarios(LocalTime horaInicio, LocalTime horaFim) {
-        if (horaInicio == null || horaFim == null) {
-            throw new HorarioInvalidoException("Os horários não podem ser nulos.");
-        } else if (Objects.equals(horaInicio, horaFim)) {
-            throw new HorarioInvalidoException("Os horários não podem ser idênticos.");
-        } else if (horaFim.isBefore(horaInicio)) {
+        if ((horaInicio == null || horaFim == null) || (horaInicio.isAfter(horaFim))) {
             throw new HorarioInvalidoException();
         }
-
-        Duration duracao = Duration.between(horaInicio, horaFim);
-
-        if(duracao.toMinutes() < 15) {
-            throw new HorarioInvalidoException("Os catálogos devem durar no mínimo 15 minutos.");
-        }
-
         return true;
     }
+
+    /**
+     * Verifica se dois intervalos de horário se sobrepõem
+     *
+     * @param inicioA Hora de início do primeiro intervalo
+     * @param fimA    Hora de fim do primeiro intervalo
+     * @param inicioB Hora de início do segundo intervalo
+     * @param fimB    Hora de fim do segundo intervalo
+     * @return true se há sobreposição, false caso contrário
+     */
+    public static boolean validarCatalogo(LocalTime inicioA, LocalTime fimA,
+                                          LocalTime inicioB, LocalTime fimB) {
+        // Valida os horários de ambos os intervalos
+        validarHorarios(inicioA, fimA);
+        validarHorarios(inicioB, fimB);
+
+        // Verifica se a duração mínima entre os horários é atendida
+        atendeDuracaoMinima(inicioA, fimA);
+
+        if (inicioA.isBefore(fimB) && fimA.isAfter(inicioB)) {
+            throw new HorarioInvalidoException("Os horários se sobrepõem com algum catálogo existente.");
+        }
+        return true;
+    }
+
+    /**
+     * Calcula a duração em minutos entre dois horários
+     *
+     * @param inicio Horário de início
+     * @param fim    Horário de fim
+     * @return Duração em minutos
+     */
+
+    public static boolean atendeDuracaoMinima(LocalTime inicio, LocalTime fim) {
+        if (inicio == null || fim == null) {
+            throw new HorarioInvalidoException("Os horários não podem ser nulos.");
+        }
+
+        if (fim.isBefore(inicio)) {
+            throw new HorarioInvalidoException("O horário de fim não pode ser anterior ao de início.");
+        }
+
+        Duration duracaoMinima = Duration.ofMinutes(15);
+
+        Duration duracao = Duration.between(inicio, fim);
+
+        if (duracao.compareTo(duracaoMinima) < 0) {
+            throw new HorarioInvalidoException(String.format("A duração mínima é de %d minutos.", duracaoMinima.toMinutes()));
+        }
+        return true;
+    }
+
 }

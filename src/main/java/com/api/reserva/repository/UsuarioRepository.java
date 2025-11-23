@@ -1,12 +1,13 @@
 package com.api.reserva.repository;
 
+import com.api.reserva.entity.Role;
 import com.api.reserva.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
@@ -37,11 +38,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Query(
             "SELECT u " +
                     "FROM Usuario u " +
-                    "WHERE u.email = :identificador OR u.tag = :identificador"
+                    "WHERE u.email = :identificador"
     )
     Usuario findByIdentificador(@Param("identificador") String identificador);
 
-    Optional<Usuario> findByTag(String tag);
 
 //    @Query(
 //            "SELECT u " +
@@ -49,5 +49,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 //                    "WHERE 'ESTUDANTE' MEMBER OF u.roles"
 //    )
 //    List<Usuario> findByRoleEstudante();
+
+    Set<Usuario> findAllByRolesRoleNome(Role.Values roleNome);
 
 }

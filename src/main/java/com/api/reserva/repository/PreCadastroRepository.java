@@ -2,8 +2,6 @@ package com.api.reserva.repository;
 
 import com.api.reserva.entity.PreCadastro;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
