@@ -15,7 +15,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns(
                         "http://localhost:5173",
                         "http://127.0.0.1:5500",
-                        "https://techhub-cze9exb3bmh7axhx.brazilsouth-01.azurewebsites.net")
+                        "https://techhub-cze9exb3bmh7axhx.brazilsouth-01.azurewebsites.net",
+                        "https://espaco-senai.vercel.app"
+                )
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true)
