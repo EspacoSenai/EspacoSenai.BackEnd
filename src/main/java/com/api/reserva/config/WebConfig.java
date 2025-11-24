@@ -16,7 +16,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://localhost:5173",
                         "http://127.0.0.1:5500",
                         "https://techhub-cze9exb3bmh7axhx.brazilsouth-01.azurewebsites.net",
-                        "https://espaco-senai.vercel.app"
+                        "https://espaco-senai.vercel.app",
+                        "https://espacosenai.azurewebsites.net"
                 )
                 .allowedMethods("*")
                 .allowedHeaders("*")
