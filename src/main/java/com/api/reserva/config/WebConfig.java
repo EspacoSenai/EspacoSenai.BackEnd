@@ -12,16 +12,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 // ORIGENS QUE PODEM CHAMAR A API
-                .allowedOrigins(
-                        "http://localhost:5173",
-                        "http://127.0.0.1:5500",
-                        "https://techhub-cze9exb3bmh7axhx.brazilsouth-01.azurewebsites.net",
-                        "https://espaco-senai.vercel.app",
-                        "https://espacosenai.azurewebsites.net"
-                )
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .maxAge(3600);
+            .allowedOriginPatterns("*")  // Temporário - apenas para debug
+            .allowedMethods("*")
+            .allowedHeaders("*")
+            .maxAge(3600);
     }
 
     @Override
