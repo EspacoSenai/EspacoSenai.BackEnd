@@ -3,6 +3,7 @@ package com.api.reserva.service;
 import com.api.reserva.dto.Pin;
 import com.api.reserva.dto.Reserva3dDTO;
 import com.api.reserva.dto.ReservaImpressoraReferenciaDTO;
+import com.api.reserva.dto.Temperatura;
 import com.api.reserva.entity.*;
 import com.api.reserva.enums.Disponibilidade;
 import com.api.reserva.enums.StatusReserva3D;
@@ -53,7 +54,7 @@ public class ReservaImpressoraService {
     }
 
     @Transactional
-    public void salvar(Reserva3dDTO reserva, Authentication authentication){
+    public void salvar(ReservaImpressoraReferenciaDTO reserva, Authentication authentication){
         validarDadosReserva(reserva);
 
         Usuario host = usuarioRepository.findById(MetodosAuth.extrairId(authentication)).orElseThrow(
@@ -69,6 +70,7 @@ public class ReservaImpressoraService {
         LocalTime agora = LocalTime.now();
         LocalTime minimoDeTempo = agora.plusMinutes(15);
 
+
         if (dataDaReserva.equals(LocalDate.now())) {
             // Valida se o horário fim já não passou
             if (fimReserva.isBefore(agora) || fimReserva.equals(agora)) {
@@ -79,8 +81,7 @@ public class ReservaImpressoraService {
                 throw new HorarioInvalidoException("A reserva deve ser feita com no mínimo 15 minutos de antecedência.");
             }
         }
-
-
+        validarSobreposicaoHorarios(dataDaReserva, inicioReserva, fimReserva);
 
         // Criar reserva
         ReservaImpressora reservaImpressora = new ReservaImpressora(
@@ -99,7 +100,7 @@ public class ReservaImpressoraService {
 
 
 
-    private void validarDadosReserva(Reserva3dDTO reservaDTO) {
+    private void validarDadosReserva(ReservaImpressoraReferenciaDTO reservaDTO) {
         if (reservaDTO.getData().isBefore(LocalDate.now())) {
             throw new DataInvalidaException("A data da reserva deve ser futura ou hoje");
         }
@@ -110,19 +111,6 @@ public class ReservaImpressoraService {
     }
 
 
-
-
-
-
-
-    private boolean horariosSesobrepem(LocalTime inicio1, LocalTime fim1, LocalTime inicio2, LocalTime fim2) {
-        return inicio1.isBefore(fim2) && fim1.isAfter(inicio2);
-    }
-
-    public void acharReservaPeloPin(Integer pin){
-        ReservaImpressora reservas = impressoraRepository.findByPin(pin);
-
-    }
 
     public Integer geradorDePin() {
         Integer maxPin = impressoraRepository.findMaxPin();
@@ -139,16 +127,68 @@ public class ReservaImpressoraService {
 
         ReservaImpressora reserva = impressoraRepository.findByPin(pin.pin());
 
-        if (reserva == null) {
-            throw new RuntimeException("Reserva não encontrada para o PIN: " + pin.pin());
-        }
+        if (reserva == null) throw new RuntimeException("Reserva não encontrada para o PIN: " + pin.pin());
+
+        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime inicio = LocalDateTime.of(reserva.getData(), reserva.getHoraInicio());
+        LocalDateTime fim = LocalDateTime.of(reserva.getData(), reserva.getHoraFim());
+
+        LocalDateTime limiteMinimo = inicio.minusMinutes(15);
+
+        if (agora.isBefore(limiteMinimo)) throw new HorarioInvalidoException("A maquina só será liberada 15 minutos antes do inicio da reserva.");
+
+        if (agora.isAfter(fim)) throw new HorarioInvalidoException("A maquina não pode ser liberada após a data da reserva.");
 
         if (reserva.getStatusReserva() == StatusReserva3D.DESLIGADA) {
             reserva.setStatusReserva(StatusReserva3D.LIGADA);
         }
 
         impressoraRepository.save(reserva);
+
     }
+
+    private boolean horariosSesobrepem(LocalTime inicio1, LocalTime fim1, LocalTime inicio2, LocalTime fim2) {
+        return inicio1.isBefore(fim2) && fim1.isAfter(inicio2);
+    }
+
+    private void validarSobreposicaoHorarios(LocalDate data, LocalTime inicioReserva, LocalTime fimReserva) {
+        java.util.Set<ReservaImpressora> todas = new java.util.HashSet<>(impressoraRepository.findAll());
+
+        for (ReservaImpressora existente : todas) {
+            if (data.equals(existente.getData())) {
+                if (horariosSesobrepem(inicioReserva, fimReserva, existente.getHoraInicio(), existente.getHoraFim())) {
+                    throw new HorarioInvalidoException("Já existe uma reserva de impressora neste horário para este dia.");
+                }
+            }
+        }
+    }
+
+    public void atualizarTemperatura(Temperatura temperatura){
+        ReservaImpressora reserva = impressoraRepository.findById(temperatura.id()).orElseThrow(
+                () -> new SemResultadosException("Maquina não achada."));
+        if(reserva.getStatusReserva() != StatusReserva3D.LIGADA){}
+
+        reserva.setTemperatura(temperatura.temperatura());
+        impressoraRepository.save(reserva);
+    }
+
+    public boolean desligarMaquina(){
+        List<ReservaImpressora> reservaImpressora = impressoraRepository.findAll();
+        for(ReservaImpressora reservaImpressora1 : reservaImpressora){
+            LocalDateTime agora = LocalDateTime.of( reservaImpressora1.getData(),reservaImpressora1.getHoraFim());
+            if(reservaImpressora1.getStatusReserva() == StatusReserva3D.LIGADA && agora.isAfter(LocalDateTime.now())){
+                reservaImpressora1.getTemperatura();
+                if(reservaImpressora1.getTemperatura() < 30){
+                    reservaImpressora1.setStatusReserva(StatusReserva3D.DESLIGADA);
+                    impressoraRepository.save(reservaImpressora1);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 
 
 }

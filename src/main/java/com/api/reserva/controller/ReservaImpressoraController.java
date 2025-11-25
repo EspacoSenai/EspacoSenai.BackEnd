@@ -3,12 +3,14 @@ package com.api.reserva.controller;
 import com.api.reserva.dto.Pin;
 import com.api.reserva.dto.Reserva3dDTO;
 import com.api.reserva.dto.ReservaImpressoraReferenciaDTO;
+import com.api.reserva.dto.Temperatura;
 import com.api.reserva.service.ReservaImpressoraService;
 import com.api.reserva.util.ResponseBuilder;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,20 +30,36 @@ public class ReservaImpressoraController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR')")
     public ResponseEntity<ReservaImpressoraReferenciaDTO> buscarPorId(@PathVariable Long id) {
         ReservaImpressoraReferenciaDTO reserva = reservaImpressoraService.buscar(id);
         return ResponseEntity.ok(reserva);
     }
 
     @PostMapping
-    public ResponseEntity<Void> salvar(@RequestBody @Valid Reserva3dDTO reserva, Authentication authentication) {
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
+    public ResponseEntity<Void> salvar(@RequestBody @Valid ReservaImpressoraReferenciaDTO reserva, Authentication authentication) {
         reservaImpressoraService.salvar(reserva, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/disgraca")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
     public ResponseEntity<Object> liberarMamarquinaminha(@RequestBody Pin pin){
         reservaImpressoraService.atualizarStatusPeloPin(pin);
         return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Maquina liberada com sucesso.");
     }
+
+    @PostMapping("/temperatura")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
+    public void atualizarTemperatura(@RequestBody Temperatura temperatura){
+        reservaImpressoraService.atualizarTemperatura(temperatura);
+    }
+    @GetMapping("/desligar")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<Void> desligarMaquina(){
+       reservaImpressoraService.desligarMaquina();
+       return ResponseEntity.noContent().build();
+    }
+
 }

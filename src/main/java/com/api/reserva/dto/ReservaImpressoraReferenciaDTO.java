@@ -9,8 +9,6 @@ import java.time.LocalTime;
 public class ReservaImpressoraReferenciaDTO {
 
     private Long id;
-    private UsuarioReferenciaDTO host;
-    private CatalogoReferenciaDTO catalogo;
     private LocalDate data;
     private LocalTime horaInicio;
     private LocalTime horaFim;
@@ -21,7 +19,6 @@ public class ReservaImpressoraReferenciaDTO {
 
     public ReservaImpressoraReferenciaDTO(ReservaImpressora reserva) {
         this.id = reserva.getId();
-        this.host = new UsuarioReferenciaDTO(reserva.getHost());
         this.data = reserva.getData();
         this.horaInicio = reserva.getHoraInicio();
         this.horaFim = reserva.getHoraFim();
@@ -34,22 +31,6 @@ public class ReservaImpressoraReferenciaDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public UsuarioReferenciaDTO getHost() {
-        return host;
-    }
-
-    public void setHost(UsuarioReferenciaDTO host) {
-        this.host = host;
-    }
-
-    public CatalogoReferenciaDTO getCatalogo() {
-        return catalogo;
-    }
-
-    public void setCatalogo(CatalogoReferenciaDTO catalogo) {
-        this.catalogo = catalogo;
     }
 
     public LocalDate getData() {

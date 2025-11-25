@@ -1,6 +1,7 @@
 package com.api.reserva.entity;
 
 import com.api.reserva.dto.Reserva3dDTO;
+import com.api.reserva.dto.Temperatura;
 import com.api.reserva.enums.StatusReserva;
 import com.api.reserva.enums.StatusReserva3D;
 import com.api.reserva.util.CodigoUtil;
@@ -43,6 +44,8 @@ public class ReservaImpressora {
     @Column(unique = true)
     private Integer pin;
 
+    private Double temperatura;
+
 
     public ReservaImpressora() {
     }
@@ -60,6 +63,9 @@ public class ReservaImpressora {
         this.horaFim = horaFim;
         this.dataHoraSolicitacao = dataHoraSolicitacao;
         this.pin = pin;
+    }
+    public ReservaImpressora(Temperatura temperatura) {
+        this.temperatura = temperatura.temperatura();
     }
 
 
@@ -128,5 +134,11 @@ public class ReservaImpressora {
         this.pin = pin;
     }
 
+    public Double getTemperatura() {
+        return temperatura;
+    }
 
+    public void setTemperatura(Double temperatura) {
+        this.temperatura = temperatura;
+    }
 }

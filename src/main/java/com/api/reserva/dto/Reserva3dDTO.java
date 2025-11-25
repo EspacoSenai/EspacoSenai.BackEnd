@@ -12,7 +12,6 @@ import java.time.LocalTime;
 
 public class Reserva3dDTO {
     private Long id;
-    private Usuario host;
     private LocalDate data;
     private LocalTime horaInicio;
     private LocalTime horaFim;
@@ -25,7 +24,6 @@ public class Reserva3dDTO {
 
     public Reserva3dDTO(ReservaImpressora reserva) {
         this.id = id;
-        this.host = host;
         this.data = data;
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
@@ -43,13 +41,6 @@ public class Reserva3dDTO {
         this.id = id;
     }
 
-    public Usuario getHost() {
-        return host;
-    }
-
-    public void setHost(Usuario host) {
-        this.host = host;
-    }
 
     public LocalDate getData() {
         return data;
