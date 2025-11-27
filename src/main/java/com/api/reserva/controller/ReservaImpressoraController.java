@@ -1,9 +1,6 @@
 package com.api.reserva.controller;
 
-import com.api.reserva.dto.Pin;
-import com.api.reserva.dto.Reserva3dDTO;
-import com.api.reserva.dto.ReservaImpressoraReferenciaDTO;
-import com.api.reserva.dto.Temperatura;
+import com.api.reserva.dto.*;
 import com.api.reserva.service.ReservaImpressoraService;
 import com.api.reserva.util.ResponseBuilder;
 import jakarta.validation.Valid;
@@ -17,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservas-impressora")
+@RequestMapping("/reserva-impressora")
 public class ReservaImpressoraController {
 
     @Autowired
@@ -36,22 +33,20 @@ public class ReservaImpressoraController {
         return ResponseEntity.ok(reserva);
     }
 
-    @PostMapping
+    @PostMapping("/salvar")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
     public ResponseEntity<Void> salvar(@RequestBody @Valid ReservaImpressoraReferenciaDTO reserva, Authentication authentication) {
         reservaImpressoraService.salvar(reserva, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/disgraca")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
+    @PostMapping("/pin")
     public ResponseEntity<Object> liberarMamarquinaminha(@RequestBody Pin pin){
-        reservaImpressoraService.atualizarStatusPeloPin(pin);
-        return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Maquina liberada com sucesso.");
+        RespostaPin resposta = reservaImpressoraService.atualizarStatusPeloPin(pin);
+        return ResponseEntity.ok(resposta);
     }
 
     @PostMapping("/temperatura")
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
     public void atualizarTemperatura(@RequestBody Temperatura temperatura){
         reservaImpressoraService.atualizarTemperatura(temperatura);
     }
@@ -60,6 +55,13 @@ public class ReservaImpressoraController {
     public ResponseEntity<Void> desligarMaquina(){
        reservaImpressoraService.desligarMaquina();
        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/achar-usuario/{id}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
+    public ResponseEntity<UsuarioReferenciaDTO> acharUsuario (@PathVariable Long id){
+        UsuarioReferenciaDTO reserva = reservaImpressoraService.acharPorReserva(id);
+        return ResponseEntity.ok(reserva);
     }
 
 }

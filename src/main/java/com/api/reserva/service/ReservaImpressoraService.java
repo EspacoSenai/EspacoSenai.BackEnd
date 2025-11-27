@@ -1,9 +1,6 @@
 package com.api.reserva.service;
 
-import com.api.reserva.dto.Pin;
-import com.api.reserva.dto.Reserva3dDTO;
-import com.api.reserva.dto.ReservaImpressoraReferenciaDTO;
-import com.api.reserva.dto.Temperatura;
+import com.api.reserva.dto.*;
 import com.api.reserva.entity.*;
 import com.api.reserva.enums.Disponibilidade;
 import com.api.reserva.enums.StatusReserva3D;
@@ -23,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.api.reserva.enums.StatusReserva3D.DESLIGADA;
@@ -123,7 +121,7 @@ public class ReservaImpressoraService {
         return nextPin;
     }
 
-    public void atualizarStatusPeloPin(Pin pin) {
+    public RespostaPin atualizarStatusPeloPin(Pin pin) {
 
         ReservaImpressora reserva = impressoraRepository.findByPin(pin.pin());
 
@@ -138,12 +136,16 @@ public class ReservaImpressoraService {
         if (agora.isBefore(limiteMinimo)) throw new HorarioInvalidoException("A maquina só será liberada 15 minutos antes do inicio da reserva.");
 
         if (agora.isAfter(fim)) throw new HorarioInvalidoException("A maquina não pode ser liberada após a data da reserva.");
+        
+        if (reserva.getStatusReserva() == StatusReserva3D.COMPLETA) throw new RuntimeException("A impressão já foi concluida");
 
         if (reserva.getStatusReserva() == StatusReserva3D.DESLIGADA) {
             reserva.setStatusReserva(StatusReserva3D.LIGADA);
         }
 
         impressoraRepository.save(reserva);
+
+        return new RespostaPin(reserva);
 
     }
 
@@ -186,6 +188,14 @@ public class ReservaImpressoraService {
             }
         }
         return false;
+    }
+
+    public UsuarioReferenciaDTO acharPorReserva(Long id){
+        ReservaImpressora reservaImpressora = impressoraRepository.findById(id).orElseThrow(( ) ->
+                new SemResultadosException("Reserva"));
+
+        Usuario usuario = reservaImpressora.getHost();
+        return new UsuarioReferenciaDTO(usuario);
     }
 
 

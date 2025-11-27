@@ -79,6 +79,7 @@ public class SecurityConfig {
                 .requestMatchers("/assets/**").permitAll()
                 .requestMatchers("/static/**").permitAll()
                 .requestMatchers("/webjars/**").permitAll()
+                .requestMatchers("/reserva-impressora/**").permitAll()
                 .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 ->
