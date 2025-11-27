@@ -5,7 +5,6 @@ import com.api.reserva.dto.AmbienteReferenciaDTO;
 import com.api.reserva.entity.*;
 import com.api.reserva.enums.Aprovacao;
 import com.api.reserva.enums.Disponibilidade;
-import com.api.reserva.enums.NotificacaoTipo;
 import com.api.reserva.enums.StatusReserva;
 import com.api.reserva.exception.DadoDuplicadoException;
 import com.api.reserva.exception.EntidadeJaExistente;
@@ -157,7 +156,6 @@ public class AmbienteService {
 
                     notificacaoService.novaNotificacao(
                             reserva.getHost(),
-                            NotificacaoTipo.RESERVA_APROVADA,
                             "Sua reserva com código " + reserva.getCodigo() + " foi aprovada automaticamente.",
                             "O ambiente " + ambiente.getNome() + " agora possui aprovação automática."
                             );
@@ -216,7 +214,6 @@ public class AmbienteService {
                     // Notifica o host (criador da reserva)
                     notificacaoService.novaNotificacao(
                             reserva.getHost(),
-                            NotificacaoTipo.RESERVA_CANCELADA,
                             "Sua reserva com código " + reserva.getCodigo() + " foi cancelada.",
                             "O ambiente '" + ambiente.getNome() + "' foi removido do sistema. Sua reserva foi cancelada automaticamente."
                     );
@@ -225,7 +222,6 @@ public class AmbienteService {
                     for (Usuario membro : reserva.getMembros()) {
                         notificacaoService.novaNotificacao(
                                 membro,
-                                NotificacaoTipo.RESERVA_CANCELADA,
                                 "Uma reserva de que você é participante foi cancelada.",
                                 "A reserva com código " + reserva.getCodigo() + " no ambiente '" + ambiente.getNome() + "' foi cancelada porque o ambiente foi removido."
                         );

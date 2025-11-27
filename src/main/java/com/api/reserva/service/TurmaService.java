@@ -6,7 +6,6 @@ import com.api.reserva.entity.Reserva;
 import com.api.reserva.entity.Role;
 import com.api.reserva.entity.Turma;
 import com.api.reserva.entity.Usuario;
-import com.api.reserva.enums.NotificacaoTipo;
 import com.api.reserva.enums.StatusReserva;
 import com.api.reserva.exception.EntidadeJaAssociadaException;
 import com.api.reserva.exception.SemPermissaoException;
@@ -181,27 +180,20 @@ public class TurmaService {
                             reserva.setMsgInterna("Cancelada automaticamente: a turma '" + turma.getNome() + "' teve a data de término alterada para " + terminoNovo + ".");
                             reservaRepository.save(reserva);
 
-                            // notificar o host da reserva
-                            notificacaoService.novaNotificacao(
-                                    reserva.getHost(),
-                                    NotificacaoTipo.ALTERACOES,
-                                    "Reserva cancelada",
-                                    "Sua reserva para " + reserva.getData() + " foi cancelada porque a turma " + turma.getNome() + " teve a data de término alterada."
-                            );
+//                            // notificar o host da reserva
+//                            notificacaoService.novaNotificacao(
+//                                    reserva.getHost(),
+//                                    NotificacaoTipo.ALTERACOES,
+//                                    "Reserva cancelada",
+//                                    "Sua reserva para " + reserva.getData() + " foi cancelada porque a turma " + turma.getNome() + " teve a data de término alterada."
+//                            );
                         }
                     }
                 }
             }
 
             if (mudou) {
-                for (Usuario estudante : turma.getEstudantes()) {
-                    notificacaoService.novaNotificacao(
-                            estudante,
-                            NotificacaoTipo.TURMA,
-                            "Alteração na turma",
-                            "Houve uma alteração na turma " + turma.getNome() + ". Verifique os detalhes."
-                    );
-                }
+                // notificações detalhadas removidas; mantemos apenas atualização da turma
             }
 
             turmaRepository.save(turma);
@@ -228,14 +220,7 @@ public class TurmaService {
                 .collect(Collectors.toSet());
         turma.getEstudantes().addAll(estudantes);
         turmaRepository.save(turma);
-        for (Usuario estudante : estudantes) {
-            notificacaoService.novaNotificacao(
-                    estudante,
-                    NotificacaoTipo.ALTERACOES,
-                    "Adicionado à turma",
-                    "Você foi adicionado à turma " + turma.getNome() + "."
-            );
-        }
+        // notificações removidas
     }
 
     public void removerEstudantes(Long turmaId, List<Long> estudanteIds, Authentication authentication) {
@@ -252,14 +237,7 @@ public class TurmaService {
                 .collect(Collectors.toSet());
         turma.getEstudantes().removeAll(estudantes);
         turmaRepository.save(turma);
-        for (Usuario estudante : estudantes) {
-            notificacaoService.novaNotificacao(
-                    estudante,
-                    NotificacaoTipo.ALTERACOES,
-                    "Removido da turma",
-                    "Você foi removido da turma " + turma.getNome() + "."
-            );
-        }
+        // notificações removidas
     }
 
     public void atualizarProfessor(Long turmaId, Long professorId) {
@@ -271,20 +249,7 @@ public class TurmaService {
         Usuario professorAntigo = turma.getProfessor();
         turma.setProfessor(professor);
         turmaRepository.save(turma);
-        if (professorAntigo != null && !professorAntigo.equals(professor)) {
-            notificacaoService.novaNotificacao(
-                    professorAntigo,
-                    NotificacaoTipo.ALTERACOES,
-                    "Removido da turma",
-                    "Você foi removido como professor da turma " + turma.getNome() + "."
-            );
-        }
-        notificacaoService.novaNotificacao(
-                professor,
-                NotificacaoTipo.ALTERACOES,
-                "Designado como professor",
-                "Você foi designado como professor da turma " + turma.getNome() + "."
-        );
+        // notificações removidas
     }
 
     public void ingressarPorCodigo(String codigoAcesso, Authentication authentication) {
@@ -302,12 +267,7 @@ public class TurmaService {
 
         turma.getEstudantes().add(estudante);
         turmaRepository.save(turma);
-        notificacaoService.novaNotificacao(
-                estudante,
-                NotificacaoTipo.TURMA,
-                "Adicionado à turma",
-                "Você foi adicionado à turma " + turma.getNome() + " via código de acesso."
-        );
+        // notificações removidas
     }
 
     public void gerarNovoCodigo(Long turmaId, Authentication authentication) {
@@ -325,13 +285,7 @@ public class TurmaService {
         String novoCodigo = CodigoUtil.gerarCodigo(6);
         turma.setCodigoAcesso(novoCodigo);
         turmaRepository.save(turma);
-
-        notificacaoService.novaNotificacao(
-                turma.getProfessor(),
-                NotificacaoTipo.TURMA,
-                "Código de acesso atualizado",
-                "O código de acesso da turma " + turma.getNome() + " foi atualizado."
-        );
+        // notificações removidas
     }
 
 
@@ -374,25 +328,25 @@ public class TurmaService {
                             reserva.setMsgInterna("Cancelada automaticamente: a turma '" + turma.getNome() + "' foi excluída.");
                             reservaRepository.save(reserva);
 
-                            // notificar o host da reserva
-                            notificacaoService.novaNotificacao(
-                                    reserva.getHost(),
-                                    NotificacaoTipo.ALTERACOES,
-                                    "Reserva cancelada",
-                                    "Sua reserva para " + reserva.getData() + " foi cancelada porque a turma " + turma.getNome() + " foi excluída."
-                            );
-
-                            // notificar todos os membros/participantes da reserva sobre o cancelamento
-                            if (reserva.getMembros() != null) {
-                                for (Usuario membro : reserva.getMembros()) {
-                                    notificacaoService.novaNotificacao(
-                                            membro,
-                                            NotificacaoTipo.ALTERACOES,
-                                            "Reserva cancelada",
-                                            "A reserva para " + reserva.getData() + " foi cancelada porque a turma " + turma.getNome() + " foi excluída."
-                                    );
-                                }
-                            }
+//                            // notificar o host da reserva
+//                            notificacaoService.novaNotificacao(
+//                                    reserva.getHost(),
+//                                    NotificacaoTipo.ALTERACOES,
+//                                    "Reserva cancelada",
+//                                    "Sua reserva para " + reserva.getData() + " foi cancelada porque a turma " + turma.getNome() + " foi excluída."
+//                            );
+//
+//                            // notificar todos os membros/participantes da reserva sobre o cancelamento
+//                            if (reserva.getMembros() != null) {
+//                                for (Usuario membro : reserva.getMembros()) {
+//                                    notificacaoService.novaNotificacao(
+//                                            membro,
+//                                            NotificacaoTipo.ALTERACOES,
+//                                            "Reserva cancelada",
+//                                            "A reserva para " + reserva.getData() + " foi cancelada porque a turma " + turma.getNome() + " foi excluída."
+//                                    );
+//                                }
+//                            }
                         }
                     }
                 }
@@ -408,7 +362,6 @@ public class TurmaService {
                         // notificar o estudante que ele foi removido da reserva
                         notificacaoService.novaNotificacao(
                                 estudante,
-                                NotificacaoTipo.ALTERACOES,
                                 "Removido da reserva",
                                 "Você foi removido da reserva para " + reserva.getData() + " porque a turma " + turma.getNome() + " foi excluída."
                         );
@@ -417,7 +370,6 @@ public class TurmaService {
                         if (reserva.getHost() != null) {
                             notificacaoService.novaNotificacao(
                                     reserva.getHost(),
-                                    NotificacaoTipo.ALTERACOES,
                                     "Participante removido",
                                     "O participante " + estudante.getNome() + " foi removido da sua reserva em " + reserva.getData() + " devido à exclusão da turma " + turma.getNome() + "."
                             );

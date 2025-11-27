@@ -3,7 +3,6 @@ package com.api.reserva.service;
 import com.api.reserva.dto.NotificacaoDTO;
 import com.api.reserva.entity.Notificacao;
 import com.api.reserva.entity.Usuario;
-import com.api.reserva.enums.NotificacaoTipo;
 import com.api.reserva.exception.SemPermissaoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.NotificacaoRepository;
@@ -40,15 +39,14 @@ public class NotificacaoService {
     }
 
     @Transactional
-    public void novaNotificacao(Usuario usuario, NotificacaoTipo notificacaoTipo, String titulo, String mensagem) {
+    public void novaNotificacao(Usuario usuario, String titulo, String mensagem) {
         if (usuario == null) {
             // Não lançar exceção para não interromper fluxos críticos; registramos para investigação
-            logger.warn("Tentativa de criar notificação sem usuário destino. titulo='{}' mensagem='{}' tipo={}", titulo, mensagem, notificacaoTipo);
+            logger.warn("Tentativa de criar notificação sem usuário destino. titulo='{}' mensagem='{}'", titulo, mensagem);
             return;
         }
         Notificacao notificacao = new Notificacao(
                 usuario,
-                notificacaoTipo,
                 titulo,
                 mensagem
         );

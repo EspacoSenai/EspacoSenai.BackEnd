@@ -30,8 +30,6 @@ public class CatalogoService {
     @Autowired
     public AmbienteRepository ambienteRepository;
     @Autowired
-    public HorarioRepository horarioRepository;
-    @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
     private ReservaRepository reservaRepository;
@@ -62,7 +60,6 @@ public class CatalogoService {
             throw new SemPermissaoException("Apenas ADMIN ou o responsável podem salvar catálogos");
         }
 
-        // ...existing code...
         Set<Catalogo> catalogos = new HashSet<>(catalogoRepository.findCatalogoByAmbienteId(ambiente.getId()));
 
 
@@ -227,7 +224,6 @@ public class CatalogoService {
                     // Notifica o host (criador da reserva)
                     notificacaoService.novaNotificacao(
                             reserva.getHost(),
-                            com.api.reserva.enums.NotificacaoTipo.RESERVA_CANCELADA,
                             "Sua reserva foi cancelada",
                             "A reserva com código " + reserva.getCodigo() + " foi cancelada porque o catálogo " +
                             msgDiaSemana + " foi removido do ambiente '" + ambiente.getNome() + "'."
@@ -237,7 +233,6 @@ public class CatalogoService {
                     for (Usuario membro : reserva.getMembros()) {
                         notificacaoService.novaNotificacao(
                                 membro,
-                                com.api.reserva.enums.NotificacaoTipo.RESERVA_CANCELADA,
                                 "Uma reserva de que você é participante foi cancelada",
                                 "A reserva com código " + reserva.getCodigo() + " foi cancelada porque o catálogo " +
                                 msgDiaSemana + " do ambiente '" + ambiente.getNome() + "' foi removido."

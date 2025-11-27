@@ -4,7 +4,6 @@ import com.api.reserva.dto.ReservaDTO;
 import com.api.reserva.dto.ReservaReferenciaDTO;
 import com.api.reserva.entity.*;
 import com.api.reserva.enums.Disponibilidade;
-import com.api.reserva.enums.NotificacaoTipo;
 import com.api.reserva.enums.StatusReserva;
 import com.api.reserva.exception.*;
 import com.api.reserva.repository.CatalogoRepository;
@@ -174,33 +173,6 @@ public class ReservaService {
             reserva.setStatusReserva(StatusReserva.PENDENTE);
         }
         reservaRepository.save(reserva);
-
-        // Notificar o host sobre a criação da reserva
-        if(isAdminOrCoordenadorOrProfessor) {
-            notificacaoService.novaNotificacao(
-                    host,
-                    NotificacaoTipo.RESERVA_APROVADA,
-                    "Reserva Aprovada",
-                    "Sua reserva para " + ambiente.getNome() + " foi criada e aprovada automaticamente!"
-            );
-        } else {
-            notificacaoService.novaNotificacao(
-                    host,
-                    NotificacaoTipo.NOVA_RESERVA,
-                    "Pedido de Reserva Criado",
-                    "Seu pedido de reserva para " + ambiente.getNome() + " foi criado. Aguarde a aprovação do coordenador."
-            );
-
-            // Notificar os coordenadores do ambiente sobre a nova reserva
-            if (ambiente.getResponsavel() != null) {
-                notificacaoService.novaNotificacao(
-                        ambiente.getResponsavel(),
-                        NotificacaoTipo.NOVA_RESERVA,
-                        "Nova Solicitação de Reserva",
-                        "Uma nova solicitação de reserva para " + ambiente.getNome() + " foi criada por " + host.getNome() + ". Por favor, analise e aprove ou rejeite."
-                );
-            }
-        }
     }
 
     @Transactional
@@ -304,14 +276,6 @@ public class ReservaService {
 
         reserva.setStatusReserva(StatusReserva.APROVADA);
         reservaRepository.save(reserva);
-
-        // Notificar o host da reserva
-        notificacaoService.novaNotificacao(
-                reserva.getHost(),
-                NotificacaoTipo.RESERVA_APROVADA,
-                "Reserva Aprovada",
-                "Sua reserva para " + reserva.getCatalogo().getAmbiente().getNome() + " foi aprovada!"
-        );
     }
 
     @Transactional
@@ -344,14 +308,6 @@ public class ReservaService {
         reserva.setStatusReserva(StatusReserva.NEGADA);
         reserva.setMsgInterna(motivo);
         reservaRepository.save(reserva);
-
-        // Notificar o host da reserva
-        notificacaoService.novaNotificacao(
-                reserva.getHost(),
-                NotificacaoTipo.RESERVA_REJEITADA,
-                "Reserva Rejeitada",
-                "Sua reserva para " + reserva.getCatalogo().getAmbiente().getNome() + " foi rejeitada. Motivo: " + motivo
-        );
     }
 
     private void validarDadosReserva(ReservaDTO reservaDTO) {
@@ -716,22 +672,6 @@ public class ReservaService {
         // Adicionar usuário aos membros
         reserva.getMembros().add(usuario);
         reservaRepository.save(reserva);
-
-        // Notificar o host sobre o novo participante
-        notificacaoService.novaNotificacao(
-                reserva.getHost(),
-                NotificacaoTipo.NOVA_RESERVA,
-                "Novo Participante na Reserva",
-                usuario.getNome() + " ingressou em sua reserva para " + reserva.getCatalogo().getAmbiente().getNome()
-        );
-
-        // Notificar o usuário sobre ingresso bem-sucedido
-        notificacaoService.novaNotificacao(
-                usuario,
-                NotificacaoTipo.RESERVA_APROVADA,
-                "Ingresso em Reserva",
-                "Você ingressou com sucesso na reserva de " + reserva.getHost().getNome() + " para " + reserva.getCatalogo().getAmbiente().getNome()
-        );
     }
 
     @Transactional
@@ -764,22 +704,6 @@ public class ReservaService {
         // Remover usuário dos membros
         reserva.getMembros().remove(usuario);
         reservaRepository.save(reserva);
-
-        // Notificar o host sobre a saída do participante
-        notificacaoService.novaNotificacao(
-                reserva.getHost(),
-                NotificacaoTipo.NOVA_RESERVA,
-                "Participante Saiu da Reserva",
-                usuario.getNome() + " saiu de sua reserva para " + reserva.getCatalogo().getAmbiente().getNome()
-        );
-
-        // Notificar o usuário sobre a saída bem-sucedida
-        notificacaoService.novaNotificacao(
-                usuario,
-                NotificacaoTipo.RESERVA_CANCELADA,
-                "Saída da Reserva",
-                "Você saiu com sucesso da reserva de " + reserva.getHost().getNome()
-        );
     }
 
     @Transactional
@@ -834,14 +758,6 @@ public class ReservaService {
         // Remover participante
         reserva.getMembros().remove(participante);
         reservaRepository.save(reserva);
-
-        // Notificar o participante sobre sua remoção
-        notificacaoService.novaNotificacao(
-                participante,
-                NotificacaoTipo.RESERVA_CANCELADA,
-                "Removido da Reserva",
-                usuarioLogado.getNome() + " removeu você da reserva para " + reserva.getCatalogo().getAmbiente().getNome()
-        );
     }
 
     @Transactional
@@ -884,38 +800,6 @@ public class ReservaService {
         // Cancelar reserva
         reserva.setStatusReserva(StatusReserva.CANCELADA);
         reservaRepository.save(reserva);
-
-        // Notificar o host (se quem cancelou não é o próprio host)
-        if (!isHost) {
-            notificacaoService.novaNotificacao(
-                    reserva.getHost(),
-                    NotificacaoTipo.RESERVA_CANCELADA,
-                    "Reserva Cancelada",
-                    "Sua reserva para " + ambiente.getNome() + " foi cancelada. Motivo: " + motivoCancelamento
-            );
-        }
-
-        // Notificar todos os membros/participantes
-        reserva.getMembros().forEach(membro ->
-            notificacaoService.novaNotificacao(
-                    membro,
-                    NotificacaoTipo.RESERVA_CANCELADA,
-                    "Reserva Cancelada",
-                    "A reserva de " + reserva.getHost().getNome() + " para " + ambiente.getNome() + " foi cancelada. Motivo: " + motivoCancelamento
-            )
-        );
-
-        // Se quem cancelou foi o host, notificar o coordenador
-        if (isHost) {
-            if (ambiente.getResponsavel() != null) {
-                notificacaoService.novaNotificacao(
-                        ambiente.getResponsavel(),
-                        NotificacaoTipo.RESERVA_CANCELADA,
-                        "Reserva Cancelada pelo Host",
-                        reserva.getHost().getNome() + " cancelou sua reserva para " + ambiente.getNome() + ". Motivo: " + motivoCancelamento
-                );
-            }
-        }
     }
 
 }

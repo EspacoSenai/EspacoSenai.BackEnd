@@ -1,6 +1,5 @@
 package com.api.reserva.entity;
 
-import com.api.reserva.enums.NotificacaoTipo;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -16,9 +15,6 @@ public class Notificacao {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @Enumerated(EnumType.STRING)
-    private NotificacaoTipo notificacaoTipo;
-
     @Column(nullable = false, length = 100)
     private String titulo;
 
@@ -32,9 +28,8 @@ public class Notificacao {
     public Notificacao() {
     }
 
-    public Notificacao(Usuario usuario, NotificacaoTipo notificacaoTipo, String titulo, String mensagem) {
+    public Notificacao(Usuario usuario, String titulo, String mensagem) {
         this.usuario = usuario;
-        this.notificacaoTipo = notificacaoTipo;
         this.titulo = titulo;
         this.mensagem = mensagem;
         this.dataHoraCriacao = LocalDateTime.now();
@@ -51,14 +46,6 @@ public class Notificacao {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
-    }
-
-    public NotificacaoTipo getNotificacaoTipo() {
-        return notificacaoTipo;
-    }
-
-    public void setNotificacaoTipo(NotificacaoTipo notificacaoTipo) {
-        this.notificacaoTipo = notificacaoTipo;
     }
 
     public String getTitulo() {

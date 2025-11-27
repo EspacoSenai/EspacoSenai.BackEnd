@@ -1,7 +1,6 @@
 package com.api.reserva.dto;
 
 import com.api.reserva.entity.Notificacao;
-import com.api.reserva.enums.NotificacaoTipo;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -12,32 +11,28 @@ public class NotificacaoDTO{
 
     private Long usuarioId;
 
-    private NotificacaoTipo notificacaoTipo;
-
     @NotNull
     @Size(message = "O título deve ter no máximo 100 caracteres.", max = 100)
     private String titulo;
 
     @Size(message = "A mensagem deve ter no máximo 500 caracteres.", max = 500)
     private String mensagem;
-    private LocalDateTime dataHoraCriacao;
+    private LocalDateTime criadoEm;
     private boolean lida;
 
-    public NotificacaoDTO(Long id, NotificacaoTipo notificacaoTipo, String titulo, String mensagem, LocalDateTime dataHoraCriacao, boolean lida) {
+    public NotificacaoDTO(Long id, String titulo, String mensagem, LocalDateTime criadoEm, boolean lida) {
         this.id = id;
-        this.notificacaoTipo = notificacaoTipo;
         this.titulo = titulo;
         this.mensagem = mensagem;
-        this.dataHoraCriacao = dataHoraCriacao;
+        this.criadoEm = criadoEm;
         this.lida = lida;
     }
 
     public NotificacaoDTO(Notificacao notificacao) {
         id = notificacao.getId();
-        notificacaoTipo = notificacao.getNotificacaoTipo();
         titulo = notificacao.getTitulo();
         mensagem = notificacao.getMensagem();
-        dataHoraCriacao = notificacao.getDataHoraCriacao();
+        criadoEm = notificacao.getDataHoraCriacao();
         lida = notificacao.isLida();
     }
 
@@ -45,9 +40,6 @@ public class NotificacaoDTO{
         return id;
     }
 
-    public NotificacaoTipo getNotificacaoTipo() {
-        return notificacaoTipo;
-    }
 
     public String getTitulo() {
         return titulo;
@@ -57,8 +49,8 @@ public class NotificacaoDTO{
         return mensagem;
     }
 
-    public LocalDateTime getDataHoraCriacao() {
-        return dataHoraCriacao;
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
     }
 
     public boolean getLida() {

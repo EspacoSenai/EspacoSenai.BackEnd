@@ -1,6 +1,7 @@
 package com.api.reserva.controller;
 
 import com.api.reserva.dto.PreCadastroDTO;
+import com.api.reserva.entity.PreCadastro;
 import com.api.reserva.service.PreCadastroService;
 import com.api.reserva.util.ResponseBuilder;
 import jakarta.validation.Valid;
@@ -39,8 +40,11 @@ public class PreCadastroController {
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_PROFESSOR')")
     @PostMapping("/planilha")
     public ResponseEntity<Object> salvar(@RequestParam MultipartFile planilha) {
-        preCadastroService.salvarEstudantesPlanilha(planilha);
-        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Estudantes pré-cadastros com sucesso.");
+        if (planilha.isEmpty()) {
+            return ResponseEntity.badRequest().body("Arquivo vazio");
+        }
+        List<PreCadastro> resultado = preCadastroService.salvarEstudantesPlanilha(planilha);
+        return ResponseEntity.ok(resultado);
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_PROFESSOR')")

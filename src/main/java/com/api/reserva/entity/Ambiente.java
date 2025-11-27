@@ -32,9 +32,6 @@ public class Ambiente {
     private boolean emUso;
 
     @OneToMany(mappedBy = "ambiente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Recurso> recursos = new HashSet<>();
-
-    @OneToMany(mappedBy = "ambiente", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Catalogo> catalogos = new HashSet<>();
 
     @ManyToOne
@@ -110,13 +107,5 @@ public class Ambiente {
 
     public void setCatalogos(Set<Catalogo> catalogos) {
         this.catalogos = catalogos;
-    }
-
-    public Set<Recurso> getRecursos() {
-        return recursos;
-    }
-
-    public void setRecursos(Set<Recurso> recursos) {
-        this.recursos = recursos;
     }
 }

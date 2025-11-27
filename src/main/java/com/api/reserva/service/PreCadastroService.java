@@ -119,11 +119,11 @@ public class PreCadastroService {
                 emailsPreCadastrados.add(email);
             }
             preCadastroRepository.saveAll(preCadastros);
-            emailService.enviarMultiplosEmail(
-                    emailsPreCadastrados,
-                    "Espaço Senai Você foi pré-cadastrado",
-                    "Você está apto para criar uma conta. Acesse a página principal de cadastro."
-            );
+//            emailService.enviarMultiplosEmail(
+//                    emailsPreCadastrados,
+//                    "Espaço Senai Você foi pré-cadastrado",
+//                    "Você está apto para criar uma conta. Acesse a página principal de cadastro."
+//            );
         } catch (IOException e) {
             throw new RuntimeException("Erro ao processar a planilha: " + e.getMessage());
         }

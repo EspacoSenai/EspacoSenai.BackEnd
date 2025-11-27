@@ -1,7 +1,6 @@
 package com.api.reserva.dto;
 
 import com.api.reserva.entity.Ambiente;
-import com.api.reserva.entity.Recurso;
 import com.api.reserva.enums.Aprovacao;
 import com.api.reserva.enums.Disponibilidade;
 
@@ -14,7 +13,6 @@ public class AmbienteReferenciaDTO {
     private Aprovacao aprovacao;
     private Set<CatalogoReferenciaDTO> catalogos;
     private UsuarioReferenciaDTO responsavel;
-    private Set<Recurso> recursos;
 
     public AmbienteReferenciaDTO() {
     }
@@ -25,7 +23,6 @@ public class AmbienteReferenciaDTO {
         disponibilidade = ambiente.getDisponibilidade();
         aprovacao = ambiente.getAprovacao();
         responsavel = ambiente.getResponsavel() != null ? new UsuarioReferenciaDTO(ambiente.getResponsavel()) : null;
-        recursos = ambiente.getRecursos();
         catalogos = ambiente.getCatalogos().stream().map(CatalogoReferenciaDTO::new).collect(java.util.stream.Collectors.toSet());
     }
 
@@ -67,14 +64,6 @@ public class AmbienteReferenciaDTO {
 
     public void setResponsavel(UsuarioReferenciaDTO responsavel) {
         this.responsavel = responsavel;
-    }
-
-    public Set<Recurso> getRecursos() {
-        return recursos;
-    }
-
-    public void setRecursos(Set<Recurso> recursos) {
-        this.recursos = recursos;
     }
 
     public Set<CatalogoReferenciaDTO> getCatalogos() {
