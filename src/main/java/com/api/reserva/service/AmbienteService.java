@@ -81,6 +81,7 @@ public class AmbienteService {
         ambiente.setDisponibilidade(ambienteDTO.getDisponibilidade());
         ambiente.setAprovacao(ambienteDTO.getAprovacao());
         ambiente.setEmUso(false);
+        ambiente.setRecurso(ambienteDTO.isRecurso());
 
         if (ambienteDTO.getResponsavelId() != null) {
             Usuario responsavel = usuarioRepository.findById(ambienteDTO.getResponsavelId())
@@ -130,6 +131,7 @@ public class AmbienteService {
 
         ambiente.setNome(ambienteDTO.getNome());
         ambiente.setDescricao(ambienteDTO.getDescricao());
+        ambiente.setRecurso(ambienteDTO.isRecurso());
 
         // Se disponibilidade mudou para indisponível -> usar método específico
         if (ambiente.getDisponibilidade() != ambienteDTO.getDisponibilidade() &&

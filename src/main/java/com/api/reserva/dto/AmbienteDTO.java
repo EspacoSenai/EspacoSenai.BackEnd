@@ -30,19 +30,22 @@ public class AmbienteDTO {
 
     private boolean emUso;
 
+    private boolean recurso;
+
     private Set<Long> recursosIds = new HashSet<>();
 
     public AmbienteDTO() {
     }
 
     public AmbienteDTO(String nome, String descricao, Disponibilidade disponibilidade, Aprovacao aprovacao,
-                       Long responsavelId, boolean emUso, Set<Long> recursosIds) {
+                       Long responsavelId, boolean emUso, boolean recurso, Set<Long> recursosIds) {
         this.nome = nome;
         this.descricao = descricao;
         this.disponibilidade = disponibilidade;
         this.aprovacao = aprovacao;
         this.responsavelId = responsavelId;
         this.emUso = emUso;
+        this.recurso = recurso;
         this.recursosIds = recursosIds;
     }
 
@@ -53,6 +56,7 @@ public class AmbienteDTO {
         disponibilidade = ambiente.getDisponibilidade();
         aprovacao = ambiente.getAprovacao();
         emUso = ambiente.isEmUso();
+        recurso = ambiente.isRecurso();
     }
 
     public Long getId() {
@@ -105,6 +109,14 @@ public class AmbienteDTO {
 
     public void setEmUso(boolean emUso) {
         this.emUso = emUso;
+    }
+
+    public boolean isRecurso() {
+        return recurso;
+    }
+
+    public void setRecurso(boolean recurso) {
+        this.recurso = recurso;
     }
 
     public Set<Long> getRecursosIds() {

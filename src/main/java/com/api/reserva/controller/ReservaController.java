@@ -121,9 +121,9 @@ public class ReservaController {
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR')")
-    @GetMapping("/buscar-por-status")
-    public ResponseEntity<Set<ReservaReferenciaDTO>> buscarPorStatus(@RequestParam String statusStatus) {
-        StatusReserva statusEnum = StatusReserva.valueOf(statusStatus.toUpperCase());
+    @GetMapping("/buscar-por-status/{status}")
+    public ResponseEntity<Set<ReservaReferenciaDTO>> buscarPorStatus(@PathVariable String status) {
+        StatusReserva statusEnum = StatusReserva.valueOf(status.toUpperCase());
         return ResponseEntity.ok(reservaService.buscarPorStatus(statusEnum));
     }
 }

@@ -110,4 +110,12 @@ public class Ambiente {
     public void setCatalogos(Set<Catalogo> catalogos) {
         this.catalogos = catalogos;
     }
+
+    public boolean isRecurso() {
+        return recurso;
+    }
+
+    public void setRecurso(boolean recurso) {
+        this.recurso = recurso;
+    }
 }

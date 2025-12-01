@@ -109,8 +109,8 @@ public class UsuarioController {
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
-    @GetMapping("/buscar-por-role")
-    public ResponseEntity<Set<UsuarioReferenciaDTO>> buscarPorRole(@RequestParam String role) {
+    @GetMapping("/buscar-por-role/{role}")
+    public ResponseEntity<Set<UsuarioReferenciaDTO>> buscarPorRole(@PathVariable String role) {
         Role.Values roleEnum = Role.Values.valueOf(role.toUpperCase());
         Set<UsuarioReferenciaDTO> usuarios = usuarioService.buscarPorRole(roleEnum);
         return ResponseEntity.ok(usuarios);
