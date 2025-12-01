@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("turma")
@@ -36,7 +37,7 @@ public class TurmaController {
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_PROFESSOR')")
     @PostMapping("/salvar")
-    public ResponseEntity<Object> criar(@Valid @RequestBody TurmaDTO turmaDTO, Authentication authentication) {
+    public ResponseEntity<Object> salvar(@Valid @RequestBody TurmaDTO turmaDTO, Authentication authentication) {
         turmaService.salvar(turmaDTO, authentication);
         return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Turma criada com sucesso.");
     }
@@ -90,5 +91,12 @@ public class TurmaController {
     public ResponseEntity<Void> deletar(@PathVariable Long id, Authentication authentication) {
         turmaService.deletar(id, authentication);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
+    @GetMapping("/minhas-turmas")
+    public ResponseEntity<List<TurmaReferenciaDTO>> minhasTurmas(Authentication authentication) {
+        Set<TurmaReferenciaDTO> turmas = turmaService.minhasTurmas(authentication);
+        return ResponseEntity.ok(turmas.stream().toList());
     }
 }

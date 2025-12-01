@@ -2,6 +2,8 @@ package com.api.reserva.controller;
 
 import com.api.reserva.dto.ReservaDTO;
 import com.api.reserva.dto.ReservaReferenciaDTO;
+import com.api.reserva.entity.Role;
+import com.api.reserva.enums.StatusReserva;
 import com.api.reserva.service.ReservaService;
 import com.api.reserva.util.ResponseBuilder;
 import jakarta.validation.Valid;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("reserva")
@@ -30,7 +33,7 @@ public class ReservaController {
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
     @GetMapping("/minhas-reservas")
     public ResponseEntity<List<ReservaReferenciaDTO>> minhasReservas(Authentication authentication) {
-        return ResponseEntity.ok(reservaService.buscarMinhasReservas(authentication));
+        return ResponseEntity.ok(reservaService.minhasReservas(authentication));
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
@@ -115,5 +118,12 @@ public class ReservaController {
         String motivo = body.get("motivo");
         reservaService.cancelarReserva(id, motivo, authentication);
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Reserva cancelada com sucesso.");
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR')")
+    @GetMapping("/buscar-por-status")
+    public ResponseEntity<Set<ReservaReferenciaDTO>> buscarPorStatus(@RequestParam String statusStatus) {
+        StatusReserva statusEnum = StatusReserva.valueOf(statusStatus.toUpperCase());
+        return ResponseEntity.ok(reservaService.buscarPorStatus(statusEnum));
     }
 }

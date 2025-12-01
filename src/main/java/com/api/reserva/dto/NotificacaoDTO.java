@@ -32,7 +32,7 @@ public class NotificacaoDTO{
         id = notificacao.getId();
         titulo = notificacao.getTitulo();
         mensagem = notificacao.getMensagem();
-        criadoEm = notificacao.getDataHoraCriacao();
+        criadoEm = notificacao.getCriadoEm();
         lida = notificacao.isLida();
     }
 

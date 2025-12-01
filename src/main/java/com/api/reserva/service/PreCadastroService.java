@@ -109,12 +109,6 @@ public class PreCadastroService {
                 PreCadastro preCadastro = new PreCadastro();
                 preCadastro.setNome(nome);
                 preCadastro.setEmail(email);
-//                estudante.setSenha(null);
-//                estudante.getRoles().add(roleEstudante);
-//                estudante.gerarTag();
-//                while (estudantes.stream().anyMatch(e -> e.getTag().equals(estudante.getTag()))) {
-//                    estudante.gerarTag();
-//                }
                 preCadastros.add(preCadastro);
                 emailsPreCadastrados.add(email);
             }

@@ -38,6 +38,8 @@ public class Ambiente {
     @JoinColumn(name = "responsavel_id")
     private Usuario responsavel;
 
+    private boolean recurso;
+
     public Ambiente() {
     }
 

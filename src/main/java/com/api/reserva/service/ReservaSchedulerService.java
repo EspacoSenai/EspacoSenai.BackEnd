@@ -73,7 +73,7 @@ public class ReservaSchedulerService {
         LocalDate hoje = LocalDate.now();
         LocalTime agora = LocalTime.now();
 
-        List<Reserva> pendentes = reservaRepository.findAllByStatusReserva(StatusReserva.PENDENTE);
+        Set<Reserva> pendentes = reservaRepository.findAllByStatusReserva(StatusReserva.PENDENTE);
 
         for (Reserva reserva : pendentes) {
             boolean dataAnterior = reserva.getData().isBefore(hoje);
@@ -81,7 +81,6 @@ public class ReservaSchedulerService {
 
             if (dataAnterior || hojeEPassouInicio) {
                 reserva.setStatusReserva(StatusReserva.CANCELADA);
-                reserva.setMsgInterna("Cancelada automaticamente por expirar o prazo de aprovação.");
                 reservaRepository.save(reserva);
             }
         }

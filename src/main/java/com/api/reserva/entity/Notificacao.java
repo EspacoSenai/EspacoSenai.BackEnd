@@ -21,7 +21,7 @@ public class Notificacao {
     @Column(nullable = false, length = 500)
     private String mensagem;
 
-    private LocalDateTime dataHoraCriacao;
+    private LocalDateTime criadoEm;
 
     private boolean lida;
 
@@ -32,7 +32,7 @@ public class Notificacao {
         this.usuario = usuario;
         this.titulo = titulo;
         this.mensagem = mensagem;
-        this.dataHoraCriacao = LocalDateTime.now();
+        this.criadoEm = LocalDateTime.now();
         this.lida = false;
     }
 
@@ -64,12 +64,12 @@ public class Notificacao {
         this.mensagem = mensagem;
     }
 
-    public LocalDateTime getDataHoraCriacao() {
-        return dataHoraCriacao;
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
     }
 
-    public void setDataHoraCriacao(LocalDateTime dataHoraCriacao) {
-        this.dataHoraCriacao = dataHoraCriacao;
+    public void setCriadoEm(LocalDateTime dataHoraCriacao) {
+        this.criadoEm = dataHoraCriacao;
     }
 
     public boolean isLida() {

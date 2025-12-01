@@ -17,7 +17,6 @@ public class ReservaReferenciaDTO {
     private LocalTime horaFim;
     private StatusReserva statusReserva;
     private String msgUsuario;
-    private String msgInterna;
     private LocalDateTime dataHoraSolicitacao;
     private Set<UsuarioReferenciaDTO> membros;
 
@@ -32,10 +31,9 @@ public class ReservaReferenciaDTO {
         horaInicio = reserva.getHoraInicio();
         horaFim = reserva.getHoraFim();
         statusReserva = reserva.getStatusReserva();
-        msgUsuario = reserva.getMsgUsuario();
-        msgInterna = reserva.getMsgInterna();
+        msgUsuario = reserva.getFinalidade();
         membros = reserva.getMembros().stream().map(UsuarioReferenciaDTO::new).collect(java.util.stream.Collectors.toSet());
-        dataHoraSolicitacao = reserva.getDataHoraSolicitacao();
+        dataHoraSolicitacao = reserva.getCriadoEm();
     }
 
 
@@ -111,13 +109,6 @@ public class ReservaReferenciaDTO {
         this.msgUsuario = msgUsuario;
     }
 
-    public String getMsgInterna() {
-        return msgInterna;
-    }
-
-    public void setMsgInterna(String msgInterna) {
-        this.msgInterna = msgInterna;
-    }
 
     public LocalDateTime getDataHoraSolicitacao() {
         return dataHoraSolicitacao;

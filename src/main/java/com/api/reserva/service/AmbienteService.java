@@ -151,7 +151,6 @@ public class AmbienteService {
                     StatusReserva status = reserva.getStatusReserva();
                     if (status == StatusReserva.PENDENTE) {
                         reserva.setStatusReserva(StatusReserva.APROVADA);
-                        reserva.setMsgInterna("Aprovação automática realizada.");
                     }
 
                     notificacaoService.novaNotificacao(
@@ -205,8 +204,7 @@ public class AmbienteService {
 
                     // Registra o motivo do cancelamento
                     reserva.setStatusReserva(StatusReserva.CANCELADA);
-                    reserva.setMsgInterna("O ambiente foi deletado pelo sistema.");
-                    reserva.setMsgUsuario("A reserva foi cancelada porque o ambiente '" + ambiente.getNome() + "' foi removido do sistema.");
+                    reserva.setFinalidade("A reserva foi cancelada porque o ambiente '" + ambiente.getNome() + "' foi removido do sistema.");
 
                     // Salva a reserva com as alterações
                     reservaRepository.save(reserva);
@@ -279,7 +277,6 @@ public class AmbienteService {
             // Cancelar apenas reservas com status PENDENTE
             if (reserva.getStatusReserva() == StatusReserva.PENDENTE) {
                 reserva.setStatusReserva(StatusReserva.CANCELADA);
-                reserva.setMsgInterna("O ambiente foi indisponibilizado.");
                 reservaRepository.save(reserva);
             }
         });

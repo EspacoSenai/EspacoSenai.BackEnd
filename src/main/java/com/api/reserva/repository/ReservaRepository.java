@@ -39,7 +39,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     List<Reserva> findAllByStatusReservaAndDataBefore(StatusReserva statusReserva, LocalDate localDate);
 
-    List<Reserva> findAllByStatusReserva(StatusReserva statusReserva);
+    Set<Reserva> findAllByStatusReserva(StatusReserva statusReserva);
 
     Set<Reserva> findAllByData(LocalDate dataDaReserva);
 

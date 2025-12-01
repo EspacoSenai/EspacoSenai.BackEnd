@@ -49,7 +49,7 @@ public class ReservaService {
                 SemResultadosException::new));
     }
 
-    public List<ReservaReferenciaDTO> buscarMinhasReservas(Authentication authentication) {
+    public List<ReservaReferenciaDTO> minhasReservas(Authentication authentication) {
         Long usuarioId = MetodosAuth.extrairId(authentication);
 
         // Buscar reservas onde o usuário é host
@@ -145,8 +145,7 @@ public class ReservaService {
                 reservaDTO.getData(),
                 reservaDTO.getHoraInicio(),
                 reservaDTO.getHoraFim(),
-                reservaDTO.getMsgUsuario(),
-                reservaDTO.getMsgInterna()
+                reservaDTO.getFinalidade()
         );
 
         if (reservaDTO.getMembrosIds() != null && !reservaDTO.getMembrosIds().isEmpty()) {
@@ -222,7 +221,7 @@ public class ReservaService {
         reserva.setData(reservaDTO.getData());
         reserva.setHoraInicio(reservaDTO.getHoraInicio());
         reserva.setHoraFim(reservaDTO.getHoraFim());
-        reserva.setMsgUsuario(reservaDTO.getMsgUsuario());
+        reserva.setFinalidade(reservaDTO.getFinalidade());
 
 //        // Atualizar convidados
 //        atualizarConvidados(reserva, reservaDTO.getConvidadosIds());
@@ -306,7 +305,6 @@ public class ReservaService {
         }
 
         reserva.setStatusReserva(StatusReserva.NEGADA);
-        reserva.setMsgInterna(motivo);
         reservaRepository.save(reserva);
     }
 
@@ -795,11 +793,23 @@ public class ReservaService {
 
         // Salvar motivo
         String motivoCancelamento = motivo != null ? motivo : "Cancelamento sem motivo especificado";
-        reserva.setMsgInterna(motivoCancelamento);
 
         // Cancelar reserva
         reserva.setStatusReserva(StatusReserva.CANCELADA);
         reservaRepository.save(reserva);
     }
 
+    public Set<ReservaReferenciaDTO> buscarPorStatus(StatusReserva statusReserva) {
+        Set<ReservaReferenciaDTO> reservas = reservaRepository.findAllByStatusReserva(statusReserva)
+                .stream()
+                .filter(r -> r.getStatusReserva() == statusReserva)
+                .map(ReservaReferenciaDTO::new)
+                .collect(Collectors.toSet());
+
+        if(reservas.isEmpty()) {
+            throw new SemResultadosException("Reservas com status: " + statusReserva);
+        } else {
+            return reservas;
+        }
+    }
 }

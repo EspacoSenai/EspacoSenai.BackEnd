@@ -35,12 +35,9 @@ public class ReservaDTO {
     private StatusReserva statusReserva;
 
     @Size(max = 500)
-    private String msgUsuario;
+    private String finalidade;
 
-    @Size(max = 500)
-    private String msgInterna;
-
-    private LocalDateTime dataHoraSolicitacao;
+    private LocalDateTime criadoEm;
 
     public ReservaDTO() {
     }
@@ -53,9 +50,8 @@ public class ReservaDTO {
         this.horaInicio = reserva.getHoraInicio();
         this.horaFim = reserva.getHoraFim();
         this.statusReserva = reserva.getStatusReserva();
-        this.msgUsuario = reserva.getMsgUsuario();
-        this.msgInterna = reserva.getMsgInterna();
-        this.dataHoraSolicitacao = reserva.getDataHoraSolicitacao();
+        this.finalidade = reserva.getFinalidade();
+        this.criadoEm = reserva.getCriadoEm();
         this.membrosIds = reserva.getMembros().stream().map(membro ->
                 membro.getId()).collect(java.util.stream.Collectors.toSet());
     }
@@ -116,28 +112,20 @@ public class ReservaDTO {
         this.statusReserva = statusReserva;
     }
 
-    public String getMsgUsuario() {
-        return msgUsuario;
+    public String getFinalidade() {
+        return finalidade;
     }
 
-    public void setMsgUsuario(String msgUsuario) {
-        this.msgUsuario = msgUsuario;
+    public void setFinalidade(String finalidade) {
+        this.finalidade = finalidade;
     }
 
-    public String getMsgInterna() {
-        return msgInterna;
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
     }
 
-    public void setMsgInterna(String msgInterna) {
-        this.msgInterna = msgInterna;
-    }
-
-    public LocalDateTime getDataHoraSolicitacao() {
-        return dataHoraSolicitacao;
-    }
-
-    public void setDataHoraSolicitacao(LocalDateTime dataHoraSolicitacao) {
-        this.dataHoraSolicitacao = dataHoraSolicitacao;
+    public void setCriadoEm(LocalDateTime criadoEm) {
+        this.criadoEm = criadoEm;
     }
 }
 

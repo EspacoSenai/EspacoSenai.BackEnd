@@ -3,6 +3,7 @@ package com.api.reserva.controller;
 import com.api.reserva.dto.TurmaReferenciaDTO;
 import com.api.reserva.dto.UsuarioDTO;
 import com.api.reserva.dto.UsuarioReferenciaDTO;
+import com.api.reserva.entity.Role;
 import com.api.reserva.repository.UsuarioRepository;
 import com.api.reserva.service.TurmaService;
 import com.api.reserva.service.UsuarioService;
@@ -105,6 +106,14 @@ public class UsuarioController {
     public ResponseEntity<List<UsuarioReferenciaDTO>> buscarEstudantes() {
         List<UsuarioReferenciaDTO> estudantes = usuarioService.buscarEstudantes();
         return ResponseEntity.ok(estudantes);
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
+    @GetMapping("/buscar-por-role")
+    public ResponseEntity<Set<UsuarioReferenciaDTO>> buscarPorRole(@RequestParam String role) {
+        Role.Values roleEnum = Role.Values.valueOf(role.toUpperCase());
+        Set<UsuarioReferenciaDTO> usuarios = usuarioService.buscarPorRole(roleEnum);
+        return ResponseEntity.ok(usuarios);
     }
 }
 

@@ -1,4 +1,4 @@
-package com.tcc.blogperiferico.config;
+package com.api.reserva.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -22,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -177,16 +175,14 @@ public class TurmaService {
 
                         for (Reserva reserva : reservasAfetadas) {
                             reserva.setStatusReserva(StatusReserva.CANCELADA);
-                            reserva.setMsgInterna("Cancelada automaticamente: a turma '" + turma.getNome() + "' teve a data de término alterada para " + terminoNovo + ".");
                             reservaRepository.save(reserva);
 
 //                            // notificar o host da reserva
-//                            notificacaoService.novaNotificacao(
-//                                    reserva.getHost(),
-//                                    NotificacaoTipo.ALTERACOES,
-//                                    "Reserva cancelada",
-//                                    "Sua reserva para " + reserva.getData() + " foi cancelada porque a turma " + turma.getNome() + " teve a data de término alterada."
-//                            );
+                            notificacaoService.novaNotificacao(
+                                    reserva.getHost(),
+                                    "Reserva cancelada",
+                                    "Sua reserva para " + reserva.getData() + " foi cancelada porque a turma " + turma.getNome() + " teve a data de término alterada."
+                            );
                         }
                     }
                 }
@@ -325,7 +321,6 @@ public class TurmaService {
                     for (Reserva reserva : reservasHost) {
                         if (reserva.getStatusReserva() != null && statusesAtivos.contains(reserva.getStatusReserva())) {
                             reserva.setStatusReserva(StatusReserva.CANCELADA);
-                            reserva.setMsgInterna("Cancelada automaticamente: a turma '" + turma.getNome() + "' foi excluída.");
                             reservaRepository.save(reserva);
 
 //                            // notificar o host da reserva
@@ -382,5 +377,33 @@ public class TurmaService {
         // limpar associações e remover a turma
         turma.getEstudantes().clear();
         turmaRepository.delete(turma);
+    }
+
+    public Set<TurmaReferenciaDTO> minhasTurmas(Authentication authentication) {
+        Long usuarioId = MetodosAuth.extrairId(authentication);
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() -> new SemResultadosException("Usuário"));
+
+        boolean isProfessor = usuario.getRoles().stream()
+                .anyMatch(r -> r.getRoleNome() == Role.Values.PROFESSOR);
+
+        Set<TurmaReferenciaDTO> turmas = new HashSet<>();
+
+        if (isProfessor) {
+            // Se for professor, buscar turmas onde ele é o professor
+            turmas.addAll(turmaRepository.findAllByProfessor_Id(usuarioId).stream()
+                    .map(TurmaReferenciaDTO::new)
+                    .collect(Collectors.toSet()));
+        } else {
+            // Se for estudante, buscar turmas onde ele é estudante
+            turmas.addAll(turmaRepository.findAllByEstudantes_Id(usuarioId).stream()
+                    .map(TurmaReferenciaDTO::new)
+                    .collect(Collectors.toSet()));
+        }
+
+        if (turmas.isEmpty()) {
+            throw new SemResultadosException();
+        }
+
+        return turmas;
     }
 }

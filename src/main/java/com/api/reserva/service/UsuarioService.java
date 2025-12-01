@@ -352,4 +352,20 @@ public class UsuarioService {
 
         return estudantes.stream().map(UsuarioReferenciaDTO::new).toList();
     }
+
+    public Set<UsuarioReferenciaDTO> buscarPorRole(Role.Values roleNome) {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        Set<Usuario> usuariosFiltrados = usuarios.stream()
+                .filter(u -> u.getRoles().stream()
+                        .anyMatch(role -> role.getRoleNome() == roleNome))
+                .collect(Collectors.toSet());
+
+        if (usuariosFiltrados.isEmpty()) {
+            throw new SemResultadosException("Nenhum usuário encontrado com a role: " + roleNome);
+        }
+
+        return usuariosFiltrados.stream()
+                .map(UsuarioReferenciaDTO::new)
+                .collect(Collectors.toSet());
+    }
 }

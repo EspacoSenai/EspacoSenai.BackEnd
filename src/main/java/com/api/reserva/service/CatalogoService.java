@@ -130,7 +130,6 @@ public class CatalogoService {
 
                     reservasDoCatalogo.forEach(reserva -> {
                         reserva.setStatusReserva(StatusReserva.CANCELADA);
-                        reserva.setMsgInterna("Cancelada automaticamente. O catálogo foi indisponibilizado.");
                     });
                     reservaRepository.saveAll(reservasDoCatalogo);
                 }
@@ -199,21 +198,14 @@ public class CatalogoService {
                             catalogo.getHoraFim());
 
                     // Manter mensagem existente e adicionar informação sobre deleção
-                    if (reserva.getMsgUsuario() != null && !reserva.getMsgUsuario().isEmpty()) {
-                        reserva.setMsgUsuario(reserva.getMsgUsuario() +
+                    if (reserva.getFinalidade() != null && !reserva.getFinalidade().isEmpty()) {
+                        reserva.setFinalidade(reserva.getFinalidade() +
                             " [Atualização: O catálogo " + msgDiaSemana + " foi removido do sistema.]");
                     } else {
-                        reserva.setMsgUsuario("O catálogo " + msgDiaSemana + " do ambiente '" +
+                        reserva.setFinalidade("O catálogo " + msgDiaSemana + " do ambiente '" +
                             ambiente.getNome() + "' foi removido do sistema.");
                     }
 
-                    // Manter mensagem interna e adicionar informação sobre deleção
-                    if (reserva.getMsgInterna() != null && !reserva.getMsgInterna().isEmpty()) {
-                        reserva.setMsgInterna(reserva.getMsgInterna() +
-                            " [Catálogo deletado: " + msgDiaSemana + "]");
-                    } else {
-                        reserva.setMsgInterna("Cancelada automaticamente. Catálogo deletado: " + msgDiaSemana);
-                    }
 
                     // Altera o status para cancelada
                     reserva.setStatusReserva(StatusReserva.CANCELADA);

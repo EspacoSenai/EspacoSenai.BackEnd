@@ -47,31 +47,27 @@ public class Reserva {
     private StatusReserva statusReserva;
 
     @Column(length = 500)
-    private String msgUsuario;
-
-    @Column(length = 500)
-    private String msgInterna;
+    private String finalidade;
 
     @Column(unique = true, nullable = false, length = 5)
     private String codigo;
 
     @CurrentTimestamp
-    private LocalDateTime dataHoraSolicitacao;
+    private LocalDateTime criadoEm;
 
     public Reserva() {
     }
 
     public Reserva(Usuario host, Catalogo catalogo, LocalDate data, LocalTime horaInicio,
-                   LocalTime horaFim, String msgUsuario, String msgInterna) {
+                   LocalTime horaFim, String finalidade) {
         this.host = host;
         this.catalogo = catalogo;
         this.data = data;
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
         this.statusReserva = StatusReserva.PENDENTE;
-        this.msgUsuario = msgUsuario;
-        this.msgInterna = msgInterna;
-        this.dataHoraSolicitacao = LocalDateTime.now();
+        this.finalidade = finalidade;
+        this.criadoEm = LocalDateTime.now();
         // Gerar código único de 5 caracteres alfanuméricos
         this.codigo = CodigoUtil.gerarCodigo(5);
     }
@@ -120,28 +116,20 @@ public class Reserva {
         this.statusReserva = statusReserva;
     }
 
-    public String getMsgUsuario() {
-        return msgUsuario;
+    public String getFinalidade() {
+        return finalidade;
     }
 
-    public void setMsgUsuario(String msgUsuario) {
-        this.msgUsuario = msgUsuario;
+    public void setFinalidade(String msgUsuario) {
+        this.finalidade = msgUsuario;
     }
 
-    public String getMsgInterna() {
-        return msgInterna;
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
     }
 
-    public void setMsgInterna(String msgInterna) {
-        this.msgInterna = msgInterna;
-    }
-
-    public LocalDateTime getDataHoraSolicitacao() {
-        return dataHoraSolicitacao;
-    }
-
-    public void setDataHoraSolicitacao(LocalDateTime dataHoraSolicitacao) {
-        this.dataHoraSolicitacao = dataHoraSolicitacao;
+    public void setCriadoEm(LocalDateTime dataHoraSolicitacao) {
+        this.criadoEm = dataHoraSolicitacao;
     }
 
     public Catalogo getCatalogo() {
