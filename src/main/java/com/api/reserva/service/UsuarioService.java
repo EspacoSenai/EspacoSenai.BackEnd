@@ -268,24 +268,32 @@ public class UsuarioService {
 
     /**
      * Atualiza os dados de um usuário existente.
+     * Permissões validadas via @PreAuthorize no controller.
      */
     @Transactional
-    public void atualizar(UsuarioDTO usuarioDTO, Authentication authentication) {
-        if (usuarioRepository.existsByEmail(usuarioDTO.getEmail())) {
-            throw new UsuarioDuplicadoException();
-        }
-
-        Long usuarioId = MetodosAuth.extrairId(authentication);
-
+    public void atualizar(UsuarioDTO usuarioDTO, Long usuarioId) {
+        // Validar email (excluindo o usuário atual)
         if (usuarioRepository.existsByEmailAndIdNot(usuarioDTO.getEmail(), usuarioId)) {
             throw new UsuarioDuplicadoException();
         }
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(SemResultadosException::new);
+                .orElseThrow(() -> new SemResultadosException("Usuário não encontrado."));
 
+        usuario.setNome(usuarioDTO.getNome());
         usuario.setEmail(usuarioDTO.getEmail());
-        usuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
+
+        // Apenas codificar senha se foi fornecida
+        if (usuarioDTO.getSenha() != null && !usuarioDTO.getSenha().isEmpty()) {
+            usuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
+        }
+
+        // Atualizar roles se fornecidas
+        if (usuarioDTO.getRolesIds() != null && !usuarioDTO.getRolesIds().isEmpty()) {
+            Set<Role> roles = new HashSet<>(roleRepository.findAllById(usuarioDTO.getRolesIds()));
+            roles.removeIf(role -> Role.Values.ADMIN.equals(role.getRoleNome()));
+            usuario.setRoles(roles);
+        }
 
         usuarioRepository.save(usuario);
     }

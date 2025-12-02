@@ -270,7 +270,7 @@ public class ReservaService {
         }
 
         if(reserva.getStatusReserva() != StatusReserva.PENDENTE) {
-            throw new HorarioInvalidoException("Apenas reservas pendentes podem ser aprovadas");
+            throw new HorarioInvalidoException("Apenas reservas pendentes podem ser aprovadas. Status atual: " + reserva.getStatusReserva());
         }
 
         reserva.setStatusReserva(StatusReserva.APROVADA);
@@ -301,7 +301,7 @@ public class ReservaService {
         }
 
         if(reserva.getStatusReserva() != StatusReserva.PENDENTE) {
-            throw new HorarioInvalidoException("Apenas reservas pendentes podem ser negadas");
+            throw new HorarioInvalidoException("Apenas reservas pendentes podem ser negadas. Status atual: " + reserva.getStatusReserva());
         }
 
         reserva.setStatusReserva(StatusReserva.NEGADA);

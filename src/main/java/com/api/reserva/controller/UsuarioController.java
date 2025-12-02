@@ -60,10 +60,10 @@ public class UsuarioController {
 //        return ResponseEntity.ok(usuarioReferenciaDTO);
 //    }
 
-    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
-    @PutMapping("/atualizar")
-    public ResponseEntity<Object> atualizar (@Valid @RequestBody UsuarioDTO usuarioDTO, Authentication authentication) {
-        usuarioService.atualizar(usuarioDTO, authentication);
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<Object> atualizar (@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO, Authentication authentication) {
+        usuarioService.atualizar(usuarioDTO, id);
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Usuário atualizado com sucesso.");
     }
 //
