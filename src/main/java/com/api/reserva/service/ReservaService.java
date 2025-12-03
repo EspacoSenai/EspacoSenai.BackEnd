@@ -120,7 +120,11 @@ public class ReservaService {
                          r.getStatusReserva() == StatusReserva.ACONTECENDO))
                 .collect(Collectors.toSet());
 
-        if(!reservasDoHostNoAmbienteNoDia.isEmpty()){
+
+
+        if (!reservasDoHostNoAmbienteNoDia.isEmpty()) {
+            System.out.println("Reservas do host no mesmo ambiente e dia:");
+            reservasDoHostNoAmbienteNoDia.forEach(r -> System.out.println("Reserva id=" + r.getId() + " data=" + r.getData() + " inicio=" + r.getHoraInicio() + " fim=" + r.getHoraFim()));
             throw new SemPermissaoException("Você só pode fazer uma reserva por dia neste ambiente.");
         }
 
@@ -172,6 +176,14 @@ public class ReservaService {
             reserva.setStatusReserva(StatusReserva.PENDENTE);
         }
         reservaRepository.save(reserva);
+
+        // Notificar usuário sobre criação de reserva
+        notificacaoService.novaNotificacao(
+                host,
+                "Reserva Criada ✓",
+                "Sua reserva no ambiente '" + catalogo.getAmbiente().getNome() +
+                "' para " + reservaDTO.getData() + " foi criada com sucesso."
+        );
     }
 
     @Transactional
@@ -223,10 +235,15 @@ public class ReservaService {
         reserva.setHoraFim(reservaDTO.getHoraFim());
         reserva.setFinalidade(reservaDTO.getFinalidade());
 
-//        // Atualizar convidados
-//        atualizarConvidados(reserva, reservaDTO.getConvidadosIds());
-
         reservaRepository.save(reserva);
+
+        // Notificar usuário sobre atualização
+        notificacaoService.novaNotificacao(
+                reserva.getHost(),
+                "Reserva Atualizada ✎",
+                "Sua reserva no ambiente '" + catalogo.getAmbiente().getNome() +
+                "' foi atualizada com sucesso."
+        );
     }
 
     @Transactional
@@ -242,6 +259,14 @@ public class ReservaService {
                 (role == null || !role.contains("SCOPE_ADMIN") && !role.contains("SCOPE_COORDENADOR"))) {
             throw new SemPermissaoException();
         }
+
+        // Notificar usuário sobre deleção
+        notificacaoService.novaNotificacao(
+                reserva.getHost(),
+                "Reserva Deletada ✗",
+                "Sua reserva no ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
+                "' para " + reserva.getData() + " foi deletada."
+        );
 
         reservaRepository.delete(reserva);
     }
@@ -275,6 +300,14 @@ public class ReservaService {
 
         reserva.setStatusReserva(StatusReserva.APROVADA);
         reservaRepository.save(reserva);
+
+        // Notificar usuário sobre aprovação
+        notificacaoService.novaNotificacao(
+                reserva.getHost(),
+                "Reserva Aprovada ✓",
+                "Sua reserva no ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
+                "' para " + reserva.getData() + " foi APROVADA."
+        );
     }
 
     @Transactional
@@ -306,6 +339,15 @@ public class ReservaService {
 
         reserva.setStatusReserva(StatusReserva.NEGADA);
         reservaRepository.save(reserva);
+
+        // Criar notificação imediata para o usuário
+        notificacaoService.novaNotificacao(
+                reserva.getHost(),
+                "Reserva Rejeitada ✗",
+                "Sua reserva no ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
+                "' para " + reserva.getData() + " foi REJEITADA.\n" +
+                "Motivo: " + motivo
+        );
     }
 
     private void validarDadosReserva(ReservaDTO reservaDTO) {
@@ -670,6 +712,22 @@ public class ReservaService {
         // Adicionar usuário aos membros
         reserva.getMembros().add(usuario);
         reservaRepository.save(reserva);
+
+        // Notificar usuário que ingressou
+        notificacaoService.novaNotificacao(
+                usuario,
+                "Você Ingressou ✓",
+                "Você ingressou na reserva do ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
+                "' para " + reserva.getData() + "."
+        );
+
+        // Notificar host que um novo membro ingressou
+        notificacaoService.novaNotificacao(
+                reserva.getHost(),
+                "Novo Membro na Reserva 👤",
+                usuario.getNome() + " ingressou em sua reserva no ambiente '" +
+                reserva.getCatalogo().getAmbiente().getNome() + "'."
+        );
     }
 
     @Transactional
@@ -702,6 +760,22 @@ public class ReservaService {
         // Remover usuário dos membros
         reserva.getMembros().remove(usuario);
         reservaRepository.save(reserva);
+
+        // Notificar usuário que saiu
+        notificacaoService.novaNotificacao(
+                usuario,
+                "Você Saiu da Reserva ⬅️",
+                "Você saiu da reserva do ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
+                "' para " + reserva.getData() + "."
+        );
+
+        // Notificar host que um membro saiu
+        notificacaoService.novaNotificacao(
+                reserva.getHost(),
+                "Membro Saiu da Reserva 👤",
+                usuario.getNome() + " saiu de sua reserva no ambiente '" +
+                reserva.getCatalogo().getAmbiente().getNome() + "'."
+        );
     }
 
     @Transactional
@@ -722,6 +796,14 @@ public class ReservaService {
         // Gerar novo código
         reserva.setCodigo(com.api.reserva.util.CodigoUtil.gerarCodigo(5));
         reservaRepository.save(reserva);
+
+        // Notificar usuário que novo código foi gerado
+        notificacaoService.novaNotificacao(
+                usuario,
+                "Novo Código Gerado 🔑",
+                "Um novo código foi gerado para sua reserva no ambiente '" +
+                reserva.getCatalogo().getAmbiente().getNome() + "'. Novo código: " + reserva.getCodigo()
+        );
     }
 
     @Transactional
@@ -756,6 +838,22 @@ public class ReservaService {
         // Remover participante
         reserva.getMembros().remove(participante);
         reservaRepository.save(reserva);
+
+        // Notificar participante que foi removido
+        notificacaoService.novaNotificacao(
+                participante,
+                "Removido da Reserva 🚫",
+                "Você foi removido da reserva no ambiente '" +
+                reserva.getCatalogo().getAmbiente().getNome() + "' pelo host."
+        );
+
+        // Notificar host que removeu participante
+        notificacaoService.novaNotificacao(
+                usuarioLogado,
+                "Participante Removido 👤",
+                participante.getNome() + " foi removido da sua reserva no ambiente '" +
+                reserva.getCatalogo().getAmbiente().getNome() + "'."
+        );
     }
 
     @Transactional
@@ -797,6 +895,24 @@ public class ReservaService {
         // Cancelar reserva
         reserva.setStatusReserva(StatusReserva.CANCELADA);
         reservaRepository.save(reserva);
+
+        // Notificar host
+        notificacaoService.novaNotificacao(
+                reserva.getHost(),
+                "Reserva Cancelada ❌",
+                "Sua reserva no ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
+                "' para " + reserva.getData() + " foi CANCELADA.\nMotivo: " + motivoCancelamento
+        );
+
+        // Notificar todos os membros
+        for (Usuario membro : reserva.getMembros()) {
+            notificacaoService.novaNotificacao(
+                    membro,
+                    "Reserva Cancelada ❌",
+                    "A reserva no ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
+                    "' para " + reserva.getData() + " foi CANCELADA.\nMotivo: " + motivoCancelamento
+            );
+        }
     }
 
     public Set<ReservaReferenciaDTO> buscarPorStatus(StatusReserva statusReserva) {

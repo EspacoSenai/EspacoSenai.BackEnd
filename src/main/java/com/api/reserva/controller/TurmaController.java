@@ -94,7 +94,7 @@ public class TurmaController {
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
-    @GetMapping("/minhas-turmas")
+    @GetMapping("/minhas")
     public ResponseEntity<List<TurmaReferenciaDTO>> minhasTurmas(Authentication authentication) {
         Set<TurmaReferenciaDTO> turmas = turmaService.minhasTurmas(authentication);
         return ResponseEntity.ok(turmas.stream().toList());

@@ -28,8 +28,14 @@ public class NotificacaoDTO{
         this.lida = lida;
     }
 
+     public NotificacaoDTO(Long id, Long usuarioId, String titulo, String mensagem, LocalDateTime criadoEm, boolean lida) {
+        this(id, titulo, mensagem, criadoEm, lida);
+        this.usuarioId = usuarioId;
+    }
+
     public NotificacaoDTO(Notificacao notificacao) {
         id = notificacao.getId();
+        usuarioId = notificacao.getUsuario() != null ? notificacao.getUsuario().getId() : null;
         titulo = notificacao.getTitulo();
         mensagem = notificacao.getMensagem();
         criadoEm = notificacao.getCriadoEm();
@@ -40,6 +46,13 @@ public class NotificacaoDTO{
         return id;
     }
 
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
 
     public String getTitulo() {
         return titulo;

@@ -62,27 +62,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-        .authorizeHttpRequests(authorization -> authorization
-                .requestMatchers("/").permitAll()
-                .requestMatchers("/index.html").permitAll()
-                .requestMatchers("/dashboard.html").permitAll()
-                .requestMatchers("/login").permitAll()
-                .requestMatchers("/register").permitAll()
-                .requestMatchers("/auth/signin").permitAll()
-                .requestMatchers("/auth/signup").permitAll()
-                .requestMatchers("/auth/confirmar-conta/**").permitAll()
-                .requestMatchers("/auth/redefinir-senha/**").permitAll()
-                .requestMatchers("/auth/logout").permitAll()
-                .requestMatchers("/css/**").permitAll()
-                .requestMatchers("/js/**").permitAll()
-                .requestMatchers("/images/**").permitAll()
-                .requestMatchers("/assets/**").permitAll()
-                .requestMatchers("/static/**").permitAll()
-                .requestMatchers("/webjars/**").permitAll()
-                .anyRequest().authenticated())
+                .authorizeHttpRequests(authorization -> authorization
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/index.html").permitAll()
+                        .requestMatchers("/dashboard.html").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/auth/signin").permitAll()
+                        .requestMatchers("/auth/signup").permitAll()
+                        .requestMatchers("/auth/confirmar-conta/**").permitAll()
+                        .requestMatchers("/auth/redefinir-senha/**").permitAll()
+                        .requestMatchers("/auth/logout").permitAll()
+                        .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/js/**").permitAll()
+                        .requestMatchers("/images/**").permitAll()
+                        .requestMatchers("/assets/**").permitAll()
+                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 ->
-                    oauth2.bearerTokenResolver(cookieBearerTokenResolver()).jwt(Customizer.withDefaults()))
+                        oauth2.bearerTokenResolver(cookieBearerTokenResolver()).jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
@@ -154,7 +155,7 @@ public class SecurityConfig {
             }
 
             throw new IllegalStateException(
-                "Chave privada não configurada. Configure jwt.private.key (arquivo) ou JWT_PRIVATE_KEY (string PEM)"
+                    "Chave privada não configurada. Configure jwt.private.key (arquivo) ou JWT_PRIVATE_KEY (string PEM)"
             );
 
         } catch (Exception e) {
@@ -167,7 +168,7 @@ public class SecurityConfig {
      */
     private RSAPrivateKey loadPrivateKeyFromFile() throws Exception {
         org.springframework.core.io.ResourceLoader resourceLoader =
-            new org.springframework.core.io.DefaultResourceLoader();
+                new org.springframework.core.io.DefaultResourceLoader();
         Resource resource = resourceLoader.getResource(privateKeyLocation);
 
         String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
@@ -180,11 +181,11 @@ public class SecurityConfig {
     private RSAPrivateKey loadPrivateKeyFromString(String keyContent) throws Exception {
         // Remove cabeçalhos e rodapés PEM e quebras de linha
         String privateKeyPEM = keyContent
-            .replace("-----BEGIN PRIVATE KEY-----", "")
-            .replace("-----END PRIVATE KEY-----", "")
-            .replace("-----BEGIN RSA PRIVATE KEY-----", "")
-            .replace("-----END RSA PRIVATE KEY-----", "")
-            .replaceAll("\\s", "");
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replace("-----BEGIN RSA PRIVATE KEY-----", "")
+                .replace("-----END RSA PRIVATE KEY-----", "")
+                .replaceAll("\\s", "");
 
         // Decodifica Base64
         byte[] encoded = Base64.getDecoder().decode(privateKeyPEM);

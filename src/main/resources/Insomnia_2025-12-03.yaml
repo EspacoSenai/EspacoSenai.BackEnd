@@ -1,0 +1,1780 @@
+type: collection.insomnia.rest/5.0
+name: reserva
+meta:
+  id: wrk_a821eaeae401405caca8e7ca561a7891
+  created: 1762059879949
+  modified: 1762059879949
+  description: ""
+collection:
+  - name: Ambiente
+    meta:
+      id: fld_8a9d140ea5de4492a5a41eaf8810b94d
+      created: 1750161286222
+      modified: 1761324366966
+      sortKey: -1750164994746
+      description: ""
+    children:
+      - url: "{{ _.base_url.base_url }}/ambiente/buscar"
+        name: /ambiente/buscar
+        meta:
+          id: req_16d8c261a8f343b2b529cdc6089c01a0
+          created: 1750161290601
+          modified: 1764805510611
+          isPrivate: false
+          description: ""
+          sortKey: -1750161417571
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/ambiente/salvar"
+        name: /ambiente/salvar
+        meta:
+          id: req_11fd5e6afcb046e88e2cb2d6ad34e79c
+          created: 1750161396117
+          modified: 1764783051153
+          isPrivate: false
+          description: ""
+          sortKey: -1750161417496
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "mesa pingue pongue",
+              "descricao": "oksjiusdfiusd",
+              "disponibilidade": "DISPONIVEL",
+              "aprovacao": "MANUAL"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/ambiente/excluir/:id"
+        name: /ambiente/deletar
+        meta:
+          id: req_7276dded3960443a9c982c90acb01456
+          created: 1750161417471
+          modified: 1762637348620
+          isPrivate: false
+          description: ""
+          sortKey: -1750161384319
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: ""
+      - url: "{{ _.base_url.base_url }}/ambiente/atualizar/:id"
+        name: /ambiente/atualizar
+        meta:
+          id: req_5ff7e383ea294640bce66f4a21b58c84
+          created: 1750161439027
+          modified: 1763427667074
+          isPrivate: false
+          description: ""
+          sortKey: -1750161384419
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "quadra",
+              "descricao": "arlivre",
+              "disponibilidade": "INDISPONIVEL",
+              "aprovacao": "MANUAL",
+            	"responsaveisIds": [
+            	
+            	]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.2.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: "1"
+      - url: "{{ _.base_url.base_url }}/ambiente/listar/:id"
+        name: /ambiente/buscar/{id}
+        meta:
+          id: req_5e94ba1ff56e442298e3a2bd2a67c4a3
+          created: 1750161500723
+          modified: 1762637325732
+          isPrivate: false
+          description: ""
+          sortKey: -1750161417521
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: "1"
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: Usuario
+    meta:
+      id: fld_598dc7d8815e4632947db8d7b634e760
+      created: 1750161956808
+      modified: 1763603693735
+      sortKey: -1759073600441
+      description: ""
+    children:
+      - url: "{{ _.base_url.base_url }}/usuario/buscar-todos"
+        name: /usuario/buscar-por-role/{role}
+        meta:
+          id: req_1e40b5a9e7844a49935b3648c014a596
+          created: 1750161963961
+          modified: 1764621934077
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234528
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/usuario/buscar/:id"
+        name: /usuario/buscar/{id}
+        meta:
+          id: req_56bcc14933f24868a7e1f737b145a127
+          created: 1750161990994
+          modified: 1763604149884
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234515.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_bb709d8d8744440dbe4ff4c59ef22cec',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: "2"
+      - url: "{{ _.base_url.base_url }}/usuario/signup"
+        name: /usuario/salvar
+        meta:
+          id: req_5facf90e0f744f0d9b40622351b70cd7
+          created: 1750162012197
+          modified: 1763604147134
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234503
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"nome": "estudante",
+            	"email": "teixeiravitorinoc8@gmail.com",
+            	"senha": "semhash"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.2.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/usuario/atualizar/:id"
+        name: /usuario/atualizar/{id}
+        meta:
+          id: req_807e9d1eb47448aab62ad8c2922cc503
+          created: 1750162194037
+          modified: 1764787577647
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234440.5
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            		"nome": "jungle",
+            		"email": "lalvesdacosta45@gmail.com",
+            		"senha": "12345678",
+            		"status": "ATIVO",
+            		"notificacoes": [],
+            		"roles": [
+            			{
+            				"id": 4,
+            				"roleNome": "ESTUDANTE"
+            			}
+            		]
+            	}
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.2.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: "9"
+      - url: "{{ _.base_url.base_url }}/usuario/deletar/:id"
+        name: /usuario/deletar/{id}
+        meta:
+          id: req_88c0949ac4fd44f9bafe96c862f33d46
+          created: 1750162234428
+          modified: 1763603918381
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234428
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_f811f423c14149098a47ef89ccbfa022',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: "16"
+      - url: "{{ _.base_url.base_url }}/usuario/salvar-privilegiado"
+        name: /usuario/salvar-privilegiado
+        meta:
+          id: req_15e0657444244fe3a9cafcef610db7bb
+          created: 1758195000006
+          modified: 1764784633868
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234490.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "p1",
+              "email": "p1@gmail.com",
+              "senha": "12345678",
+              "status": "ATIVO",
+              "rolesIds": [
+            		3
+              ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.5.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/usuario/minhas-turmas"
+        name: /usuario/minhas-turmas
+        meta:
+          id: req_ebf9f84217a648c995eb826d7138aef8
+          created: 1763694390441
+          modified: 1763694397433
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234521.75
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/usuario/meu-perfil"
+        name: /usuario/meu-perfil
+        meta:
+          id: req_45c3009550b0424c957c40fd0d04bc67
+          created: 1763694516193
+          modified: 1763694533970
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234518.625
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/usuario/buscar-estudantes"
+        name: /usuario/buscar-estudantes
+        meta:
+          id: req_8c8624c13bb94e8fb78b44550a1a48ea
+          created: 1763694633000
+          modified: 1763694647002
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234524.875
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/usuario/buscar-por-role/:role"
+        name: /usuario/buscar
+        meta:
+          id: req_59e74b6034c549e0bef11feaddad48e7
+          created: 1764621605826
+          modified: 1764621670199
+          isPrivate: false
+          description: ""
+          sortKey: -1750162234526.4375
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: role
+            value: ESTUDANTE
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: Reserva
+    meta:
+      id: fld_07bb36ce55b84a41a0cb054fecc7d157
+      created: 1750167451681
+      modified: 1761324366978
+      sortKey: -1750167451681
+      description: ""
+    children:
+      - url: "{{ _.base_url.base_url }}/reserva/buscar"
+        name: /reserva/buscar/{id}
+        meta:
+          id: req_87496f9b26c94bc5b7de9dfc67879cca
+          created: 1750167454904
+          modified: 1763181915956
+          isPrivate: false
+          description: ""
+          sortKey: -1750167582036
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/reserva/buscar"
+        name: /reserva/buscar
+        meta:
+          id: req_416274395e9343728ab5116456535ec4
+          created: 1750167480584
+          modified: 1763183621860
+          isPrivate: false
+          description: ""
+          sortKey: -1750167582136
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/reserva/salvar"
+        name: /reserva/salvar
+        meta:
+          id: req_7d6b39096e0543f78d3a3401374a233b
+          created: 1750167505718
+          modified: 1764804369700
+          isPrivate: false
+          description: ""
+          sortKey: -1750167581936
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "catalogoId": 2,
+              "data": "2025-12-03",
+              "horaInicio": "21:00",
+              "horaFim": "21:15",
+              "finalidade": "liberar pro fut"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/reserva/atualizar/:id"
+        name: /reserva/atualizar/{id}
+        meta:
+          id: req_01cb67a8cd71492b99dadeb5f4de20fe
+          created: 1750167543841
+          modified: 1763181934308
+          isPrivate: false
+          description: ""
+          sortKey: -1750167581886
+        method: PUT
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: ""
+      - url: "{{ _.base_url.base_url }}/reserva/excluir/:id"
+        name: /reserva/deletar/{id}
+        meta:
+          id: req_1ab6229335e1438ca7674b8581bd2a30
+          created: 1750167581836
+          modified: 1763181955363
+          isPrivate: false
+          description: ""
+          sortKey: -1750167581836
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: ""
+      - url: "{{ _.base_url.base_url }}/reserva/aprovar/:id"
+        name: /reserva/aprovar/{id}
+        meta:
+          id: req_890973b82a674e11bfa32314f2579ab7
+          created: 1763183634915
+          modified: 1764785507150
+          isPrivate: false
+          description: ""
+          sortKey: -1763183634915
+        method: PATCH
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: "24"
+      - url: "{{ _.base_url.base_url }}/reserva/minhas-reservas"
+        name: /reserva/minhas-reservas
+        meta:
+          id: req_d3c6ee566a44472ba57cfa6b02dcceb0
+          created: 1763737165309
+          modified: 1764789642658
+          isPrivate: false
+          description: ""
+          sortKey: -1750167582086
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/reserva/buscar-por-status/:status"
+        name: /reserva/buscar-por-status/{status}
+        meta:
+          id: req_da99d471cfae4b0294b9ff6fbc662d9d
+          created: 1764621770090
+          modified: 1764625746844
+          isPrivate: false
+          description: ""
+          sortKey: -1750167582111
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: status
+            value: APROVADA
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: Turma
+    meta:
+      id: fld_4c74223b67d54c0f931860669a2d7836
+      created: 1753045467311
+      modified: 1762314574762
+      sortKey: -1759073600416
+      description: ""
+    children:
+      - url: "{{ _.base_url.base_url }}/turma/salvar"
+        name: /turma/salvar
+        meta:
+          id: req_66dc354718714c44b6ea235314a9f829
+          created: 1752971550851
+          modified: 1763692810772
+          isPrivate: false
+          description: ""
+          sortKey: -1753056888291
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            
+            {
+            	"nome": "{% faker 'randomLoremWords' %}",
+              "curso": "mecanica",
+              "modalidade": "TECNICO",
+            	"dataInicio": "{% faker 'randomDateFuture' %}",
+            	"dataTermino": "2026-12-12",
+            	"capacidade": "2"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/turma/buscar"
+        name: /turma/buscar
+        meta:
+          id: req_9b22395899ad4e36bf9c75575b11edc4
+          created: 1753121449725
+          modified: 1763677689401
+          isPrivate: false
+          description: ""
+          sortKey: -1753056888266
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/turma/adicionar-estudantes/:turmaId"
+        name: /turma/adicionar-estudantes/{turmaId}
+        meta:
+          id: req_ebf5a52ad79d4868a30fc2ca87414938
+          created: 1753121896124
+          modified: 1763735469333
+          isPrivate: false
+          description: ""
+          sortKey: -1753056888147.25
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            [
+            	3
+            ]
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: turmaId
+            value: "1"
+      - url: "{{ _.base_url.base_url }}/turma/minhas"
+        name: /turma/minhas
+        meta:
+          id: req_3421df2b66bc40e9bde8d0c314fb05c2
+          created: 1761324992888
+          modified: 1764785567043
+          isPrivate: false
+          description: ""
+          sortKey: -1753056888253.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/turma/deletar/:id"
+        name: /turma/deletar/{id}
+        meta:
+          id: req_97fa75ca79264e1a9b83bba80686bea3
+          created: 1761325005501
+          modified: 1762236660929
+          isPrivate: false
+          description: ""
+          sortKey: -1753056888195.6875
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: "2"
+      - url: "{{ _.base_url.base_url }}/turma/remover-estudantes/:turmaId"
+        name: /turma/remover-estudantes/{turmaId}
+        meta:
+          id: req_7a075cbb04a649859d156bccef06860f
+          created: 1761327108460
+          modified: 1763735478252
+          isPrivate: false
+          description: ""
+          sortKey: -1751612235091.625
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            [
+            	3
+            ]
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: turmaId
+            value: "1"
+      - url: "{{ _.base_url.base_url }}/turma/atualizar/:id"
+        name: /turma/atualizar/{id}
+        meta:
+          id: req_8d11dbc274a54fb5a78a8942ffe40a00
+          created: 1761327144596
+          modified: 1763614228020
+          isPrivate: false
+          description: ""
+          sortKey: -1753056888244.125
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            
+            {
+            	"nome": "{% faker 'randomLoremWords' %}",
+              "curso": "mecanica",
+              "modalidade": "TECNICO",
+            	"dataInicio": "{% faker 'randomDateFuture' %}",
+            	"dataTermino": "2026-12-12",
+            	"capacidade": "2"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: "2"
+      - url: "{{ _.base_url.base_url }}/turma/atualizar-professor/:turmaId/:professorId"
+        name: /turma/atualizar-professor/{turmaId}/{professorId}
+        meta:
+          id: req_3181a7d36c304e5fb453fc18fb3e3fd7
+          created: 1761327826391
+          modified: 1763643166225
+          isPrivate: false
+          description: ""
+          sortKey: -1750889908563.8125
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: turmaId
+            value: "1"
+          - name: professorId
+            value: "3"
+      - url: "{{ _.base_url.base_url }}/turma/ingressar-por-codigo/:codigo"
+        name: /turma/ingressar-por-codigo/{codigo}
+        meta:
+          id: req_d37043637eb54c1a8594c6ea3b407244
+          created: 1761327860060
+          modified: 1764784897011
+          isPrivate: false
+          description: ""
+          sortKey: -1750889908463.8125
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: codigo
+            value: OITPO2
+      - url: "{{ _.base_url.base_url }}/turma/gerar-novo-codigo/:turmaId"
+        name: /turma/gerar-novo-codigo/{turmaId}
+        meta:
+          id: req_614bb369fc60485f87f6609768b41cf6
+          created: 1761327960269
+          modified: 1763644516819
+          isPrivate: false
+          description: ""
+          sortKey: -1750528745249.9062
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: turmaId
+            value: "1"
+      - url: "{{ _.base_url.base_url }}/turma/buscar"
+        name: /turma/buscar
+        meta:
+          id: req_7df24f2203ce42d1940025078f687f0b
+          created: 1764785165906
+          modified: 1764785165906
+          isPrivate: false
+          description: ""
+          sortKey: -1753056888259.75
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: Catalogo
+    meta:
+      id: fld_8282a5508c32459b80afaa7db9126c68
+      created: 1754508440895
+      modified: 1761324366973
+      sortKey: -1754508440895
+      description: ""
+    children:
+      - url: "{{ _.base_url.base_url }}/catalogo/buscar/:id"
+        name: /catalogo/buscar/{id}
+        meta:
+          id: req_34a80dbac6a444f584c1eceaa9ccbd50
+          created: 1754508449588
+          modified: 1762644587413
+          isPrivate: false
+          description: ""
+          sortKey: -1754508453070
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: id
+            value: ""
+      - url: "{{ _.base_url.base_url }}/catalogo/buscar"
+        name: /catalogo/buscar
+        meta:
+          id: req_1bb8f31130604dd285c508aba95ced2c
+          created: 1754508499720
+          modified: 1764794178998
+          isPrivate: false
+          description: ""
+          sortKey: -1754508453170
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/catalogo/salvar/:ambienteId"
+        name: /catalogo/salvar/{ambienteId}
+        meta:
+          id: req_dbf2b7949ff848ac9a221fbeb96c9a2c
+          created: 1754508513184
+          modified: 1764794208675
+          isPrivate: false
+          description: ""
+          sortKey: -1753668838034.8125
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            [
+            	{
+            	"horaInicio": "19:00",
+              "horaFim": "23:59",
+              "diaSemana": "QUARTA",
+              "disponibilidade": "DISPONIVEL"
+            	}
+            ]
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: ambienteId
+            value: "2"
+      - url: "{{ _.base_url.base_url }}/catalogo/atualizar/:Id"
+        name: /catalogo/atualizar/{id}
+        meta:
+          id: req_7933fb4e4c9541d4ad06d1096af93703
+          created: 1754525591459
+          modified: 1763733901572
+          isPrivate: false
+          description: ""
+          sortKey: -1753604252262.875
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "idAmbiente": 1,
+              "horaInicio": "12:00",
+              "horaFim": "13:00",
+              "diaSemana": "DOMINGO",
+              "disponibilidade": "DISPONIVEL"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJteWFwcCIsInN1YiI6IjEiLCJleHAiOjE3NTQ1MjgxMjcsImlhdCI6MTc1NDUyMjEyNywic2NvcGUiOiJBRE1JTiJ9.BiT6AhMk_UwbC7M6JKMYygMWpNPP-dIKSOyR2TfA8KzyXqQOKVZ_HIhFAnoE7InLlfm5cTx_G0_k9Lrx9hlt8x3NB5WFmC4W9y8Oki-J_8K10M18mNATM0xCrz_5hWjhV-JaNK0Dh7qiZhUmgjeYA02n764TZHekIyrPn_aBi8RWHJwZ3unSsTV2rZvX9fEm_3aqGeWoNQ25bhuaQQjQD7mJIRjrPI00NGVbQSm78syL648QJfzqurM_7v82M1pg40ddlifKIkbOUsxxz02t866nZ7sRLrXHUi2NvvWx-jVEeCh1GtbQtRzTfehnKxcVYxKtmy8DmBG5uJw0mDFgmA
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: Id
+            value: ""
+      - url: "{{ _.base_url.base_url }}/catalogo/deletar"
+        name: /catalogo/deletar/{id}
+        meta:
+          id: req_8ae50553af8f4b10a60621c3fb12c762
+          created: 1763733865305
+          modified: 1763760539492
+          isPrivate: false
+          description: ""
+          sortKey: -1753539666490.9375
+        method: DELETE
+        body:
+          mimeType: application/json
+          text: |-
+            [
+            	6
+            ]
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: PreCadastro
+    meta:
+      id: fld_9dbab631a5c448748fbdd5236d9498b0
+      created: 1755623443386
+      modified: 1763603633911
+      sortKey: -1759073600466
+      description: ""
+    children:
+      - url: "{{ _.base_url.base_url }}/precadastro/planilha"
+        name: /precadastro/planilha
+        meta:
+          id: req_b24e66d3acfa493f800e87e0ae5b248c
+          created: 1753155703750
+          modified: 1764703745670
+          isPrivate: false
+          description: ""
+          sortKey: -1756223813386.5
+        method: POST
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: planilha
+              value: ""
+              description: ""
+              disabled: false
+              id: pair_12c082b9ae584043abdfa5ef459594fb
+              fileName: D:\mockalunosb.xlsx
+              type: file
+        headers:
+          - name: Content-Type
+            value: multipart/form-data
+          - name: User-Agent
+            value: insomnia/11.3.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/precadastro/buscar/e.g"
+        name: /precadastro/buscar
+        meta:
+          id: req_7350ccb9d0eb496cba414a19068d68ee
+          created: 1755625361563
+          modified: 1764704019436
+          isPrivate: false
+          description: ""
+          sortKey: -1756822265310
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_f811f423c14149098a47ef89ccbfa022',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/precadastro/salvar"
+        name: /precadastro/salvar
+        meta:
+          id: req_2e4bd21f29464249a91e6d0622551a28
+          created: 1756822265210
+          modified: 1764805154076
+          isPrivate: false
+          description: ""
+          sortKey: -1756822265210
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "teixeiravitorinoc8@gmail.com"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.5.0
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: Auth
+    meta:
+      id: fld_1cc578d4096247f39b8aba6472356570
+      created: 1756822817008
+      modified: 1763241448270
+      sortKey: -1759073600516
+      description: ""
+    children:
+      - url: "{{ _.base_url.base_url }}/auth/signin"
+        name: /auth/login
+        meta:
+          id: req_eb2f5a86d4664137a4902c1b9a4a9278
+          created: 1753475047405
+          modified: 1764801347497
+          isPrivate: false
+          description: ""
+          sortKey: -1757128413011.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"identificador": "{{ _.identificador }}",
+            	"senha": "{{ _.senha }}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            id: pair_b6e2e88beec74e829790dfd8646bc21b
+            disabled: false
+          - name: User-Agent
+            value: insomnia/11.3.0
+            id: pair_841f52edb6864ecea7f136af51663432
+            disabled: false
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/auth/signup"
+        name: /auth/signup
+        meta:
+          id: req_3ae127827253438eb2c7c67ba58a4d22
+          created: 1755608021582
+          modified: 1764702369524
+          isPrivate: false
+          description: ""
+          sortKey: -1756831096276
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "Claudemir",
+              "email": "teixeiravitorinoc8@gmail.com",
+              "senha": "12345678"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.3.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/auth/confirmar-conta/:token/:codigo"
+        name: /auth/confirmar-conta/{token}/{codigo}
+        meta:
+          id: req_d1b9d0f66ac14ebd864573bddea67e94
+          created: 1756822896636
+          modified: 1764703203053
+          isPrivate: false
+          description: ""
+          sortKey: -1756831096263.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.5.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: token
+            value: "{% response 'body', 'req_3ae127827253438eb2c7c67ba58a4d22',
+              'b64::JC50b2tlbg==::46b', 'never', 60 %}"
+          - name: codigo
+            value: FUA4ZA
+      - url: "{{ _.base_url.base_url }}/auth/redefinir-senha"
+        name: /auth/redefinir-senha
+        meta:
+          id: req_f4f0b3b89b334a07af65c0e8a430f4ac
+          created: 1756831242787
+          modified: 1764702275808
+          isPrivate: false
+          description: ""
+          sortKey: -1756831096238.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            		"identificador": "teixeiravitorinoc8@gmail.com"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.5.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url.base_url }}/auth/redefinir-senha/nova-senha/:token"
+        name: /auth/redefinir-senha/nova-senha/{token}
+        meta:
+          id: req_8ef6a86fc95d42f0a31537c5fef099b2
+          created: 1756833652538
+          modified: 1764703595654
+          isPrivate: false
+          description: ""
+          sortKey: -1756831095926
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"novaSenha": "senhaforte"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.5.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: token
+            value: "{% response 'body', 'req_f4f0b3b89b334a07af65c0e8a430f4ac',
+              'b64::JC50b2tlbg==::46b', 'never', 60 %}"
+      - url: "{{ _.base_url.base_url
+          }}/auth/redefinir-senha/validar-codigo/:token/:codigo"
+        name: /auth/redefinir-senha/validar-codigo/{token}/{codigo}
+        meta:
+          id: req_63fbcd1bf4ed42dc8a684dc139844e49
+          created: 1757425729747
+          modified: 1764703574336
+          isPrivate: false
+          description: ""
+          sortKey: -1756831096082.25
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.5.0
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+        pathParameters:
+          - name: token
+            value: "{% response 'body', 'req_f4f0b3b89b334a07af65c0e8a430f4ac',
+              'b64::JC50b2tlbg==::46b', 'never', 60 %}"
+          - name: codigo
+            value: DDSWHQ
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+  - name: Notificacao
+    meta:
+      id: fld_622574180c504783bb2c3614ac8add82
+      created: 1764694276428
+      modified: 1764694276428
+      sortKey: -1764694276428
+      description: ""
+    children:
+      - url: ws://localhost:8080/ws/notificacoes
+        name: ws://localhost:8080/ws/notificacoes
+        meta:
+          id: ws-req_69115fbbd4d2436ea5b39b9f0a0cc3af
+          created: 1764739341531
+          modified: 1764805994245
+          description: ""
+          sortKey: -1764694279171
+        settings:
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_eb2f5a86d4664137a4902c1b9a4a9278',
+            'b64::JC5hY2Nlc3NUb2tlbg==::46b', 'never', 60 %}"
+        headers:
+          - name: User-Agent
+            value: insomnia/11.3.0
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_f1b8639b2d684fb0a25262905c7dddc1
+    created: 1761324367127
+    modified: 1764805491043
+  cookies:
+    - key: access_token
+      value: eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJteWFwcCIsInN1YiI6IjEiLCJleHAiOjE3NjQ3OTM0NTgsImlhdCI6MTc2NDc4NzQ1OCwic2NvcGUiOiJBRE1JTiJ9.pPZeb-3-0nZYdTU8KU2CztY6nqsDsJy96rGUkmp5CNwZ7G52F_SunlUy7dY5mApa7RYpEiqyeyhzWFgQfJfm6i11mjS4bm0WUCixspcJUGGEcmhA72FVw39bpNEZG19bl0iqG8dLNZgb875D8QFLWgOYz3QZtKadC0G40tx8JX_a_lMvWVHEflRTsDTp2UuNy2A3EDRlNGs6WnjS0NqchQEp8gKfcAO68azVP2cfDypj7vwECUS9LdLF6zSomyGCG4zPfXrdcysZqfKUM-ooggLleUi2Q3ckCCxMJHpVr6Jl09zqVDOeD1k7-sWo3ZL_3vr1kVESo_er0wMn4phKcg
+      maxAge: 6000
+      domain: espacosenai.azurewebsites.net
+      path: /
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-11-21T20:56:40.998Z
+      lastAccessed: 2025-12-03T18:44:18.297Z
+      id: 0b8eff8c-d667-42c3-88de-20a1949aa6c1
+    - key: access_token
+      value: eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJteWFwcCIsInN1YiI6IjEiLCJleHAiOjE3NjQ4MTE0OTAsImlhdCI6MTc2NDgwNTQ5MCwic2NvcGUiOiJBRE1JTiJ9.TdhjiTj5T8loUVaZojC-pf8WLbamCKRNlNRx1_Bzr-lMxEvyx-P8hE6z7eOwkBWJTubuOz2RsrNlsu7e7OFiVsX4k_ufFgDpyjkTrVNA86ZVKaZPqT5y3e0A8rlq0o3SIARIzO1qhGl08apu6Z-WwG1EekuvL2T8mxRC6gw8xN3Eh7nZIfzUSkGjxFFu7XoE7btu2V0_dhTHdw-Vn189DrPqgRmFZ7K4_bW27LtdlwpGjamK5DllRCZT90e23SF94qTZhxSO-6gvy2iGRYhnWDVEoayXXcxfdP4Pfl78A-AUl4V9LECVWSBiGmyeBEHMYwJqNi5UZIKDT3Stgfjl0A
+      maxAge: 6000
+      domain: localhost
+      path: /
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-12-02T17:48:00.831Z
+      lastAccessed: 2025-12-03T23:44:51.043Z
+      id: e7e09302-f981-402a-93f5-9e9ba5df4558
+environments:
+  name: Base Environment
+  meta:
+    id: env_af8aee72961a4dd794b12fb18f5f6817
+    created: 1736965163489
+    modified: 1764804060294
+    isPrivate: false
+  data:
+    base_url:
+      base_url: localhost:8080
+      base_url2: https://espacosenai.azurewebsites.net
+    token:
+      token: ""
+  subEnvironments:
+    - name: Admin
+      meta:
+        id: env_7e99f992921e412bb673e8c3276b984f
+        created: 1754524887790
+        modified: 1763604683359
+        isPrivate: false
+        sortKey: 1754524887790
+      data:
+        nome: admin
+        identificador: admin
+        senha: "1234"
+    - name: Eu
+      meta:
+        id: env_24a44e96c7b74d86b584f02a23beda74
+        created: 1762392524140
+        modified: 1764703629171
+        isPrivate: false
+        sortKey: 1762392524140
+      data:
+        nome: claudemir
+        identificador: teixeiravitorinoc8@gmail.com
+        senha: senhaforte
+    - name: Professor1
+      meta:
+        id: env_55ab0de7b17c427eb57c1a5c0aff4d91
+        created: 1763604420827
+        modified: 1764784666215
+        isPrivate: false
+        sortKey: 1763604420827
+      data:
+        nome: professor
+        identificador: p1@gmail.com
+        senha: "12345678"
+    - name: Professor2
+      meta:
+        id: env_be9388d90e724269860cfcf683e56558
+        created: 1763604503839
+        modified: 1763604739641
+        isPrivate: false
+        sortKey: 1763604503839
+      data:
+        nome: professor2
+        identificador: p2@gmail.com
+        senha: "12345678"

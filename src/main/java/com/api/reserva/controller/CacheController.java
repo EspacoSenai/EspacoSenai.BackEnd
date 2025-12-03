@@ -35,4 +35,4 @@
 //        usuarioService.confirmarConta(token, email);
 //        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Conta confirmada.");
 //    }
-//}
+//}j
