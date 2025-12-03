@@ -43,7 +43,7 @@ public class ReservaImpressoraController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/disgraca")
+    @PostMapping("/liberar/{pin}")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
     public ResponseEntity<Object> liberarMamarquinaminha(@RequestBody Pin pin){
         reservaImpressoraService.atualizarStatusPeloPin(pin);
@@ -55,6 +55,7 @@ public class ReservaImpressoraController {
     public void atualizarTemperatura(@RequestBody Temperatura temperatura){
         reservaImpressoraService.atualizarTemperatura(temperatura);
     }
+
     @GetMapping("/desligar")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
     public ResponseEntity<Void> desligarMaquina(){
