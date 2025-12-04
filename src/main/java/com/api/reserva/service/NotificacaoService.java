@@ -71,12 +71,9 @@ public class NotificacaoService {
 
     @Transactional
     public void lerNotificacao(Authentication authentication, Long id) {
-        String email = authentication.getName();
-        Usuario usuario = usuarioRepository.findByEmail(email);
-
-        if (usuario == null) {
-            throw new SemResultadosException("Usuário não encontrado");
-        }
+        Long usuarioId = MetodosAuth.extrairId(authentication);
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() ->
+                new SemResultadosException("Usuário não encontrado"));
 
         Notificacao notificacao = notificacaoRepository.findById(id).orElseThrow(SemResultadosException::new);
 
@@ -95,21 +92,11 @@ public class NotificacaoService {
         notificacaoRepository.delete(notificacao);
     }
 
-    /**
-     * Deletar notificação com validação de segurança
-     * Valida se o usuário autenticado é o dono da notificação
-     *
-     * @param authentication Authentication do usuário
-     * @param id ID da notificação
-     */
     @Transactional
     public void deletarNotificacaoSeguro(Authentication authentication, Long id) {
-        String email = authentication.getName();
-        Usuario usuario = usuarioRepository.findByEmail(email);
-
-        if (usuario == null) {
-            throw new SemResultadosException("Usuário não encontrado");
-        }
+        Long usuarioId = MetodosAuth.extrairId(authentication);
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() ->
+                new SemResultadosException("Usuário não encontrado"));
 
         Notificacao notificacao = notificacaoRepository.findById(id).orElseThrow(SemResultadosException::new);
 
