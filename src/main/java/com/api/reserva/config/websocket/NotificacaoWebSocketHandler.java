@@ -1,16 +1,17 @@
 package com.api.reserva.config.websocket;
 
+import com.api.reserva.dto.NotificacaoDTO;
 import com.api.reserva.repository.NotificacaoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 @Component
 public class NotificacaoWebSocketHandler extends AbstractWebSocketHandler {
@@ -18,6 +19,11 @@ public class NotificacaoWebSocketHandler extends AbstractWebSocketHandler {
     private static final Map<Long, WebSocketSession> usuarioSessions = new ConcurrentHashMap<>();
     private static NotificacaoRepository notificacaoRepository;
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    static {
+        // Registrar módulo para suportar LocalDateTime
+        objectMapper.registerModule(new JavaTimeModule());
+    }
 
     @Autowired
     public void setNotificacaoRepository(NotificacaoRepository repo) {
@@ -82,14 +88,8 @@ public class NotificacaoWebSocketHandler extends AbstractWebSocketHandler {
 
             if (!notificacoes.isEmpty()) {
                 for (var notif : notificacoes) {
-                    Map<String, Object> payload = new HashMap<>();
-                    payload.put("id", notif.getId());
-                    payload.put("titulo", notif.getTitulo());
-                    payload.put("mensagem", notif.getMensagem());
-                    payload.put("criadoEm", notif.getCriadoEm());
-                    payload.put("lida", notif.isLida());
-
-                    String json = objectMapper.writeValueAsString(payload);
+                    NotificacaoDTO dto = new NotificacaoDTO(notif);
+                    String json = objectMapper.writeValueAsString(dto);
                     session.sendMessage(new TextMessage(json));
                 }
                 System.out.println("✓ " + notificacoes.size() + " notificações não lidas enviadas para usuário: " + usuarioId);

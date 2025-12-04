@@ -1,13 +1,13 @@
 package com.api.reserva.config.websocket;
 
+import com.api.reserva.dto.NotificacaoDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Utilitário para enviar notificações via WebSocket
@@ -18,6 +18,11 @@ public class NotificacaoUtil {
     private static final Logger logger = LoggerFactory.getLogger(NotificacaoUtil.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    static {
+        // Registrar módulo para suportar LocalDateTime
+        objectMapper.registerModule(new JavaTimeModule());
+    }
+
     /**
      * Envia notificação para um usuário específico via WebSocket
      *
@@ -25,15 +30,20 @@ public class NotificacaoUtil {
      * @param titulo Título da notificação
      * @param mensagem Mensagem da notificação
      * @param tipo Tipo/categoria da notificação (INFO, ALERTA, SUCESSO, ERRO)
+     * @return NotificacaoDTO com os dados da notificação enviada
      */
-    public static void notificarUsuario(Long usuarioId, String titulo, String mensagem, String tipo) {
+    public static NotificacaoDTO notificarUsuario(Long usuarioId, String titulo, String mensagem, String tipo) {
         try {
-            Map<String, Object> payload = criarPayload(titulo, mensagem, tipo);
-            String json = objectMapper.writeValueAsString(payload);
+            LocalDateTime agora = LocalDateTime.now();
+            NotificacaoDTO notificacaoDTO = new NotificacaoDTO(null, usuarioId, titulo, mensagem, agora, false);
+            String json = objectMapper.writeValueAsString(notificacaoDTO);
             NotificacaoWebSocketHandler.enviarNotificacaoParaUsuario(usuarioId, json);
-            logger.info("Notificação enviada para usuário {}: {}", usuarioId, titulo);
+            logger.info("📢 Notificação enviada para usuário {}: {}", usuarioId, titulo);
+
+            return notificacaoDTO;
         } catch (IOException e) {
-            logger.error("Erro ao enviar notificação para usuário {}: {}", usuarioId, e.getMessage());
+            logger.error("❌ Erro ao enviar notificação para usuário {}: {}", usuarioId, e.getMessage());
+            return null;
         }
     }
 
@@ -43,33 +53,21 @@ public class NotificacaoUtil {
      * @param titulo Título da notificação
      * @param mensagem Mensagem da notificação
      * @param tipo Tipo/categoria da notificação (INFO, ALERTA, SUCESSO, ERRO)
+     * @return NotificacaoDTO com os dados da notificação enviada
      */
-    public static void notificarTodos(String titulo, String mensagem, String tipo) {
+    public static NotificacaoDTO notificarTodos(String titulo, String mensagem, String tipo) {
         try {
-            Map<String, Object> payload = criarPayload(titulo, mensagem, tipo);
-            String json = objectMapper.writeValueAsString(payload);
+            LocalDateTime agora = LocalDateTime.now();
+            NotificacaoDTO notificacaoDTO = new NotificacaoDTO(null, null, titulo, mensagem, agora, false);
+            String json = objectMapper.writeValueAsString(notificacaoDTO);
             NotificacaoWebSocketHandler.enviarNotificacaoParaTodos(json);
-            logger.info("Notificação em broadcast enviada: {}", titulo);
-        } catch (IOException e) {
-            logger.error("Erro ao enviar notificação em broadcast: {}", e.getMessage());
-        }
-    }
+            logger.info("📢 Notificação em broadcast enviada: {}", titulo);
 
-    /**
-     * Cria um payload padronizado para a notificação
-     *
-     * @param titulo Título da notificação
-     * @param mensagem Mensagem da notificação
-     * @param tipo Tipo/categoria (INFO, ALERTA, SUCESSO, ERRO)
-     * @return Mapa com os dados da notificação
-     */
-    private static Map<String, Object> criarPayload(String titulo, String mensagem, String tipo) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("titulo", titulo);
-        payload.put("mensagem", mensagem);
-        payload.put("tipo", tipo);
-        payload.put("timestamp", LocalDateTime.now().toString()); // Converter para String
-        return payload;
+            return notificacaoDTO;
+        } catch (IOException e) {
+            logger.error("❌ Erro ao enviar notificação em broadcast: {}", e.getMessage());
+            return null;
+        }
     }
 }
 

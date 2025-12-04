@@ -41,7 +41,7 @@ public class NotificacaoController {
      * Marcar notificação como lida
      */
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
-    @PutMapping("/ler/{id}")
+    @PatchMapping("/ler/{id}")
     public ResponseEntity<Object> marcarComoLida(Authentication authentication, @PathVariable Long id) {
         notificacaoService.lerNotificacao(authentication, id);
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Notificação marcada como lida.");

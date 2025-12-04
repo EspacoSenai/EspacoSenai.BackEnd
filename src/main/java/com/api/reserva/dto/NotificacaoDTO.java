@@ -1,6 +1,9 @@
 package com.api.reserva.dto;
 
 import com.api.reserva.entity.Notificacao;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -17,7 +20,11 @@ public class NotificacaoDTO{
 
     @Size(message = "A mensagem deve ter no máximo 500 caracteres.", max = 500)
     private String mensagem;
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonProperty("timestamp")
     private LocalDateTime criadoEm;
+
     private boolean lida;
 
     public NotificacaoDTO(Long id, String titulo, String mensagem, LocalDateTime criadoEm, boolean lida) {
