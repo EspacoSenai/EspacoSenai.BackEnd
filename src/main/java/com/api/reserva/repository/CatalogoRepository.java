@@ -10,6 +10,8 @@ import java.util.Set;
 public interface CatalogoRepository extends JpaRepository<Catalogo, Long> {
     Set<Catalogo> findCatalogoByAmbienteId(Long id);
 
+    Set<Catalogo> findByAmbienteId(Long ambienteId);
+
 }
 
 

@@ -10,6 +10,8 @@ public interface AmbienteRepository extends JpaRepository<Ambiente, Long> {
 
     boolean existsByNomeAndIdNot(String nome, Long id);
 
+                             Ambiente findByNome(String nome);
+
 //    /**
 //     * Este método retorna uma String derivada de uma Query que leva THEN, identificando o exato campo duplicado.
 //     * (cadastro e atualização.)
