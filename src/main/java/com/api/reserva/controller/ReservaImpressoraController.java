@@ -42,7 +42,7 @@ public class ReservaImpressoraController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/liberar/{pin}")
+    @PostMapping("/liberar")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
     public ResponseEntity<Object> liberarMamarquinaminha(@RequestBody Pin pin){
         reservaImpressoraService.atualizarStatusPeloPin(pin);
