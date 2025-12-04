@@ -8,6 +8,7 @@ import com.api.reserva.exception.SemPermissaoException;
 import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.NotificacaoRepository;
 import com.api.reserva.repository.UsuarioRepository;
+import com.api.reserva.util.MetodosAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -131,12 +132,9 @@ public class NotificacaoService {
      * @return Lista de notificações do usuário
      */
     public List<NotificacaoDTO> buscarMinhas(Authentication authentication) {
-        String email = authentication.getName();
-        Usuario usuario = usuarioRepository.findByEmail(email);
-
-        if (usuario == null) {
-            throw new SemResultadosException("Usuário não encontrado");
-        }
+        Long usuarioId = MetodosAuth.extrairId(authentication);
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() ->
+                new SemResultadosException("Usuário não encontrado"));
 
         return notificacaoRepository.findByUsuarioId(usuario.getId())
                 .stream()
