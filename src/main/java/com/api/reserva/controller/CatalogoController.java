@@ -50,10 +50,10 @@ public class CatalogoController {
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
-    @PatchMapping("/atualizar/{ambienteId}")
-    public ResponseEntity<Object> atualizar(@PathVariable Long ambienteId, @Valid @RequestBody Set<CatalogoDTO> catalogosDTO, Authentication authentication) {
-        catalogoService.atualizar(ambienteId, catalogosDTO, authentication);
-        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Catálogos atualizados com sucesso.");
+    @PutMapping("/atualizar/{catalogoId}")
+    public ResponseEntity<Object> atualizar(@PathVariable Long catalogoId, @Valid @RequestBody CatalogoDTO catalogoDTO, Authentication authentication) {
+        catalogoService.atualizar(catalogoId, catalogoDTO, authentication);
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Catálogo atualizado com sucesso.");
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")

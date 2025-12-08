@@ -125,7 +125,7 @@ public class UsuarioController {
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR')")
     @GetMapping("/buscar-por-email")
-    public ResponseEntity<UsuarioReferenciaDTO> buscarUsuarioPorEmail(@PathVariable String email) {
+    public ResponseEntity<UsuarioReferenciaDTO> buscarUsuarioPorEmail(@RequestParam String email) {
         UsuarioReferenciaDTO usuario = usuarioService.buscarUsuarioPorEmail(email);
         return ResponseEntity.ok(usuario);
     }

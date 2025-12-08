@@ -16,7 +16,7 @@ public class CatalogoDTO {
     private Long id;
 
     @NotNull(message = "Escolha um ambiente para vincular a este catálogo.")
-    private Long idAmbiente;
+    private Long ambienteId;
 
 //    private Long idHorario;
 
@@ -39,9 +39,9 @@ public class CatalogoDTO {
     public CatalogoDTO() {
     }
 
-    public CatalogoDTO(Long idAmbiente, Long idPeriodo, LocalTime horaInicio, LocalTime horaFim
-                       ,DiaSemana diaSemana, Disponibilidade disponibilidade) {
-        this.idAmbiente = idAmbiente;
+    public CatalogoDTO(Long ambienteId, Long idPeriodo, LocalTime horaInicio, LocalTime horaFim
+                       , DiaSemana diaSemana, Disponibilidade disponibilidade) {
+        this.ambienteId = ambienteId;
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
         this.diaSemana = diaSemana;
@@ -50,7 +50,7 @@ public class CatalogoDTO {
 
     public CatalogoDTO(Catalogo catalogo) {
         id = catalogo.getId();
-        idAmbiente = catalogo.getAmbiente().getId();
+        ambienteId = catalogo.getAmbiente().getId();
 //        idHorario = catalogo.getId();
         diaSemana = catalogo.getDiaSemana();
         disponibilidade = catalogo.getDisponibilidade();
@@ -62,12 +62,12 @@ public class CatalogoDTO {
         return id;
     }
 
-    public Long getIdAmbiente() {
-        return idAmbiente;
+    public Long getAmbienteId() {
+        return ambienteId;
     }
 
-    public void setIdAmbiente(Long idAmbiente) {
-        this.idAmbiente = idAmbiente;
+    public void setAmbienteId(Long ambienteId) {
+        this.ambienteId = ambienteId;
     }
 
 //    public Long getIdPeriodo() {
