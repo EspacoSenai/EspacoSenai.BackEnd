@@ -3,7 +3,6 @@ package com.api.reserva.controller;
 import com.api.reserva.config.websocket.NotificacaoUtil;
 import com.api.reserva.dto.NotificacaoDTO;
 import com.api.reserva.service.NotificacaoService;
-import com.api.reserva.util.MetodosAuth;
 import com.api.reserva.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

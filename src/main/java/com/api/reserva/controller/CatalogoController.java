@@ -34,6 +34,14 @@ public class CatalogoController {
         return ResponseEntity.ok(catalogoService.buscar(id));
     }
 
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR')")
+    @GetMapping("/buscar-por-ambiente/{ambienteId}")
+    public ResponseEntity<Set<CatalogoReferenciaDTO>> buscarPorAmbiente(@PathVariable Long ambienteId) {
+        Set<CatalogoReferenciaDTO> catalogos = catalogoService.buscarPorAmbienteId(ambienteId);
+        return ResponseEntity.ok(catalogos);
+    }
+
+
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
     @PostMapping("/salvar/{ambienteId}")
     public ResponseEntity<Object> salvar(@PathVariable Long ambienteId, @Valid @RequestBody Set<CatalogoDTO> catalogosDTO, Authentication authentication) {

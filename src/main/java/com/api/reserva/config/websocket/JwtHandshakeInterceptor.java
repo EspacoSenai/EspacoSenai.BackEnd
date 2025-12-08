@@ -1,5 +1,6 @@
 package com.api.reserva.config.websocket;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.ServerHttpRequest;
@@ -17,8 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.security.Principal;
 import java.util.ArrayList;

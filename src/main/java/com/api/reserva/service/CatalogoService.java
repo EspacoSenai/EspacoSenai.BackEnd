@@ -9,7 +9,10 @@ import com.api.reserva.entity.Usuario;
 import com.api.reserva.enums.StatusReserva;
 import com.api.reserva.exception.SemPermissaoException;
 import com.api.reserva.exception.SemResultadosException;
-import com.api.reserva.repository.*;
+import com.api.reserva.repository.AmbienteRepository;
+import com.api.reserva.repository.CatalogoRepository;
+import com.api.reserva.repository.ReservaRepository;
+import com.api.reserva.repository.UsuarioRepository;
 import com.api.reserva.util.MetodosAuth;
 import com.api.reserva.util.ValidacaoDatasEHorarios;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,13 @@ public class CatalogoService {
 
     public CatalogoReferenciaDTO buscar(Long id) {
         return new CatalogoReferenciaDTO(catalogoRepository.findById(id).orElseThrow(SemResultadosException::new));
+    }
+
+    public Set<CatalogoReferenciaDTO> buscarPorAmbienteId(Long ambienteId) {
+        Set<Catalogo> catalogos = catalogoRepository.findByAmbienteId(ambienteId);
+        return catalogos.stream()
+                .map(CatalogoReferenciaDTO::new)
+                .collect(Collectors.toSet());
     }
 
     @Transactional
