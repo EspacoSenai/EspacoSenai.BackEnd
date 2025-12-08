@@ -16,12 +16,20 @@ import com.api.reserva.repository.UsuarioRepository;
 import com.api.reserva.util.CodigoUtil;
 import com.api.reserva.util.MetodosAuth;
 import com.api.reserva.util.ValidacaoDatasEHorarios;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -264,6 +272,11 @@ public class TurmaService {
             throw new EntidadeJaAssociadaException("Você já está na turma.");
         }
 
+        // Validar capacidade da turma
+        if(turma.getEstudantes().size() >= turma.getCapacidade()) {
+            throw new SemPermissaoException("A turma atingiu a capacidade máxima de estudantes.");
+        }
+
         turma.getEstudantes().add(estudante);
         turmaRepository.save(turma);
         // notificações removidas
@@ -408,5 +421,72 @@ public class TurmaService {
         }
 
         return turmas;
+    }
+
+    @Transactional
+    public List<Usuario> adicionarEstudantesPlanilha(Long turmaId, MultipartFile planilha, Authentication authentication) {
+        Turma turma = turmaRepository.findById(turmaId).orElseThrow(() ->
+                new SemResultadosException("Turma não encontrada"));
+
+        Set<String> roles = MetodosAuth.extrairRole(authentication);
+
+        if (!roles.contains("SCOPE_ADMIN") && !turma.getProfessor().getId().equals(MetodosAuth.extrairId(authentication))) {
+            throw new SemPermissaoException("Você não é professor dessa turma.");
+        }
+
+        List<Usuario> estudantesAdicionados = new ArrayList<>();
+        Set<String> emailsProcessados = new HashSet<>();
+
+        try (InputStream is = planilha.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (Row row : sheet) {
+                // Pula linhas 0 (título) e 1 (cabeçalho)
+                if (row.getRowNum() < 2) continue;
+
+                // Verifica se a coluna de email (coluna 0 ou 1) não é nula
+                String email = null;
+                if (row.getCell(0) != null && row.getCell(0).toString().contains("@")) {
+                    email = row.getCell(0).getStringCellValue().trim().toLowerCase();
+                } else if (row.getCell(1) != null && row.getCell(1).toString().contains("@")) {
+                    email = row.getCell(1).getStringCellValue().trim().toLowerCase();
+                }
+
+                if (email == null || email.isBlank()) continue;
+
+                // Ignora duplicados na planilha
+                if (emailsProcessados.contains(email)) continue;
+
+                // Buscar usuário pelo email
+                Usuario usuario = usuarioRepository.findByEmail(email);
+                if (usuario == null) continue;
+
+                // Validar se é estudante
+                boolean isEstudante = usuario.getRoles().stream()
+                        .anyMatch(r -> r.getRoleNome() == Role.Values.ESTUDANTE);
+                if (!isEstudante) continue;
+
+                // Validar se já está na turma
+                if (turma.getEstudantes().contains(usuario)) continue;
+
+                // Validar capacidade
+                if (turma.getEstudantes().size() + estudantesAdicionados.size() > turma.getCapacidade()) {
+                    throw new SemPermissaoException("Capacidade máxima da turma atingida.");
+                }
+
+                turma.getEstudantes().add(usuario);
+                estudantesAdicionados.add(usuario);
+                emailsProcessados.add(email);
+            }
+
+            if (!estudantesAdicionados.isEmpty()) {
+                turmaRepository.save(turma);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar a planilha: " + e.getMessage());
+        }
+
+        return estudantesAdicionados;
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Set;
 
@@ -99,4 +99,13 @@ public class TurmaController {
         Set<TurmaReferenciaDTO> turmas = turmaService.minhasTurmas(authentication);
         return ResponseEntity.ok(turmas.stream().toList());
     }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_PROFESSOR')")
+    @PostMapping("/adicionar-estudantes-planilha/{turmaId}")
+    public ResponseEntity<Object> adicionarEstudantesPlanilha(@PathVariable Long turmaId, @RequestParam("planilha") MultipartFile planilha, Authentication authentication) {
+        turmaService.adicionarEstudantesPlanilha(turmaId, planilha, authentication);
+        return ResponseBuilder.respostaSimples(HttpStatus.OK, "Estudantes adicionados com sucesso.");
+    }
 }
+
+

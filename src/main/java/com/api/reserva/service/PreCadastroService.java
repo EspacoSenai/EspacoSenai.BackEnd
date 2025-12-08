@@ -29,8 +29,7 @@ public class PreCadastroService {
 
     private final PreCadastroRepository preCadastroRepository;
     private final RoleRepository roleRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final EmailService emailService;
+    private final UsuarioRepository usuarioRepository;    private final EmailService emailService;
 
     public PreCadastroService(PreCadastroRepository preCadastroRepository, RoleRepository roleRepository, UsuarioRepository usuarioRepository, EmailService emailService) {
         this.preCadastroRepository = preCadastroRepository;
@@ -102,9 +101,17 @@ public class PreCadastroService {
                     new SemResultadosException(String.format("Role %s", Role.Values.ESTUDANTE.name())));
             Sheet sheet = workbook.getSheetAt(0);
             for (Row row : sheet) {
-                if (row.getRowNum() == 0) continue;
-                String nome = row.getCell(0).getStringCellValue();
-                String email = row.getCell(1).getStringCellValue();
+                // Pula linhas 0 (título) e 1 (cabeçalho)
+                if (row.getRowNum() < 2) continue;
+
+                // Verifica se as células não são nulas
+                if (row.getCell(0) == null || row.getCell(1) == null) continue;
+
+                String nome = row.getCell(0).getStringCellValue().trim();
+                String email = row.getCell(1).getStringCellValue().trim().toLowerCase();
+
+                // Ignora linhas com nome ou email vazios
+                if (nome.isBlank() || email.isBlank()) continue;
 
                 PreCadastro preCadastro = new PreCadastro();
                 preCadastro.setNome(nome);
