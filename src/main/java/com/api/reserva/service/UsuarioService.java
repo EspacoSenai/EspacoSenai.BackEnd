@@ -376,4 +376,30 @@ public class UsuarioService {
                 .map(UsuarioReferenciaDTO::new)
                 .collect(Collectors.toSet());
     }
+
+    public Set<UsuarioReferenciaDTO> buscarEstudantesPorIds(Set<Long> estudanteIds) {
+        List<Usuario> usuarios = usuarioRepository.findAllById(estudanteIds);
+
+        // Filtrar apenas usuários com role ESTUDANTE
+        Set<Usuario> estudantes = usuarios.stream()
+                .filter(u -> u.getRoles().stream()
+                        .anyMatch(role -> role.getRoleNome() == Role.Values.ESTUDANTE))
+                .collect(Collectors.toSet());
+
+        if (estudantes.size() != estudanteIds.size()) {
+            throw new SemResultadosException("Um ou mais estudantes não encontrados ou não possuem a role ESTUDANTE.");
+        }
+
+        return estudantes.stream()
+                .map(UsuarioReferenciaDTO::new)
+                .collect(Collectors.toSet());
+    }
+
+    public UsuarioReferenciaDTO buscarUsuarioPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email);
+        if (usuario == null) {
+            throw new SemResultadosException("Usuário não encontrado com o email: " + email);
+        }
+        return new UsuarioReferenciaDTO(usuario);
+    }
 }

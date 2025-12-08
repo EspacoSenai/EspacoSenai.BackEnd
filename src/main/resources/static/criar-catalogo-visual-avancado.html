@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Catálogos de Ambientes - Sistema de Reservas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .catalogos-list {
+            margin-top: 20px;
+        }
+
+        .catalogo-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .catalogo-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .catalogo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .dia-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .segunda { background: #667eea; }
+        .terca { background: #28a745; }
+        .quarta { background: #ffc107; color: #333; }
+        .quinta { background: #dc3545; }
+        .sexta { background: #17a2b8; }
+        .sabado { background: #fd7e14; }
+        .domingo { background: #6f42c1; }
+
+        .catalogo-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-disponivel {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-indisponivel {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .ambiente-select-group {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea;
+        }
+
+        .json-output {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .catalogo-info {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Criador de Catálogos de Ambientes</h1>
+            <p>Crie múltiplos horários para cada dia da semana de forma visual e intuitiva</p>
+        </div>
+
+        <div class="content">
+            <!-- Seleção de Ambiente -->
+            <div class="ambiente-select-group">
+                <h2>🏢 Selecione o Ambiente</h2>
+                <div class="form-group">
+                    <label>Ambiente *</label>
+                    <select id="ambienteId" required>
+                        <option value="">-- Selecione um ambiente --</option>
+                        <option value="1">Laboratório de Informática 01</option>
+                        <option value="2">Laboratório de Informática 02</option>
+                        <option value="3">Sala de Aula 101</option>
+                        <option value="4">Auditório Principal</option>
+                        <option value="5">Biblioteca</option>
+                        <option value="6">Projetor Mobile</option>
+                        <option value="7">Notebook HP</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Formulário de Novo Catálogo -->
+            <div class="form-section">
+                <h2>➕ Adicionar Novo Horário ao Catálogo</h2>
+
+                <div class="form-group">
+                    <label>Dia da Semana *</label>
+                    <select id="diaSemana" required>
+                        <option value="">-- Selecione --</option>
+                        <option value="SEGUNDA">Segunda-feira</option>
+                        <option value="TERCA">Terça-feira</option>
+                        <option value="QUARTA">Quarta-feira</option>
+                        <option value="QUINTA">Quinta-feira</option>
+                        <option value="SEXTA">Sexta-feira</option>
+                        <option value="SABADO">Sábado</option>
+                        <option value="DOMINGO">Domingo</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Hora Início *</label>
+                        <input type="time" id="horaInicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora Fim *</label>
+                        <input type="time" id="horaFim" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Disponibilidade *</label>
+                        <select id="disponibilidade" required>
+                            <option value="DISPONIVEL">Disponível</option>
+                            <option value="INDISPONIVEL">Indisponível</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="adicionarCatalogo()">
+                    <span>➕</span> Adicionar Horário
+                </button>
+            </div>
+
+            <!-- Lista de Catálogos -->
+            <div class="form-section">
+                <h2>📋 Catálogos Criados (<span id="totalCatalogos">0</span>)</h2>
+                <div id="catalogosList" class="catalogos-list">
+                    <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p>Nenhum catálogo criado ainda</p>
+                        <p>Adicione horários para começar!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações Finais -->
+            <div class="actions">
+                <button class="btn btn-success" onclick="gerarJSON()">
+                    <span>📄</span> Gerar JSON
+                </button>
+                <button class="btn btn-primary" onclick="copiarJSON()">
+                    <span>📋</span> Copiar JSON
+                </button>
+                <button class="btn btn-danger" onclick="limparTudo()">
+                    <span>🗑️</span> Limpar Tudo
+                </button>
+            </div>
+
+            <!-- Output JSON -->
+            <div id="jsonOutputSection" style="display: none; margin-top: 30px;">
+                <div class="form-section">
+                    <h2>📄 JSON Gerado</h2>
+                    <pre class="json-output" id="jsonOutput"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Array para armazenar os catálogos
+        let catalogos = [];
+        let catalogoIdCounter = 1;
+
+        // Mapa de cores por dia
+        const diaCores = {
+            'SEGUNDA': 'segunda',
+            'TERCA': 'terca',
+            'QUARTA': 'quarta',
+            'QUINTA': 'quinta',
+            'SEXTA': 'sexta',
+            'SABADO': 'sabado',
+            'DOMINGO': 'domingo'
+        };
+
+        // Mapa de nomes dos dias
+        const diaNomes = {
+            'SEGUNDA': 'Segunda-feira',
+            'TERCA': 'Terça-feira',
+            'QUARTA': 'Quarta-feira',
+            'QUINTA': 'Quinta-feira',
+            'SEXTA': 'Sexta-feira',
+            'SABADO': 'Sábado',
+            'DOMINGO': 'Domingo'
+        };
+
+        function adicionarCatalogo() {
+            const ambienteId = document.getElementById('ambienteId').value;
+            const diaSemana = document.getElementById('diaSemana').value;
+            const horaInicio = document.getElementById('horaInicio').value;
+            const horaFim = document.getElementById('horaFim').value;
+            const disponibilidade = document.getElementById('disponibilidade').value;
+
+            // Validações
+            if (!ambienteId) {
+                alert('⚠️ Por favor, selecione um ambiente!');
+                return;
+            }
+
+            if (!diaSemana || !horaInicio || !horaFim) {
+                alert('⚠️ Por favor, preencha todos os campos obrigatórios!');
+                return;
+            }
+
+            if (horaInicio >= horaFim) {
+                alert('⚠️ A hora de início deve ser anterior à hora de fim!');
+                return;
+            }
+
+            // Criar objeto catálogo
+            const catalogo = {
+                id: catalogoIdCounter++,
+                ambienteId: parseInt(ambienteId),
+                ambienteNome: document.getElementById('ambienteId').options[document.getElementById('ambienteId').selectedIndex].text,
+                diaSemana: diaSemana,
+                horaInicio: horaInicio,
+                horaFim: horaFim,
+                disponibilidade: disponibilidade
+            };
+
+            // Adicionar ao array
+            catalogos.push(catalogo);
+
+            // Atualizar visualização
+            renderizarCatalogos();
+
+            // Limpar formulário
+            document.getElementById('diaSemana').value = '';
+            document.getElementById('horaInicio').value = '';
+            document.getElementById('horaFim').value = '';
+            document.getElementById('disponibilidade').value = 'DISPONIVEL';
+
+            // Scroll suave para a lista
+            document.getElementById('catalogosList').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function renderizarCatalogos() {
+            const lista = document.getElementById('catalogosList');
+            const total = document.getElementById('totalCatalogos');
+
+            if (catalogos.length === 0) {
+                lista.innerHTML = `
+                    <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p>Nenhum catálogo criado ainda</p>
+                        <p>Adicione horários para começar!</p>
+                    </div>
+                `;
+                total.textContent = '0';
+                return;
+            }
+
+            // Agrupar por dia da semana
+            const catalogosPorDia = {};
+            catalogos.forEach(cat => {
+                if (!catalogosPorDia[cat.diaSemana]) {
+                    catalogosPorDia[cat.diaSemana] = [];
+                }
+                catalogosPorDia[cat.diaSemana].push(cat);
+            });
+
+            // Ordenar dias da semana
+            const diasOrdem = ['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO', 'DOMINGO'];
+
+            let html = '';
+            diasOrdem.forEach(dia => {
+                if (catalogosPorDia[dia]) {
+                    html += `<div style="margin-bottom: 30px;">`;
+                    html += `<h3 style="color: #667eea; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e9ecef;">
+                        <span class="dia-badge ${diaCores[dia]}">${diaNomes[dia]}</span>
+                        <span style="font-size: 0.9rem; color: #999; margin-left: 10px;">(${catalogosPorDia[dia].length} horário${catalogosPorDia[dia].length > 1 ? 's' : ''})</span>
+                    </h3>`;
+
+                    // Ordenar horários do dia
+                    catalogosPorDia[dia].sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
+
+                    catalogosPorDia[dia].forEach(cat => {
+                        html += criarCardCatalogo(cat);
+                    });
+                    html += `</div>`;
+                }
+            });
+
+            lista.innerHTML = html;
+            total.textContent = catalogos.length;
+        }
+
+        function criarCardCatalogo(catalogo) {
+            const statusClass = catalogo.disponibilidade === 'DISPONIVEL' ? 'status-disponivel' : 'status-indisponivel';
+            const statusText = catalogo.disponibilidade === 'DISPONIVEL' ? '✓ Disponível' : '✗ Indisponível';
+
+            return `
+                <div class="catalogo-card">
+                    <div class="catalogo-header">
+                        <span class="dia-badge ${diaCores[catalogo.diaSemana]}">${diaNomes[catalogo.diaSemana]}</span>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="catalogo-info">
+                        <div class="info-item">
+                            <span class="info-label">🏢 Ambiente</span>
+                            <span class="info-value">${catalogo.ambienteNome}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">🕐 Hora Início</span>
+                            <span class="info-value">${catalogo.horaInicio}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">🕑 Hora Fim</span>
+                            <span class="info-value">${catalogo.horaFim}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">⏱️ Duração</span>
+                            <span class="info-value">${calcularDuracao(catalogo.horaInicio, catalogo.horaFim)}</span>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-danger" onclick="removerCatalogo(${catalogo.id})">
+                            <span>🗑️</span> Remover
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calcularDuracao(inicio, fim) {
+            const [hIni, mIni] = inicio.split(':').map(Number);
+            const [hFim, mFim] = fim.split(':').map(Number);
+            const minutos = (hFim * 60 + mFim) - (hIni * 60 + mIni);
+            const horas = Math.floor(minutos / 60);
+            const mins = minutos % 60;
+            return `${horas}h${mins > 0 ? ` ${mins}min` : ''}`;
+        }
+
+        function removerCatalogo(id) {
+            if (confirm('Tem certeza que deseja remover este catálogo?')) {
+                catalogos = catalogos.filter(c => c.id !== id);
+                renderizarCatalogos();
+            }
+        }
+
+        function gerarJSON() {
+            if (catalogos.length === 0) {
+                alert('⚠️ Adicione pelo menos um catálogo antes de gerar o JSON!');
+                return;
+            }
+
+            // Preparar dados no formato da API
+            const catalogosAPI = catalogos.map(cat => ({
+                ambienteId: cat.ambienteId,
+                diaSemana: cat.diaSemana,
+                horaInicio: cat.horaInicio,
+                horaFim: cat.horaFim,
+                disponibilidade: cat.disponibilidade
+            }));
+
+            const json = JSON.stringify(catalogosAPI, null, 2);
+            document.getElementById('jsonOutput').textContent = json;
+            document.getElementById('jsonOutputSection').style.display = 'block';
+
+            // Scroll para o JSON
+            document.getElementById('jsonOutputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copiarJSON() {
+            const jsonText = document.getElementById('jsonOutput').textContent;
+
+            if (!jsonText) {
+                alert('⚠️ Gere o JSON primeiro!');
+                return;
+            }
+
+            navigator.clipboard.writeText(jsonText).then(() => {
+                alert('✅ JSON copiado para a área de transferência!');
+            }).catch(err => {
+                alert('❌ Erro ao copiar: ' + err);
+            });
+        }
+
+        function limparTudo() {
+            if (confirm('⚠️ Tem certeza que deseja limpar todos os catálogos? Esta ação não pode ser desfeita!')) {
+                catalogos = [];
+                catalogoIdCounter = 1;
+                renderizarCatalogos();
+                document.getElementById('jsonOutputSection').style.display = 'none';
+                document.getElementById('ambienteId').value = '';
+            }
+        }
+
+        // Carregar horários pré-definidos ao selecionar ambiente (exemplo)
+        document.getElementById('ambienteId').addEventListener('change', function() {
+            if (this.value) {
+                // Você pode adicionar lógica aqui para carregar horários existentes do backend
+                console.log('Ambiente selecionado:', this.value);
+            }
+        });
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + Enter para adicionar
+            if (e.ctrlKey && e.key === 'Enter') {
+                adicionarCatalogo();
+            }
+            // Ctrl + G para gerar JSON
+            if (e.ctrlKey && e.key === 'g') {
+                e.preventDefault();
+                gerarJSON();
+            }
+        });
+
+        // Inicializar
+        renderizarCatalogos();
+    </script>
+</body>
+</html>
+

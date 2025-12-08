@@ -195,37 +195,65 @@ public class ReservaService {
             });
         }
 
-        // Verificar se o usuário é ADMIN, COORDENADOR ou PROFESSOR para aprovação automática
+        // Determinar status inicial da reserva baseado na configuração do ambiente e role do usuário
         Set<String> roles = MetodosAuth.extrairRole(authentication);
         boolean isAdminOrCoordenadorOrProfessor = roles != null &&
                 (roles.contains("SCOPE_ADMIN") ||
                  roles.contains("SCOPE_COORDENADOR") ||
                  roles.contains("SCOPE_PROFESSOR"));
 
-        // Apenas ADMIN, COORDENADOR e PROFESSOR têm aprovação automática
-        // Estudantes SEMPRE ficam em PENDENTE, independentemente da configuração do ambiente
-        if (isAdminOrCoordenadorOrProfessor) {
+        // Lógica de aprovação:
+        // 1. Se o ambiente tem aprovação AUTOMATICA -> TODOS são aprovados automaticamente
+        // 2. Se o ambiente tem aprovação MANUAL:
+        //    - ADMIN, COORDENADOR e PROFESSOR -> aprovação automática (privilégio)
+        //    - ESTUDANTE -> fica PENDENTE (requer aprovação manual)
+        if (ambiente.getAprovacao() == com.api.reserva.enums.Aprovacao.AUTOMATICA) {
+            // Aprovação automática para todos
             reserva.setStatusReserva(StatusReserva.APROVADA);
         } else {
-            // Estudantes ficam em PENDENTE
-            reserva.setStatusReserva(StatusReserva.PENDENTE);
+            // Aprovação MANUAL: apenas perfis privilegiados são aprovados automaticamente
+            if (isAdminOrCoordenadorOrProfessor) {
+                reserva.setStatusReserva(StatusReserva.APROVADA);
+            } else {
+                // Estudantes ficam PENDENTE
+                reserva.setStatusReserva(StatusReserva.PENDENTE);
+            }
         }
         reservaRepository.save(reserva);
 
-        // Notificar usuário sobre criação de reserva
-        notificacaoService.novaNotificacao(
-                host,
-                "Reserva Criada ✓",
-                "Sua reserva no ambiente '" + catalogo.getAmbiente().getNome() +
-                "' para " + reservaDTO.getData() + " foi criada com sucesso."
-        );
+        // Notificar usuário sobre criação de reserva com mensagem adequada ao status
+        String tituloNotificacao;
+        String mensagemNotificacao;
+
+        if (reserva.getStatusReserva() == StatusReserva.APROVADA) {
+            tituloNotificacao = "Reserva Criada e Aprovada ✓";
+            if (ambiente.getAprovacao() == com.api.reserva.enums.Aprovacao.AUTOMATICA) {
+                mensagemNotificacao = "Sua reserva no ambiente '" + catalogo.getAmbiente().getNome() +
+                        "' para " + reservaDTO.getData() + " foi criada e APROVADA AUTOMATICAMENTE. " +
+                        "Código: " + reserva.getCodigo();
+            } else {
+                mensagemNotificacao = "Sua reserva no ambiente '" + catalogo.getAmbiente().getNome() +
+                        "' para " + reservaDTO.getData() + " foi criada e aprovada. " +
+                        "Código: " + reserva.getCodigo();
+            }
+        } else {
+            tituloNotificacao = "Reserva Criada - Aguardando Aprovação ⏳";
+            mensagemNotificacao = "Sua reserva no ambiente '" + catalogo.getAmbiente().getNome() +
+                    "' para " + reservaDTO.getData() + " foi criada com sucesso. " +
+                    "Status: PENDENTE - Aguardando aprovação do coordenador. " +
+                    "Código: " + reserva.getCodigo();
+        }
+
+        notificacaoService.novaNotificacao(host, tituloNotificacao, mensagemNotificacao);
 
         // Notificar admins e coordenador do ambiente
+        String statusTexto = reserva.getStatusReserva() == StatusReserva.APROVADA ? "APROVADA" : "PENDENTE";
         notificarAdminsECoordenador(
                 catalogo.getAmbiente(),
-                "Nova Reserva 📅",
+                "Nova Reserva 📅 [" + statusTexto + "]",
                 "O usuário " + host.getNome() + " criou uma nova reserva no ambiente '" +
-                catalogo.getAmbiente().getNome() + "' para " + reservaDTO.getData() + "."
+                catalogo.getAmbiente().getNome() + "' para " + reservaDTO.getData() + ". " +
+                "Status: " + statusTexto
         );
     }
 

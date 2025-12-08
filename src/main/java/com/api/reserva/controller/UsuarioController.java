@@ -115,5 +115,19 @@ public class UsuarioController {
         Set<UsuarioReferenciaDTO> usuarios = usuarioService.buscarPorRole(roleEnum);
         return ResponseEntity.ok(usuarios);
     }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR')")
+    @PostMapping("/buscar-estudantes-por-ids")
+    public ResponseEntity<Set<UsuarioReferenciaDTO>> buscarEstudantesPorIds(@RequestBody Set<Long> estudanteIds) {
+        Set<UsuarioReferenciaDTO> estudantes = usuarioService.buscarEstudantesPorIds(estudanteIds);
+        return ResponseEntity.ok(estudantes);
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR')")
+    @GetMapping("/buscar-por-email")
+    public ResponseEntity<UsuarioReferenciaDTO> buscarUsuarioPorEmail(@RequestParam String email) {
+        UsuarioReferenciaDTO usuario = usuarioService.buscarUsuarioPorEmail(email);
+        return ResponseEntity.ok(usuario);
+    }
 }
 

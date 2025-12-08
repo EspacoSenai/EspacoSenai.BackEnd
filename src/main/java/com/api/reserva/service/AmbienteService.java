@@ -20,8 +20,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Serviço responsável pelo gerenciamento de operações relacionadas a entidade Ambiente.
@@ -144,27 +147,78 @@ public class AmbienteService {
             disponibilizarAmbiente(id);
         }
 
-        // Se tipo de aprovação mudou e ambiente está disponível -> aprovar pendentes quando passar para automática
-        if (ambiente.getAprovacao() != ambienteDTO.getAprovacao()
-                && ambienteDTO.getDisponibilidade() == Disponibilidade.DISPONIVEL) {
-            if (ambienteDTO.getAprovacao() == Aprovacao.AUTOMATICA) {
-                Set<Reserva> reservasDoAmbiente = reservaRepository.findAllByCatalogo_Ambiente_Id(id);
-                reservasDoAmbiente.forEach(reserva -> {
-                    StatusReserva status = reserva.getStatusReserva();
-                    if (status == StatusReserva.PENDENTE) {
-                        reserva.setStatusReserva(StatusReserva.APROVADA);
-                    }
+        // Tratar mudança no tipo de aprovação do ambiente
+        if (ambiente.getAprovacao() != ambienteDTO.getAprovacao()) {
+            Aprovacao aprovacaoAntiga = ambiente.getAprovacao();
+            Aprovacao aprovacaoNova = ambienteDTO.getAprovacao();
 
-                    notificacaoService.novaNotificacao(
-                            reserva.getHost(),
-                            "Sua reserva com código " + reserva.getCodigo() + " foi aprovada automaticamente.",
-                            "O ambiente " + ambiente.getNome() + " agora possui aprovação automática."
-                            );
-                    reservaRepository.save(reserva);
+            // Mudou de MANUAL para AUTOMATICA -> Aprovar todas as reservas PENDENTES
+            if (aprovacaoAntiga == Aprovacao.MANUAL && aprovacaoNova == Aprovacao.AUTOMATICA) {
+                Set<Reserva> reservasPendentes = reservaRepository.findAllByCatalogo_Ambiente_Id(id)
+                        .stream()
+                        .filter(r -> r.getStatusReserva() == StatusReserva.PENDENTE)
+                        .collect(Collectors.toSet());
+
+                if (!reservasPendentes.isEmpty()) {
+                    reservasPendentes.forEach(reserva -> {
+                        reserva.setStatusReserva(StatusReserva.APROVADA);
+                        reservaRepository.save(reserva);
+
+                        // Notificar host da aprovação automática
+                        notificacaoService.novaNotificacao(
+                                reserva.getHost(),
+                                "Reserva Aprovada Automaticamente ✓",
+                                "Sua reserva no ambiente '" + ambiente.getNome() +
+                                "' (código: " + reserva.getCodigo() + ") foi aprovada automaticamente. " +
+                                "O ambiente agora possui aprovação automática."
+                        );
+                    });
+
+                    // Notificar administradores sobre a mudança
+                    notificarAdminsECoordenador(
+                            ambiente,
+                            "Aprovação Automática Ativada 🔄",
+                            "O ambiente '" + ambiente.getNome() + "' mudou para aprovação AUTOMÁTICA. " +
+                            reservasPendentes.size() + " reserva(s) pendente(s) foram aprovadas automaticamente."
+                    );
+                }
+            }
+            // Mudou de AUTOMATICA para MANUAL -> Apenas notificar, reservas aprovadas permanecem aprovadas
+            else if (aprovacaoAntiga == Aprovacao.AUTOMATICA && aprovacaoNova == Aprovacao.MANUAL) {
+                // Notificar administradores sobre a mudança
+                notificarAdminsECoordenador(
+                        ambiente,
+                        "Aprovação Manual Ativada 🔄",
+                        "O ambiente '" + ambiente.getNome() + "' mudou para aprovação MANUAL. " +
+                        "Novas reservas de estudantes precisarão de aprovação manual. " +
+                        "Reservas já aprovadas permanecem inalteradas."
+                );
+
+                // Notificar usuários com reservas futuras no ambiente
+                Set<Reserva> reservasFuturas = reservaRepository.findAllByCatalogo_Ambiente_Id(id)
+                        .stream()
+                        .filter(r -> r.getData().isAfter(LocalDate.now()) || r.getData().equals(LocalDate.now()))
+                        .filter(r -> r.getStatusReserva() == StatusReserva.APROVADA ||
+                                     r.getStatusReserva() == StatusReserva.CONFIRMADA)
+                        .collect(Collectors.toSet());
+
+                Set<Usuario> usuariosNotificados = new HashSet<>();
+                reservasFuturas.forEach(reserva -> {
+                    if (!usuariosNotificados.contains(reserva.getHost())) {
+                        notificacaoService.novaNotificacao(
+                                reserva.getHost(),
+                                "Mudança no Tipo de Aprovação ℹ️",
+                                "O ambiente '" + ambiente.getNome() + "' mudou para aprovação MANUAL. " +
+                                "Suas reservas atuais permanecem válidas, mas novas reservas de estudantes precisarão de aprovação."
+                        );
+                        usuariosNotificados.add(reserva.getHost());
+                    }
                 });
             }
         }
 
+        // Atualizar a aprovação do ambiente
+        ambiente.setAprovacao(ambienteDTO.getAprovacao());
         ambienteRepository.save(ambiente);
     }
 
@@ -301,5 +355,30 @@ public class AmbienteService {
             catalogo.setDisponibilidade(Disponibilidade.DISPONIVEL);
             catalogoRepository.save(catalogo);
         });
+    }
+
+    /**
+     * Notifica todos os administradores e o coordenador responsável pelo ambiente
+     *
+     * @param ambiente o ambiente relacionado à notificação
+     * @param titulo   o título da notificação
+     * @param mensagem a mensagem da notificação
+     */
+    private void notificarAdminsECoordenador(Ambiente ambiente, String titulo, String mensagem) {
+        // Buscar todos os admins
+        Set<Usuario> admins = usuarioRepository.findAll().stream()
+                .filter(u -> u.getRoles().stream()
+                        .anyMatch(role -> role.getRoleNome() == Role.Values.ADMIN))
+                .collect(Collectors.toSet());
+
+        // Notificar cada admin
+        for (Usuario admin : admins) {
+            notificacaoService.novaNotificacao(admin, titulo, mensagem);
+        }
+
+        // Notificar coordenador do ambiente se houver
+        if (ambiente.getResponsavel() != null) {
+            notificacaoService.novaNotificacao(ambiente.getResponsavel(), titulo, mensagem);
+        }
     }
 }

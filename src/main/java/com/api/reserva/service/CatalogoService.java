@@ -85,6 +85,7 @@ public class CatalogoService {
         catalogoRepository.saveAll(catalogos);
     }
 
+    @Transactional
     public void atualizar(Long ambienteId, Set<CatalogoDTO> catalogosDTO, Authentication authentication) {
         Ambiente ambiente = ambienteRepository.findById(ambienteId).orElseThrow(() ->
                 new SemResultadosException("ambiente"));
@@ -99,8 +100,15 @@ public class CatalogoService {
         }
 
         Set<Catalogo> catalogosExistentes = ambiente.getCatalogos();
-        Set<Reserva> reservasExistentes = new HashSet<>(reservaRepository.findAll());
         Set<Catalogo> catalogosParaSalvar = new HashSet<>();
+
+        // Define os status que são considerados "ativos" e devem ser cancelados se houver mudanças
+        Set<StatusReserva> statusAtivos = Set.of(
+                StatusReserva.PENDENTE,
+                StatusReserva.APROVADA,
+                StatusReserva.CONFIRMADA,
+                StatusReserva.ACONTECENDO
+        );
 
         catalogosDTO.forEach(catalogoDTO -> {
             ValidacaoDatasEHorarios.validarHorarios(catalogoDTO.getHoraInicio(), catalogoDTO.getHoraFim());
@@ -122,18 +130,78 @@ public class CatalogoService {
                     catalogoDTO.getDisponibilidade().equals(com.api.reserva.enums.Disponibilidade.INDISPONIVEL);
 
             if (diaMudou || horarioMudou || disponibilidadeMudou) {
-                // Cancelar reservas APENAS se o catálogo está sendo marcado como INDISPONÍVEL
-                if (mudandoParaIndisponivel) {
-                    Set<Reserva> reservasDoCatalogo = reservasExistentes.stream()
-                            .filter(r -> r.getCatalogo().equals(catalogoExistente))
-                            .collect(Collectors.toSet());
+                // Buscar APENAS as reservas deste catálogo específico (otimização)
+                Set<Reserva> reservasDoCatalogo = reservaRepository.findAllByCatalogo_Id(catalogoExistente.getId())
+                        .stream()
+                        .filter(r -> statusAtivos.contains(r.getStatusReserva()))
+                        .collect(Collectors.toSet());
 
-                    reservasDoCatalogo.forEach(reserva -> {
-                        reserva.setStatusReserva(StatusReserva.CANCELADA);
-                    });
-                    reservaRepository.saveAll(reservasDoCatalogo);
+                // Determinar o motivo do cancelamento
+                String motivoCancelamento;
+                if (mudandoParaIndisponivel) {
+                    motivoCancelamento = "O catálogo foi marcado como INDISPONÍVEL";
+                } else if (diaMudou && horarioMudou) {
+                    motivoCancelamento = String.format("O dia da semana mudou de %s para %s e o horário mudou de %s-%s para %s-%s",
+                            catalogoExistente.getDiaSemana(), catalogoDTO.getDiaSemana(),
+                            catalogoExistente.getHoraInicio(), catalogoExistente.getHoraFim(),
+                            catalogoDTO.getHoraInicio(), catalogoDTO.getHoraFim());
+                } else if (diaMudou) {
+                    motivoCancelamento = String.format("O dia da semana mudou de %s para %s",
+                            catalogoExistente.getDiaSemana(), catalogoDTO.getDiaSemana());
+                } else if (horarioMudou) {
+                    motivoCancelamento = String.format("O horário mudou de %s-%s para %s-%s",
+                            catalogoExistente.getHoraInicio(), catalogoExistente.getHoraFim(),
+                            catalogoDTO.getHoraInicio(), catalogoDTO.getHoraFim());
+                } else {
+                    motivoCancelamento = String.format("A disponibilidade mudou de %s para %s",
+                            catalogoExistente.getDisponibilidade(), catalogoDTO.getDisponibilidade());
                 }
 
+                // Cancelar reservas ativas e notificar usuários
+                if (!reservasDoCatalogo.isEmpty()) {
+                    String msgCatalogoInfo = String.format("%s %s-%s",
+                            catalogoExistente.getDiaSemana(),
+                            catalogoExistente.getHoraInicio(),
+                            catalogoExistente.getHoraFim());
+
+                    reservasDoCatalogo.forEach(reserva -> {
+                        // Atualizar finalidade da reserva com o motivo
+                        if (reserva.getFinalidade() != null && !reserva.getFinalidade().isEmpty()) {
+                            reserva.setFinalidade(reserva.getFinalidade() +
+                                    " [Atualização: " + motivoCancelamento + "]");
+                        } else {
+                            reserva.setFinalidade("Cancelada automaticamente. Motivo: " + motivoCancelamento);
+                        }
+
+                        // Cancelar reserva
+                        reserva.setStatusReserva(StatusReserva.CANCELADA);
+                        reservaRepository.save(reserva);
+
+                        // Notificar host
+                        notificacaoService.novaNotificacao(
+                                reserva.getHost(),
+                                "Reserva Cancelada - Catálogo Alterado ⚠️",
+                                "Sua reserva no ambiente '" + ambiente.getNome() +
+                                "' (código: " + reserva.getCodigo() + ") foi cancelada.\n" +
+                                "Catálogo: " + msgCatalogoInfo + "\n" +
+                                "Motivo: " + motivoCancelamento
+                        );
+
+                        // Notificar todos os membros
+                        for (Usuario membro : reserva.getMembros()) {
+                            notificacaoService.novaNotificacao(
+                                    membro,
+                                    "Reserva Cancelada - Catálogo Alterado ⚠️",
+                                    "Uma reserva de que você participa no ambiente '" + ambiente.getNome() +
+                                    "' (código: " + reserva.getCodigo() + ") foi cancelada.\n" +
+                                    "Catálogo: " + msgCatalogoInfo + "\n" +
+                                    "Motivo: " + motivoCancelamento
+                            );
+                        }
+                    });
+                }
+
+                // Atualizar o catálogo
                 catalogoExistente.setDiaSemana(catalogoDTO.getDiaSemana());
                 catalogoExistente.setHoraInicio(catalogoDTO.getHoraInicio());
                 catalogoExistente.setHoraFim(catalogoDTO.getHoraFim());
