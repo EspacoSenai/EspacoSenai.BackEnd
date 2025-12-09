@@ -7,7 +7,6 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.lang.NonNull;
-import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -82,27 +81,67 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     private String resolveToken(ServerHttpRequest request) {
+        // Tentar extrair do header Authorization (padrão HTTP)
         List<String> headerAuth = request.getHeaders().get("Authorization");
-        if (headerAuth != null) {
+        if (headerAuth != null && !headerAuth.isEmpty()) {
             for (String candidate : headerAuth) {
                 if (StringUtils.hasText(candidate)) {
-                    return cleanToken(candidate);
+                    String cleaned = cleanToken(candidate);
+                    if (cleaned != null) {
+                        System.out.println("✅ Token extraído do header Authorization");
+                        return cleaned;
+                    }
                 }
             }
         }
 
+        // Fallback: tentar extrair da query string ou parâmetros
         if (request instanceof ServletServerHttpRequest servletRequest) {
             HttpServletRequest httpServletRequest = servletRequest.getServletRequest();
+            String uri = request.getURI().toString();
+
+            // Extrair token da query string
+            if (uri.contains("token=")) {
+                String[] parts = uri.split("token=");
+                if (parts.length > 1) {
+                    String token = parts[1].split("[&\\?]")[0];
+                    if (StringUtils.hasText(token)) {
+                        System.out.println("✅ Token extraído da query string 'token'");
+                        return token;
+                    }
+                }
+            }
+
+            // Tentar access_token
             String tokenParam = httpServletRequest.getParameter("access_token");
-            if (!StringUtils.hasText(tokenParam)) {
-                tokenParam = httpServletRequest.getParameter("token");
+            if (StringUtils.hasText(tokenParam)) {
+                System.out.println("✅ Token extraído do parâmetro 'access_token'");
+                return cleanToken(tokenParam);
             }
-            if (!StringUtils.hasText(tokenParam)) {
-                tokenParam = httpServletRequest.getParameter(StompCommand.CONNECT.name().toLowerCase());
+
+            // Tentar token
+            tokenParam = httpServletRequest.getParameter("token");
+            if (StringUtils.hasText(tokenParam)) {
+                System.out.println("✅ Token extraído do parâmetro 'token'");
+                return cleanToken(tokenParam);
             }
-            return cleanToken(tokenParam);
+
+            // Tentar extrair de access_token na query string
+            if (uri.contains("access_token=")) {
+                String[] parts = uri.split("access_token=");
+                if (parts.length > 1) {
+                    String token = parts[1].split("[&\\?]")[0];
+                    if (StringUtils.hasText(token)) {
+                        System.out.println("✅ Token extraído da query string 'access_token'");
+                        return token;
+                    }
+                }
+            }
         }
 
+        System.out.println("⚠️ Token NÃO encontrado em Authorization header ou parâmetros");
+        System.out.println("📍 URI: " + request.getURI());
+        System.out.println("📍 Headers: " + request.getHeaders());
         return null;
     }
 

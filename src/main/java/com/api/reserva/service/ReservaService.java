@@ -195,29 +195,13 @@ public class ReservaService {
             });
         }
 
-        // Determinar status inicial da reserva baseado na configuração do ambiente e role do usuário
-        Set<String> roles = MetodosAuth.extrairRole(authentication);
-        boolean isAdminOrCoordenadorOrProfessor = roles != null &&
-                (roles.contains("SCOPE_ADMIN") ||
-                 roles.contains("SCOPE_COORDENADOR") ||
-                 roles.contains("SCOPE_PROFESSOR"));
-
-        // Lógica de aprovação:
-        // 1. Se o ambiente tem aprovação AUTOMATICA -> TODOS são aprovados automaticamente
-        // 2. Se o ambiente tem aprovação MANUAL:
-        //    - ADMIN, COORDENADOR e PROFESSOR -> aprovação automática (privilégio)
-        //    - ESTUDANTE -> fica PENDENTE (requer aprovação manual)
+        // Determinar status inicial da reserva baseado na configuração do ambiente
         if (ambiente.getAprovacao() == com.api.reserva.enums.Aprovacao.AUTOMATICA) {
             // Aprovação automática para todos
             reserva.setStatusReserva(StatusReserva.APROVADA);
         } else {
-            // Aprovação MANUAL: apenas perfis privilegiados são aprovados automaticamente
-            if (isAdminOrCoordenadorOrProfessor) {
-                reserva.setStatusReserva(StatusReserva.APROVADA);
-            } else {
-                // Estudantes ficam PENDENTE
-                reserva.setStatusReserva(StatusReserva.PENDENTE);
-            }
+            // Aprovação MANUAL: todos ficam PENDENTE, independente do rol
+            reserva.setStatusReserva(StatusReserva.PENDENTE);
         }
         reservaRepository.save(reserva);
 
@@ -406,7 +390,7 @@ public class ReservaService {
     }
 
     @Transactional
-    public void rejeitar(Long id, String motivo, Authentication authentication) {
+    public void negar(Long id, Authentication authentication) {
         Reserva reserva = reservaRepository.findById(id).orElseThrow(
                 () -> new SemResultadosException("Reserva não encontrada"));
 
@@ -440,8 +424,7 @@ public class ReservaService {
                 reserva.getHost(),
                 "Reserva Rejeitada ✗",
                 "Sua reserva no ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
-                "' para " + reserva.getData() + " foi REJEITADA.\n" +
-                "Motivo: " + motivo
+                "' para " + reserva.getData() + " foi REJEITADA."
         );
 
         // Notificar admins e coordenador do ambiente
@@ -449,8 +432,7 @@ public class ReservaService {
                 reserva.getCatalogo().getAmbiente(),
                 "Reserva Rejeitada ✗",
                 "A reserva de " + reserva.getHost().getNome() + " no ambiente '" +
-                reserva.getCatalogo().getAmbiente().getNome() + "' para " + reserva.getData() + " foi REJEITADA.\n" +
-                "Motivo: " + motivo
+                reserva.getCatalogo().getAmbiente().getNome() + "' para " + reserva.getData() + " foi REJEITADA."
         );
     }
 
@@ -996,7 +978,7 @@ public class ReservaService {
     }
 
     @Transactional
-    public void cancelarReserva(Long reservaId, String motivo, Authentication authentication) {
+    public void cancelarReserva(Long reservaId, Authentication authentication) {
         // Buscar reserva
         Reserva reserva = reservaRepository.findById(reservaId).orElseThrow(
                 () -> new SemResultadosException("Reserva não encontrada"));
@@ -1028,9 +1010,6 @@ public class ReservaService {
             throw new HorarioInvalidoException("Esta reserva já foi " + reserva.getStatusReserva().toString().toLowerCase() + ".");
         }
 
-        // Salvar motivo
-        String motivoCancelamento = motivo != null ? motivo : "Cancelamento sem motivo especificado";
-
         // Cancelar reserva
         reserva.setStatusReserva(StatusReserva.CANCELADA);
         reservaRepository.save(reserva);
@@ -1040,7 +1019,7 @@ public class ReservaService {
                 reserva.getHost(),
                 "Reserva Cancelada ❌",
                 "Sua reserva no ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
-                "' para " + reserva.getData() + " foi CANCELADA.\nMotivo: " + motivoCancelamento
+                "' para " + reserva.getData() + " foi CANCELADA."
         );
 
         // Notificar todos os membros
@@ -1049,7 +1028,7 @@ public class ReservaService {
                     membro,
                     "Reserva Cancelada ❌",
                     "A reserva no ambiente '" + reserva.getCatalogo().getAmbiente().getNome() +
-                    "' para " + reserva.getData() + " foi CANCELADA.\nMotivo: " + motivoCancelamento
+                    "' para " + reserva.getData() + " foi CANCELADA."
             );
         }
 
@@ -1058,7 +1037,7 @@ public class ReservaService {
                 ambiente,
                 "Reserva Cancelada ❌",
                 "A reserva de " + reserva.getHost().getNome() + " no ambiente '" +
-                ambiente.getNome() + "' para " + reserva.getData() + " foi CANCELADA.\nMotivo: " + motivoCancelamento
+                ambiente.getNome() + "' para " + reserva.getData() + " foi CANCELADA."
         );
     }
 

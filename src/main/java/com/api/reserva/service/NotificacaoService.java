@@ -1,5 +1,6 @@
 package com.api.reserva.service;
 
+import com.api.reserva.config.websocket.NotificacaoWebSocketHandler;
 import com.api.reserva.dto.NotificacaoDTO;
 import com.api.reserva.entity.Notificacao;
 import com.api.reserva.entity.Usuario;
@@ -9,6 +10,8 @@ import com.api.reserva.exception.SemResultadosException;
 import com.api.reserva.repository.NotificacaoRepository;
 import com.api.reserva.repository.UsuarioRepository;
 import com.api.reserva.util.MetodosAuth;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,12 +19,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
 public class NotificacaoService {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificacaoService.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    static {
+        objectMapper.registerModule(new JavaTimeModule());
+    }
 
     private final NotificacaoRepository notificacaoRepository;
     private final UsuarioRepository usuarioRepository;
@@ -136,8 +145,33 @@ public class NotificacaoService {
      * @param dto Dados da notificação para broadcast
      */
     public void enviarBroadcast(NotificacaoDTO dto) {
-        logger.info("📢 Broadcast enviado: {}", dto.getTitulo());
-        // Implementação do broadcast via WebSocket
+        logger.info("📢 Iniciando broadcast: {}", dto.getTitulo());
+        try {
+            String json = objectMapper.writeValueAsString(dto);
+            NotificacaoWebSocketHandler.enviarNotificacaoParaTodos(json);
+            logger.info("✅ Broadcast enviado com sucesso: {}", dto.getTitulo());
+        } catch (IOException e) {
+            logger.error("❌ Erro ao enviar broadcast: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Enviar notificação via WebSocket para um usuário específico
+     *
+     * @param usuarioId ID do usuário
+     * @param titulo Título da notificação
+     * @param mensagem Mensagem da notificação
+     */
+    public void enviarNotificacaoWebSocket(Long usuarioId, String titulo, String mensagem) {
+        logger.info("📨 Enviando notificação WebSocket para usuário {}: {}", usuarioId, titulo);
+        try {
+            NotificacaoDTO dto = new NotificacaoDTO(null, usuarioId, titulo, mensagem, java.time.LocalDateTime.now(), false);
+            String json = objectMapper.writeValueAsString(dto);
+            NotificacaoWebSocketHandler.enviarNotificacaoParaUsuario(usuarioId, json);
+            logger.info("✅ Notificação enviada via WebSocket para usuário {}", usuarioId);
+        } catch (IOException e) {
+            logger.error("❌ Erro ao enviar notificação via WebSocket para usuário {}: {}", usuarioId, e.getMessage());
+        }
     }
 
     /**

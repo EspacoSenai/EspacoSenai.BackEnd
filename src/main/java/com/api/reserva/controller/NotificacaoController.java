@@ -1,6 +1,5 @@
 package com.api.reserva.controller;
 
-import com.api.reserva.config.websocket.NotificacaoUtil;
 import com.api.reserva.dto.NotificacaoDTO;
 import com.api.reserva.service.NotificacaoService;
 import com.api.reserva.util.ResponseBuilder;
@@ -11,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +71,7 @@ public class NotificacaoController {
 
     /**
      * POST /notificacao/ws/usuario/{usuarioId}
-     * Enviar notificação via WebSocket para um usuário específico
+     * Enviar notificação via WebSocket para um usuário específico (ADMIN/COORDENADOR)
      */
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
     @PostMapping("/ws/usuario/{usuarioId}")
@@ -81,18 +81,19 @@ public class NotificacaoController {
         try {
             String titulo = payload.getOrDefault("titulo", "Notificação");
             String mensagem = payload.getOrDefault("mensagem", "");
-            String tipo = payload.getOrDefault("tipo", "INFO");
 
-            NotificacaoUtil.notificarUsuario(usuarioId, titulo, mensagem, tipo);
-            return ResponseBuilder.respostaSimples(HttpStatus.OK, "Notificação enviada via WebSocket.");
+            System.out.println("📨 Enviando notificação WebSocket para usuário " + usuarioId + ": " + titulo);
+            notificacaoService.enviarNotificacaoWebSocket(usuarioId, titulo, mensagem);
+            return ResponseBuilder.respostaSimples(HttpStatus.OK, "Notificação enviada via WebSocket com sucesso.");
         } catch (Exception e) {
+            System.err.println("❌ Erro ao enviar notificação: " + e.getMessage());
             return ResponseBuilder.respostaSimples(HttpStatus.BAD_REQUEST, "Erro ao enviar notificação: " + e.getMessage());
         }
     }
 
     /**
      * POST /notificacao/ws/todos
-     * Enviar notificação via WebSocket para todos os usuários conectados
+     * Enviar notificação via WebSocket para todos os usuários conectados (ADMIN ONLY)
      */
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN')")
     @PostMapping("/ws/todos")
@@ -100,11 +101,13 @@ public class NotificacaoController {
         try {
             String titulo = payload.getOrDefault("titulo", "Notificação do Sistema");
             String mensagem = payload.getOrDefault("mensagem", "");
-            String tipo = payload.getOrDefault("tipo", "INFO");
 
-            NotificacaoUtil.notificarTodos(titulo, mensagem, tipo);
-            return ResponseBuilder.respostaSimples(HttpStatus.OK, "Notificação enviada para todos via WebSocket.");
+            NotificacaoDTO dto = new NotificacaoDTO(null, null, titulo, mensagem, LocalDateTime.now(), false);
+            System.out.println("📣 Enviando notificação broadcast: " + titulo);
+            notificacaoService.enviarBroadcast(dto);
+            return ResponseBuilder.respostaSimples(HttpStatus.OK, "Notificação enviada para todos via WebSocket com sucesso.");
         } catch (Exception e) {
+            System.err.println("❌ Erro ao enviar broadcast: " + e.getMessage());
             return ResponseBuilder.respostaSimples(HttpStatus.BAD_REQUEST, "Erro ao enviar notificação: " + e.getMessage());
         }
     }

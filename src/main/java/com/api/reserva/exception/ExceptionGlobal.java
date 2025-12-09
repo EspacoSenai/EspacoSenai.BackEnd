@@ -86,4 +86,11 @@ public class ExceptionGlobal {
                 HttpStatus.BAD_REQUEST,
                 e.getMessage());
     }
+
+    @ExceptionHandler(SemPermissaoException.class)
+    public ResponseEntity<Object> handler(SemPermissaoException e) {
+        return ResponseBuilder.respostaSimples(
+                HttpStatus.FORBIDDEN,
+                e.getMessage());
+    }
 }

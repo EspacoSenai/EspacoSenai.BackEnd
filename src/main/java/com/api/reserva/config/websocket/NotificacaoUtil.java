@@ -11,8 +11,12 @@ import java.time.LocalDateTime;
 
 /**
  * Utilitário para enviar notificações via WebSocket
- * Simplifica o envio de mensagens para usuários específicos ou broadcast
+ * DESCONTINUADO: Use NotificacaoEventListener em vez disso
+ *
+ * Este utilitário cria DTOs vazios sem ID, o que não é ideal.
+ * O listener automático (NotificacaoEventListener) é mais robusto.
  */
+@Deprecated(since = "2.0", forRemoval = true)
 public class NotificacaoUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificacaoUtil.class);
@@ -24,19 +28,18 @@ public class NotificacaoUtil {
     }
 
     /**
-     * Envia notificação para um usuário específico via WebSocket
-     *
-     * @param usuarioId ID do usuário
-     * @param titulo Título da notificação
-     * @param mensagem Mensagem da notificação
-     * @param tipo Tipo/categoria da notificação (INFO, ALERTA, SUCESSO, ERRO)
-     * @return NotificacaoDTO com os dados da notificação enviada
+     * @deprecated Use NotificacioEventListener em vez disso
      */
-    public static NotificacaoDTO notificarUsuario(Long usuarioId, String titulo, String mensagem, String tipo) {
+    @Deprecated(since = "2.0", forRemoval = true)
+    public static NotificacaoDTO notificarUsuario(Long usuarioId, String titulo, String mensagem) {
         try {
+            logger.warn("⚠️ NotificacaoUtil.notificarUsuario() está DESCONTINUADO. Use NotificacaoService.novaNotificacao() ao invés.");
+
             LocalDateTime agora = LocalDateTime.now();
             NotificacaoDTO notificacaoDTO = new NotificacaoDTO(null, usuarioId, titulo, mensagem, agora, false);
             String json = objectMapper.writeValueAsString(notificacaoDTO);
+
+            System.out.println("📤 Enviando notificação via WebSocket direto para usuário " + usuarioId + ": " + titulo);
             NotificacaoWebSocketHandler.enviarNotificacaoParaUsuario(usuarioId, json);
             logger.info("📢 Notificação enviada para usuário {}: {}", usuarioId, titulo);
 
@@ -48,18 +51,18 @@ public class NotificacaoUtil {
     }
 
     /**
-     * Envia notificação em broadcast para todos os usuários conectados via WebSocket
-     *
-     * @param titulo Título da notificação
-     * @param mensagem Mensagem da notificação
-     * @param tipo Tipo/categoria da notificação (INFO, ALERTA, SUCESSO, ERRO)
-     * @return NotificacaoDTO com os dados da notificação enviada
+     * @deprecated Use NotificacioEventListener em vez disso
      */
-    public static NotificacaoDTO notificarTodos(String titulo, String mensagem, String tipo) {
+    @Deprecated(since = "2.0", forRemoval = true)
+    public static NotificacaoDTO notificarTodos(String titulo, String mensagem) {
         try {
+            logger.warn("⚠️ NotificacaoUtil.notificarTodos() está DESCONTINUADO.");
+
             LocalDateTime agora = LocalDateTime.now();
             NotificacaoDTO notificacaoDTO = new NotificacaoDTO(null, null, titulo, mensagem, agora, false);
             String json = objectMapper.writeValueAsString(notificacaoDTO);
+
+            System.out.println("📣 Enviando notificação em broadcast via WebSocket: " + titulo);
             NotificacaoWebSocketHandler.enviarNotificacaoParaTodos(json);
             logger.info("📢 Notificação em broadcast enviada: {}", titulo);
 

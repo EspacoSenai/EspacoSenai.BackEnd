@@ -70,10 +70,9 @@ public class ReservaController {
     }
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR')")
-    @PatchMapping("/rejeitar/{id}")
-    public ResponseEntity<Object> rejeitar(@PathVariable Long id, @RequestBody Map<String, String> body, Authentication authentication) {
-        String motivo = body.get("motivo");
-        reservaService.rejeitar(id, motivo, authentication);
+    @PatchMapping("/negar/{id}")
+    public ResponseEntity<Object> negar(@PathVariable Long id, Authentication authentication) {
+        reservaService.negar(id, authentication);
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Reserva rejeitada com sucesso.");
     }
 
@@ -112,10 +111,8 @@ public class ReservaController {
     @PatchMapping("/cancelar/{id}")
     public ResponseEntity<Object> cancelarReserva(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body,
             Authentication authentication) {
-        String motivo = body.get("motivo");
-        reservaService.cancelarReserva(id, motivo, authentication);
+        reservaService.cancelarReserva(id, authentication);
         return ResponseBuilder.respostaSimples(HttpStatus.OK, "Reserva cancelada com sucesso.");
     }
 

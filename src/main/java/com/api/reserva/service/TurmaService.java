@@ -72,10 +72,6 @@ public class TurmaService {
                     turmaDTO.getCapacidade()
             );
 
-            if(turmaDTO.getEstudantesIds().size() > turmaDTO.getCapacidade()) {
-                throw new SemPermissaoException("Número de estudantes excede a capacidade máxima da turma.");
-            }
-
             if (roles.contains("SCOPE_ADMIN")) {
                 if (turmaDTO.getProfessorId() != null) {
                     Usuario professor = usuarioRepository.findById(turmaDTO.getProfessorId()).orElseThrow(() ->
@@ -95,36 +91,6 @@ public class TurmaService {
             }
 
             turma.setCodigoAcesso(CodigoUtil.gerarCodigo(6));
-//            // Set estudantes if provided
-//            if (turmaDTO.getEstudantesIds() != null && !turmaDTO.getEstudantesIds().isEmpty()) {
-//                Set<Usuario> estudantes = usuarioRepository.findAllById(turmaDTO.getEstudantesIds())
-//                        .stream()
-//                        .filter(u -> u.getRoles().stream().anyMatch(r -> r.getRoleNome() == Role.Values.ESTUDANTE))
-//                        .collect(Collectors.toSet());
-//                turma.setEstudantes(estudantes);
-//            }
-//
-//
-//            turmaRepository.save(turma);
-//
-////            notificacaoService.novaNotificacao(
-////                    professor,
-////                    NotificacaoTipo.TURMA,
-////                    "Designado como professor",
-////                    "Você foi designado como professor da nova turma " + turma.getNome() + "."
-////            );
-//
-//            if (turmaDTO.getEstudantesIds() != null && !turmaDTO.getEstudantesIds().isEmpty()) {
-//                Set<Usuario> estudantes = turma.getEstudantes();
-//                for (Usuario                                                                                                                                                           estudante : estudantes) {
-//                    notificacaoService.novaNotificacao(
-//                            estudante,
-//                            NotificacaoTipo.TURMA,
-//                            "Adicionado à turma",
-//                            "Você foi adicionado à nova turma " + turma.getNome() + "."
-//                    );
-//                }
-//            }
             turmaRepository.save(turma);
         }
     }
