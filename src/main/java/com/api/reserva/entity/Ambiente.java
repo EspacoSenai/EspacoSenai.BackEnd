@@ -29,6 +29,7 @@ public class Ambiente {
     @Enumerated(EnumType.STRING)
     private Aprovacao aprovacao;
 
+    @Column(nullable = false)
     private boolean emUso;
 
     @OneToMany(mappedBy = "ambiente", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -38,6 +39,10 @@ public class Ambiente {
     @JoinColumn(name = "responsavel_id")
     private Usuario responsavel;
 
+    @Column(nullable = false)
+    private boolean soInternos;
+
+    @Column(nullable = false)
     private boolean recurso;
 
     public Ambiente() {
@@ -49,6 +54,8 @@ public class Ambiente {
         disponibilidade = ambienteDTO.getDisponibilidade();
         aprovacao = ambienteDTO.getAprovacao();
         emUso = ambienteDTO.isEmUso();
+        recurso = ambienteDTO.isRecurso();
+        soInternos = ambienteDTO.isSoInternos();
     }
 
     public Long getId() {
@@ -117,5 +124,13 @@ public class Ambiente {
 
     public void setRecurso(boolean recurso) {
         this.recurso = recurso;
+    }
+
+    public boolean isSoInternos() {
+        return soInternos;
+    }
+
+    public void setSoInternos(boolean soInternos) {
+        this.soInternos = soInternos;
     }
 }

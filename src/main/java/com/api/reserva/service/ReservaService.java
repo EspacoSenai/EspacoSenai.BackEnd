@@ -125,6 +125,9 @@ public class ReservaService {
             throw new SemPermissaoException("O ambiente '" + ambiente.getNome() + "' está indisponível para reservas no momento.");
         }
 
+        // ✅ VALIDAÇÃO: Se ambiente é apenas para uso interno, estudante puro não pode reservar
+        validarUsuarioPodeEstarNoAmbiente(host, ambiente);
+
         LocalDate dataDaReserva = reservaDTO.getData();
         LocalTime inicioReserva = reservaDTO.getHoraInicio();
         LocalTime fimReserva = reservaDTO.getHoraFim();
@@ -191,6 +194,10 @@ public class ReservaService {
             reservaDTO.getMembrosIds().forEach(membroId -> {
                 Usuario membro = usuarioRepository.findById(membroId).orElseThrow(
                         () -> new SemResultadosException("Membro não encontrado: " + membroId));
+
+                // ✅ VALIDAÇÃO: Verificar se membro pode estar no ambiente
+                validarUsuarioPodeEstarNoAmbiente(membro, ambiente);
+
                 reserva.getMembros().add(membro);
             });
         }
@@ -264,6 +271,21 @@ public class ReservaService {
             catalogo = catalogoRepository.findById(reservaDTO.getCatalogoId()).orElseThrow(
                     () -> new SemResultadosException("Catálogo"));
             validarCatalogo(catalogo, reservaDTO);
+
+            // ✅ VALIDAÇÃO: Se novo ambiente é soInternos e host é estudante puro, não pode
+            Ambiente ambienteNovo = catalogo.getAmbiente();
+            if (ambienteNovo.isSoInternos()) {
+                boolean ehApenaEstudante = reserva.getHost().getRoles().size() == 1 &&
+                        reserva.getHost().getRoles().stream()
+                                .anyMatch(role -> role.getRoleNome() == Role.Values.ESTUDANTE);
+
+                if (ehApenaEstudante) {
+                    throw new SemPermissaoException(
+                        "Você não pode mover esta reserva para o ambiente '" + ambienteNovo.getNome() +
+                        "' pois ele é restrito para uso interno. Apenas usuários com outras funções podem fazer reservas lá."
+                    );
+                }
+            }
         } else {
             catalogo = reserva.getCatalogo();
         }
@@ -776,8 +798,12 @@ public class ReservaService {
             throw new SemPermissaoException("Você já está nesta reserva.");
         }
 
+        // ✅ VALIDAÇÃO: Se ambiente é soInternos, estudante puro não pode ingressar
+        Ambiente ambiente = reserva.getCatalogo().getAmbiente();
+        validarUsuarioPodeEstarNoAmbiente(usuario, ambiente);
+
         // Validação: Verificar se há conflito de horário com reservas APROVADAS ou CONFIRMADAS de OUTROS usuários
-        validarConflitosComOutrosUsuarios(reserva.getCatalogo().getAmbiente(), reserva.getData(),
+        validarConflitosComOutrosUsuarios(ambiente, reserva.getData(),
                 reserva.getHoraInicio(), reserva.getHoraFim(), usuario.getId());
 
         // Validação: Verificar se o usuário não está em outro ambiente no mesmo horário
@@ -1052,6 +1078,59 @@ public class ReservaService {
             throw new SemResultadosException("Reservas com status: " + statusReserva);
         } else {
             return reservas;
+        }
+    }
+
+    /**
+     * Método utilitário para validar se um usuário pode estar em um ambiente
+     * Verifica se o ambiente é restrito (soInternos) e se o usuário é estudante puro
+     *
+     * @param usuario Usuário a ser validado
+     * @param ambiente Ambiente onde o usuário quer fazer a reserva
+     * @throws SemPermissaoException se o usuário não tem permissão
+     */
+    private void validarUsuarioPodeEstarNoAmbiente(Usuario usuario, Ambiente ambiente) {
+        if (ambiente.isSoInternos()) {
+            boolean ehApenaEstudante = usuario.getRoles().size() == 1 &&
+                    usuario.getRoles().stream()
+                            .anyMatch(role -> role.getRoleNome() == Role.Values.ESTUDANTE);
+
+            if (ehApenaEstudante) {
+                throw new SemPermissaoException(
+                    "O ambiente '" + ambiente.getNome() + "' é restrito apenas para uso interno. " +
+                    "Estudantes puros não podem fazer reservas neste ambiente."
+                );
+            }
+        }
+    }
+
+    /**
+     * Método para validar se há conflitos de status/aprovação na reserva
+     * Evita problemas com transições de estado impossíveis
+     *
+     * @param reserva Reserva a ser validada
+     * @param novoStatus Novo status desejado
+     * @throws HorarioInvalidoException se a transição não é permitida
+     */
+    private void validarTransicaoDeStatus(Reserva reserva, StatusReserva novoStatus) {
+        StatusReserva statusAtual = reserva.getStatusReserva();
+
+        // Não pode mudar status se já foi finalizada (CANCELADA, NEGADA)
+        if (statusAtual == StatusReserva.CANCELADA || statusAtual == StatusReserva.NEGADA) {
+            throw new HorarioInvalidoException(
+                "Não é possível alterar uma reserva que foi " + statusAtual.toString().toLowerCase()
+            );
+        }
+
+        // Se está ACONTECENDO, só pode ser CANCELADA ou ficar ACONTECENDO
+        if (statusAtual == StatusReserva.ACONTECENDO &&
+            novoStatus != StatusReserva.CANCELADA && novoStatus != StatusReserva.ACONTECENDO) {
+            throw new HorarioInvalidoException("Uma reserva que está acontecendo só pode ser cancelada ou permanecer acontecendo");
+        }
+
+        // Se está CONFIRMADA, não pode voltar a PENDENTE
+        if (statusAtual == StatusReserva.CONFIRMADA && novoStatus == StatusReserva.PENDENTE) {
+            throw new HorarioInvalidoException("Uma reserva confirmada não pode voltar a status pendente");
         }
     }
 }

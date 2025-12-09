@@ -12,6 +12,7 @@ public class AmbienteReferenciaDTO {
     private Disponibilidade disponibilidade;
     private Aprovacao aprovacao;
     private boolean recurso;
+    private boolean soInternos;
     private Set<CatalogoReferenciaDTO> catalogos;
     private UsuarioReferenciaDTO responsavel;
 
@@ -24,6 +25,7 @@ public class AmbienteReferenciaDTO {
         disponibilidade = ambiente.getDisponibilidade();
         aprovacao = ambiente.getAprovacao();
         recurso = ambiente.isRecurso();
+        soInternos = ambiente.isSoInternos();
         responsavel = ambiente.getResponsavel() != null ? new UsuarioReferenciaDTO(ambiente.getResponsavel()) : null;
         catalogos = ambiente.getCatalogos().stream().map(CatalogoReferenciaDTO::new).collect(java.util.stream.Collectors.toSet());
     }
@@ -66,6 +68,14 @@ public class AmbienteReferenciaDTO {
 
     public void setRecurso(boolean recurso) {
         this.recurso = recurso;
+    }
+
+    public boolean isSoInternos() {
+        return soInternos;
+    }
+
+    public void setSoInternos(boolean soInternos) {
+        this.soInternos = soInternos;
     }
 
     public UsuarioReferenciaDTO getResponsavel() {

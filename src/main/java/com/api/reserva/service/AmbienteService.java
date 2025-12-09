@@ -85,6 +85,7 @@ public class AmbienteService {
         ambiente.setAprovacao(ambienteDTO.getAprovacao());
         ambiente.setEmUso(false);
         ambiente.setRecurso(ambienteDTO.isRecurso());
+        ambiente.setSoInternos(ambienteDTO.isSoInternos());
 
         if (ambienteDTO.getResponsavelId() != null) {
             Usuario responsavel = usuarioRepository.findById(ambienteDTO.getResponsavelId())
@@ -135,6 +136,7 @@ public class AmbienteService {
         ambiente.setNome(ambienteDTO.getNome());
         ambiente.setDescricao(ambienteDTO.getDescricao());
         ambiente.setRecurso(ambienteDTO.isRecurso());
+        ambiente.setSoInternos(ambienteDTO.isSoInternos());
 
         // Se disponibilidade mudou para indisponível -> usar método específico
         if (ambiente.getDisponibilidade() != ambienteDTO.getDisponibilidade() &&
@@ -216,6 +218,82 @@ public class AmbienteService {
                 });
             }
         }
+
+        // ✅ TRATAR MUDANÇA NO ATRIBUTO soInternos
+        if (ambiente.isSoInternos() != ambienteDTO.isSoInternos()) {
+            boolean soInternosAntigo = ambiente.isSoInternos();
+            boolean soInternosNovo = ambienteDTO.isSoInternos();
+
+            // Mudou de FALSE para TRUE -> Cancelar reservas de estudantes puros
+            if (!soInternosAntigo && soInternosNovo) {
+                // Buscar todas as reservas futuras/ativas
+                Set<Reserva> reservasAtivas = reservaRepository.findAllByCatalogo_Ambiente_Id(id)
+                        .stream()
+                        .filter(r -> r.getData().isAfter(LocalDate.now()) || r.getData().equals(LocalDate.now()))
+                        .filter(r -> r.getStatusReserva() == StatusReserva.PENDENTE ||
+                                     r.getStatusReserva() == StatusReserva.APROVADA ||
+                                     r.getStatusReserva() == StatusReserva.CONFIRMADA ||
+                                     r.getStatusReserva() == StatusReserva.ACONTECENDO)
+                        .collect(Collectors.toSet());
+
+                Set<Usuario> usuariosNotificados = new HashSet<>();
+
+                reservasAtivas.forEach(reserva -> {
+                    Usuario host = reserva.getHost();
+                    // Verificar se é estudante puro
+                    boolean ehApenaEstudante = host.getRoles().size() == 1 &&
+                            host.getRoles().stream()
+                                    .anyMatch(role -> role.getRoleNome() == Role.Values.ESTUDANTE);
+
+                    if (ehApenaEstudante) {
+                        // Cancelar a reserva
+                        reserva.setStatusReserva(StatusReserva.CANCELADA);
+                        reservaRepository.save(reserva);
+
+                        // Notificar host
+                        notificacaoService.novaNotificacao(
+                                host,
+                                "Reserva Cancelada Automaticamente ❌",
+                                "Sua reserva no ambiente '" + ambiente.getNome() +
+                                "' para " + reserva.getData() + " foi CANCELADA AUTOMATICAMENTE. " +
+                                "Este ambiente agora é restrito apenas para uso interno."
+                        );
+
+                        usuariosNotificados.add(host);
+
+                        // Notificar todos os membros também
+                        for (Usuario membro : reserva.getMembros()) {
+                            notificacaoService.novaNotificacao(
+                                    membro,
+                                    "Reserva Cancelada Automaticamente ❌",
+                                    "A reserva no ambiente '" + ambiente.getNome() +
+                                    "' para " + reserva.getData() + " foi CANCELADA AUTOMATICAMENTE. " +
+                                    "Este ambiente agora é restrito apenas para uso interno."
+                            );
+                        }
+                    }
+                });
+
+                // Notificar admins e coordenador
+                notificarAdminsECoordenador(
+                        ambiente,
+                        "Ambiente Restrito para Uso Interno 🔒",
+                        "O ambiente '" + ambiente.getNome() + "' agora é restrito apenas para uso interno. " +
+                        reservasAtivas.size() + " reserva(s) de estudantes foram canceladas automaticamente."
+                );
+            }
+            // Mudou de TRUE para FALSE -> Apenas notificar que agora está aberto
+            else if (soInternosAntigo && !soInternosNovo) {
+                notificarAdminsECoordenador(
+                        ambiente,
+                        "Ambiente Aberto para Todos 🔓",
+                        "O ambiente '" + ambiente.getNome() + "' agora está disponível para reservas de todos os usuários, incluindo estudantes."
+                );
+            }
+        }
+
+        // Atualizar o atributo soInternos
+        ambiente.setSoInternos(ambienteDTO.isSoInternos());
 
         // Atualizar a aprovação do ambiente
         ambiente.setAprovacao(ambienteDTO.getAprovacao());
