@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class ReservaImpressoraReferenciaDTO {
+public class ReservaImpressoraDTO {
 
     private Long id;
     private LocalDate data;
@@ -18,10 +18,10 @@ public class ReservaImpressoraReferenciaDTO {
     private Double temperatura;
     private StatusReserva3D statusReserva3D;
 
-    public ReservaImpressoraReferenciaDTO() {
+    public ReservaImpressoraDTO() {
     }
 
-    public ReservaImpressoraReferenciaDTO(ReservaImpressora reserva) {
+    public ReservaImpressoraDTO(ReservaImpressora reserva) {
         this.id = reserva.getId();
         this.data = reserva.getData();
         this.horaInicio = reserva.getHoraInicio();

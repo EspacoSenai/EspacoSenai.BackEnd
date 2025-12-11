@@ -1,7 +1,7 @@
 package com.api.reserva.controller;
 
 import com.api.reserva.dto.Pin;
-import com.api.reserva.dto.ReservaImpressoraReferenciaDTO;
+import com.api.reserva.dto.ReservaImpressoraDTO;
 import com.api.reserva.dto.TemperaturaDTO;
 import com.api.reserva.service.ReservaImpressoraService;
 import com.api.reserva.util.ResponseBuilder;
@@ -22,29 +22,29 @@ public class ReservaImpressoraController {
     @Autowired
     private ReservaImpressoraService reservaImpressoraService;
 
-    @GetMapping
-    public ResponseEntity<List<ReservaImpressoraReferenciaDTO>> buscarTodas() {
-        List<ReservaImpressoraReferenciaDTO> reservas = reservaImpressoraService.buscar();
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ReservaImpressoraDTO>> buscarTodas() {
+        List<ReservaImpressoraDTO> reservas = reservaImpressoraService.buscar();
         return ResponseEntity.ok(reservas);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/buscar/{id}")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR')")
-    public ResponseEntity<ReservaImpressoraReferenciaDTO> buscarPorId(@PathVariable Long id) {
-        ReservaImpressoraReferenciaDTO reserva = reservaImpressoraService.buscar(id);
+    public ResponseEntity<ReservaImpressoraDTO> buscarPorId(@PathVariable Long id) {
+        ReservaImpressoraDTO reserva = reservaImpressoraService.buscar(id);
         return ResponseEntity.ok(reserva);
     }
 
-    @PostMapping
+    @PostMapping("/salvar")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
-    public ResponseEntity<Void> salvar(@RequestBody @Valid ReservaImpressoraReferenciaDTO reserva, Authentication authentication) {
+    public ResponseEntity<Void> salvar(@RequestBody @Valid ReservaImpressoraDTO reserva, Authentication authentication) {
         reservaImpressoraService.salvar(reserva, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/liberar")
     @PreAuthorize("hasAnyAuthority('SCOPE_ADMIN', 'SCOPE_COORDENADOR', 'SCOPE_PROFESSOR', 'SCOPE_ESTUDANTE')")
-    public ResponseEntity<Object> liberarMamarquinaminha(@RequestBody Pin pin){
+    public ResponseEntity<Object> atualizarStatusPeloPin(@RequestBody Pin pin){
         reservaImpressoraService.atualizarStatusPeloPin(pin);
         return ResponseBuilder.respostaSimples(HttpStatus.CREATED, "Maquina liberada com sucesso.");
     }

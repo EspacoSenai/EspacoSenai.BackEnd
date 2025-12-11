@@ -1,7 +1,7 @@
 package com.api.reserva.service;
 
 import com.api.reserva.dto.Pin;
-import com.api.reserva.dto.ReservaImpressoraReferenciaDTO;
+import com.api.reserva.dto.ReservaImpressoraDTO;
 import com.api.reserva.dto.TemperaturaDTO;
 import com.api.reserva.entity.*;
 import com.api.reserva.enums.StatusReserva3D;
@@ -32,25 +32,22 @@ public class ReservaImpressoraService {
     @Autowired
     private CatalogoRepository catalogoRepository;
     @Autowired
-    private ReservaService reservaService;
-    @Autowired
     private ReservaImpressoraRepository reservaImpressoraRepository;
 
-
-    public List<ReservaImpressoraReferenciaDTO> buscar() {
+    public List<ReservaImpressoraDTO> buscar() {
         return impressoraRepository.findAll()
                 .stream()
-                .map(ReservaImpressoraReferenciaDTO::new)
+                .map(ReservaImpressoraDTO::new)
                 .toList();
     }
 
-    public ReservaImpressoraReferenciaDTO buscar(Long id) {
-        return new ReservaImpressoraReferenciaDTO(impressoraRepository.findById(id).orElseThrow(
+    public ReservaImpressoraDTO buscar(Long id) {
+        return new ReservaImpressoraDTO(impressoraRepository.findById(id).orElseThrow(
                 SemResultadosException::new));
     }
 
     @Transactional
-    public void salvar(ReservaImpressoraReferenciaDTO reserva, Authentication authentication){
+    public void salvar(ReservaImpressoraDTO reserva, Authentication authentication){
         validarDadosReserva(reserva);
 
         Usuario host = usuarioRepository.findById(MetodosAuth.extrairId(authentication)).orElseThrow(
@@ -96,7 +93,7 @@ public class ReservaImpressoraService {
 
 
 
-    private void validarDadosReserva(ReservaImpressoraReferenciaDTO reservaDTO) {
+    private void validarDadosReserva(ReservaImpressoraDTO reservaDTO) {
         if (reservaDTO.getData().isBefore(LocalDate.now())) {
             throw new DataInvalidaException("A data da reserva deve ser futura ou hoje");
         }
@@ -183,8 +180,5 @@ public class ReservaImpressoraService {
         }
         return false;
     }
-
-
-
 
 }
