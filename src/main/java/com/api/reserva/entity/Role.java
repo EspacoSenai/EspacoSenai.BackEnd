@@ -26,7 +26,8 @@ public class Role {
         ADMIN(1L),
         COORDENADOR(2L),
         PROFESSOR(3L),
-        ESTUDANTE(4L);
+        ESTUDANTE(4L),
+        IMPRESSORA(5L);
 
         Long roleId;
 
