@@ -27,6 +27,17 @@ public class TokenService {
     @Autowired
     private JwtEncoder jwtEncoder;
 
+    // Constantes de expiração
+    private static final Long EXPIRACAO_USUARIO_SEGUNDOS = 6000L; // ~1.6 horas
+    private static final Long EXPIRACAO_IMPRESSORA_SEGUNDOS = 604800L; // 1 semana (7 dias)
+
+    /**
+     * Login unificado para todos os usuários
+     * - Usuários normais: Token de ~1.6 horas
+     * - Impressoras: Token de 1 semana
+     * 
+     * A diferenciação acontece automática baseado na role do usuário
+     */
     public LoginResponse signIn(LoginRequest loginRequest) {
         Usuario usuario = usuarioRepository.findByIdentificador(loginRequest.identificador());
 
@@ -36,7 +47,11 @@ public class TokenService {
                     .map(role -> role.getRoleNome().name())
                     .collect(Collectors.joining(" "));
 
-            Long expiresIn = 6000L;
+            // ✅ Verificar se é impressora para usar token de 1 semana
+            boolean ehImpressora = usuario.getRoles().stream()
+                    .anyMatch(role -> role.getRoleNome() == com.api.reserva.entity.Role.Values.IMPRESSORA);
+            
+            Long expiresIn = ehImpressora ? EXPIRACAO_IMPRESSORA_SEGUNDOS : EXPIRACAO_USUARIO_SEGUNDOS;
 
             JwtClaimsSet claims = JwtClaimsSet.builder()
                     .issuer("myapp")
